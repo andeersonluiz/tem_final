@@ -1,0 +1,82 @@
+[
+    {
+        "idUser": "someuid",
+        "listUserChoices": [
+            {
+                "idTvShowAndMovie": "302367200",
+                "seasonSelected": 1,
+                "conclusionSelected": 0
+            },
+            {
+                "idTvShowAndMovie": "301994016",
+                "seasonSelected": 1,
+                "conclusionSelected": 1
+            },
+            {
+                "idTvShowAndMovie": "299455137",
+                "seasonSelected": 1,
+                "conclusionSelected": 0
+            },
+            {
+                "idTvShowAndMovie": "302186794",
+                "seasonSelected": 1,
+                "conclusionSelected": 2
+            },
+            {
+                "idTvShowAndMovie": "302208571",
+                "seasonSelected": 1,
+                "conclusionSelected": 0
+            }
+        ],
+        "listUserRatings": [
+            {
+                "idTvShowAndMovie": "302367200",
+                "ratingValue": 2.0
+            },
+            {
+                "idTvShowAndMovie": "302186794",
+                "ratingValue": 5.0
+            }
+        ]
+    },
+    {
+        "idUser": "someUid2",
+        "listUserChoices": [
+            {
+                "idTvShowAndMovie": "302367200",
+                "seasonSelected": 1,
+                "conclusionSelected": 0
+            },
+            {
+                "idTvShowAndMovie": "301994016",
+                "seasonSelected": 1,
+                "conclusionSelected": 1
+            },
+            {
+                "idTvShowAndMovie": "299455137",
+                "seasonSelected": 1,
+                "conclusionSelected": 0
+            },
+            {
+                "idTvShowAndMovie": "302186794",
+                "seasonSelected": 1,
+                "conclusionSelected": 2
+            },
+            {
+                "idTvShowAndMovie": "302208571",
+                "seasonSelected": 1,
+                "conclusionSelected": 0
+            }
+        ],
+        "listUserRatings": [
+            {
+                "idTvShowAndMovie": "302367200",
+                "ratingValue": 2.0
+            },
+            {
+                "idTvShowAndMovie": "302186794",
+                "ratingValue": 5.0
+            }
+        ]
+    }
+]

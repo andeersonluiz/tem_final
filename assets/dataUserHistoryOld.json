@@ -1,0 +1,35 @@
+{
+    "idUser": "someuid",
+    "listUserChoices": [
+        {
+            "idTvShowAndMovie": "302367200",
+            "seasonSelected": 2,
+            "conclusionSelected": 0
+        },
+        {
+            "idTvShowAndMovie": "301994016",
+            "seasonSelected": 2,
+            "conclusionSelected": 1
+        },
+        {
+            "idTvShowAndMovie": "302186794",
+            "seasonSelected": 4,
+            "conclusionSelected": 2
+        },
+        {
+            "idTvShowAndMovie": "302208571",
+            "seasonSelected": 5,
+            "conclusionSelected": 0
+        }
+    ],
+    "listUserRatings": [
+        {
+            "idTvShowAndMovie": "302367200",
+            "ratingValue": 2.0
+        },
+        {
+            "idTvShowAndMovie": "302186794",
+            "ratingValue": 5.0
+        }
+    ]
+}
