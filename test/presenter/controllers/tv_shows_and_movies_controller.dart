@@ -28,7 +28,7 @@ class MockTvShowsAndMoviesController extends GetxController {
   final MockGetTvShowAndMovieUseCase _getTvShowAndMovieUseCase;
   final MockGetAllMovieUseCase _getAllMovieUseCase;
   final MockGetAllTvShowUseCase _getAllTvShowUseCase;
-  Rx<String> filterSelected = Filter.none.string.obs;
+  Rx<String> filterSelected = Filter.all.string.obs;
   RxList<Tuple2<String, List<TvShowAndMovie>>> listTvShowAndMovie =
       [Tuple2("", List<TvShowAndMovie>.empty())].obs;
   Rx<String> errorListTvShowAndMovie = "".obs;

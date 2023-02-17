@@ -7,15 +7,14 @@ import 'package:tuple/tuple.dart';
 
 class LoadMoreTvShowAndMovieMainPageUseCase
     implements
-        UseCase<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>,
-            PaginationTypeMainPage> {
+        UseCase<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>, Filter> {
   LoadMoreTvShowAndMovieMainPageUseCase(this._tvShowAndMovieRepository);
 
   final TvShowAndMovieRepository _tvShowAndMovieRepository;
 
   @override
   Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>> call(
-      PaginationTypeMainPage params) {
+      Filter params) {
     return _tvShowAndMovieRepository.loadMoreTvShowAndMovieMainPage(params);
   }
 }

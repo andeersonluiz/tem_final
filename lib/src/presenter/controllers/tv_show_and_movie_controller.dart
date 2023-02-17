@@ -85,12 +85,12 @@ class TvShowAndMovieController extends GetxController {
     int index = userHistoryController.userHistory.value!.listUserRatings
         .indexWhere((element) => element.idTvShowAndMovie == idTvShowAndMovie);
     if (index != -1) {
-      tvShowAndMovie.value!.isRated = true;
-      ratingController.updateRatingValue(
+      //tvShowAndMovie.value!.isRated = true;
+      /*ratingController.updateRatingValue(
           idTvShowAndMovie,
           userHistoryController
               .userHistory.value!.listUserRatings[index].ratingValue,
-          updateLocalRating: true);
+          updateLocalRating: true);*/
     }
   }
 }

@@ -8,12 +8,14 @@ import 'package:tem_final/src/data/mappers/user_history_mapper.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_model.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_rating_model.dart';
 import 'package:tem_final/src/data/models/user_history_model.dart';
+import 'package:tem_final/src/data/models/user_rating_model.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 
 import 'package:tem_final/src/core/utils/constants.dart';
 
 import 'package:tem_final/src/core/resources/data_state.dart';
 import 'package:tem_final/src/domain/entities/user_history_entity.dart';
+import 'package:tem_final/src/domain/repositories/user_repository.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../domain/repositories/tv_show_and_movie_repository.dart';
@@ -35,45 +37,90 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
   /** 
    * remote_datasource
   */
-  @override
-  Future<DataState<bool>> updateUserHistoryRating(
-      UserHistory userHistory) async {
-    UserHistoryModel userHistoryModel =
-        userHistoryMapper.entityToModel(userHistory);
-    var resultRating = await firebaseHandlerService.updateUserHistoryRating(
-        userId, userHistoryModel);
-    if (resultRating.isLeft) {
-      var resultUpdateUserHistory = await localPreferencesHandlerService
-          .updateUserHistory(userHistoryModel);
 
-      if (resultUpdateUserHistory.isLeft) {
-        return const DataSucess(true);
+  Future<Either<bool, Tuple2<String, StackTrace>>> _updateUserHistoryRating(
+    String idTvShowAndMovie,
+    int ratingValue,
+  ) async {
+    Either<UserHistoryModel?, Tuple2<String, StackTrace>> resultGetUserHistory =
+        localPreferencesHandlerService.getUserHistory();
+    if (resultGetUserHistory.isLeft) {
+      UserHistoryModel? userHistoryModel = resultGetUserHistory.left;
+      if (userHistoryModel != null) {
+        var index = userHistoryModel.listUserRatings.indexWhere(
+            (element) => idTvShowAndMovie == element.idTvShowAndMovie);
+        UserRatingModel userRatingModel = UserRatingModel(
+            idTvShowAndMovie: idTvShowAndMovie,
+            ratingValue: ratingValue.toDouble());
+        if (index != -1) {
+          userHistoryModel.listUserRatings[index] = userRatingModel;
+        } else {
+          userHistoryModel.listUserRatings.add(userRatingModel);
+        }
+        var resultRating = await firebaseHandlerService.updateUserHistoryRating(
+            userId, userHistoryModel);
+        if (resultRating.isLeft) {
+          var resultUpdateUserHistory = await localPreferencesHandlerService
+              .updateUserHistory(userHistoryModel);
+
+          if (resultUpdateUserHistory.isLeft) {
+            return const Left(true);
+          } else {
+            return Right(resultUpdateUserHistory.right);
+          }
+        } else {
+          return Right(resultRating.right);
+        }
       } else {
-        return DataFailed(resultUpdateUserHistory.right, isLog: false);
+        return Right(resultGetUserHistory.right);
       }
     } else {
-      return DataFailed(resultRating.right, isLog: false);
+      return Right(resultGetUserHistory.right);
+    }
+  }
+
+  Future<Either<bool, Tuple2<String, StackTrace>>> _updateTvShowAndMovieRating(
+      TvShowAndMovie tvShowAndMovie, int ratingValue) async {
+    TvShowAndMovieModel tvShowAndMovieModel =
+        mapper.entityToModel(tvShowAndMovie);
+    late TvShowAndMovieRatingModel tvShowAndMovieRatingModel =
+        TvShowAndMovieRatingModel(idUser: userId, rating: ratingValue);
+    var result = await firebaseHandlerService.updateRatingInsideTvShowAndMovie(
+        tvShowAndMovieModel.id, tvShowAndMovieRatingModel);
+    if (result.isLeft) {
+      return Left(true);
+    } else {
+      return Right(result.right);
     }
   }
 
   @override
-  Future<DataState<bool>> updateTvShowAndMovieRating(
+  Future<DataState<bool>> updateRating(
       Tuple2<TvShowAndMovie, int> params) async {
-    TvShowAndMovieModel tvShowAndMovieModel =
-        mapper.entityToModel(params.item1);
-    List<TvShowAndMovieRatingModel> listTvShowAndMovieRatingModel =
-        tvShowAndMovieModel.ratingList
-            .where((element) => element.idUser == userId)
-            .toList();
-    late TvShowAndMovieRatingModel tvShowAndMovieRatingModel =
-        TvShowAndMovieRatingModel(idUser: userId, rating: params.item2);
-
-    var result = await firebaseHandlerService.updateRatingInsideTvShowAndMovie(
-        tvShowAndMovieModel.id, tvShowAndMovieRatingModel);
-    if (result.isLeft) {
-      return DataSucess(true);
+    TvShowAndMovie tvShowAndMovie = params.item1;
+    int ratingValue = params.item2;
+    /**atualizar o rating na parte do usuário */
+    var resultUpdateUserHistory =
+        await _updateUserHistoryRating(tvShowAndMovie.id, ratingValue);
+    /**atualizar o rating na parte do tvshowandmovie */
+    var resultTvShowAndMovie =
+        await _updateTvShowAndMovieRating(tvShowAndMovie, ratingValue);
+    if (resultUpdateUserHistory.isLeft && resultTvShowAndMovie.isLeft) {
+      return const DataSucess(true);
     } else {
-      return DataFailed(result.right, isLog: false);
+      String stackTraceUpdateUserHistory = resultUpdateUserHistory.isRight
+          ? resultUpdateUserHistory.right.item2.toString()
+          : "no has error";
+      String stackTraceTvShowAndMovie = resultTvShowAndMovie.isRight
+          ? resultTvShowAndMovie.right.item2.toString()
+          : "no has error";
+
+      return DataFailed(
+          Tuple2(
+              Strings.errorToUpdateRating,
+              StackTrace.fromString(
+                  "UpdateUserHistory: $stackTraceUpdateUserHistory | TvShowAndMovie : $stackTraceTvShowAndMovie")),
+          isLog: true);
     }
   }
 
@@ -120,7 +167,11 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
 
       TvShowAndMovie? tvShowAndMovie = mapper
           .modelToEntity(TvShowAndMovieModel.fromMap(firebaseResponse.left));
-
+      var index = tvShowAndMovie.ratingList
+          .indexWhere((element) => element.idUser == userId);
+      if (index != -1) {
+        tvShowAndMovie.localRating = tvShowAndMovie.ratingList[index].rating;
+      }
       return DataSucess(tvShowAndMovie);
     } else {
       return DataFailed(firebaseResponse.right, isLog: false);
@@ -249,10 +300,9 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
 
   @override
   Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>>
-      loadMoreTvShowAndMovieMainPage(
-          PaginationTypeMainPage paginationTypeMainPage) async {
+      loadMoreTvShowAndMovieMainPage(Filter filterMainPage) async {
     var resultData = await firebaseHandlerService
-        .loadMoreTvShowAndMoviesMainPage(paginationTypeMainPage);
+        .loadMoreTvShowAndMoviesMainPage(filterMainPage);
     if (resultData.isLeft) {
       var tuples = _convertTuple(resultData.left);
       return DataSucess(tuples);

@@ -4,7 +4,6 @@ import 'package:tem_final/src/core/utils/strings.dart';
 import 'package:tem_final/src/domain/entities/user_history_entity.dart';
 import 'package:tem_final/src/domain/entities/user_rating_entity.dart';
 import 'package:tem_final/src/domain/usecases/get_local_user_history_usecase.dart';
-import 'package:tem_final/src/domain/usecases/update_user_history_rating_usecase.dart';
 import 'package:tem_final/src/presenter/controllers/tv_show_and_movie_controller.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
 

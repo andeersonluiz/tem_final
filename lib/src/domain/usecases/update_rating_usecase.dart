@@ -7,12 +7,12 @@ import 'package:tem_final/src/domain/repositories/tv_show_and_movie_repository.d
 import 'package:tem_final/src/domain/repositories/user_repository.dart';
 import 'package:tuple/tuple.dart';
 
-class UpdateTvShowAndMovieRatingUseCase
+class UpdateRatingUseCase
     implements UseCase<DataState<bool>, Tuple2<TvShowAndMovie, int>> {
-  UpdateTvShowAndMovieRatingUseCase(this._tvShowandMovieRepository);
+  UpdateRatingUseCase(this._tvShowandMovieRepository);
   final TvShowAndMovieRepository _tvShowandMovieRepository;
   @override
   Future<DataState<bool>> call(Tuple2<TvShowAndMovie, int> params) async {
-    return await _tvShowandMovieRepository.updateTvShowAndMovieRating(params);
+    return await _tvShowandMovieRepository.updateRating(params);
   }
 }

@@ -12,7 +12,7 @@ class TvShowAndMovieMapper
     implements Mapper<TvShowAndMovie, TvShowAndMovieModel> {
   @override
   TvShowAndMovie modelToEntity(model,
-      {bool isFavorite = false, bool isRated = false}) {
+      {bool isFavorite = false, int localRating = -1}) {
     List<TvShowAndMovieInfoStatusModel> tvShowAndMovieInfoStatusModel =
         model.listTvShowAndMovieInfoStatusBySeason;
     return TvShowAndMovie(
@@ -33,7 +33,7 @@ class TvShowAndMovieMapper
       ratingList: model.ratingList
           .map((m) => TvShowAndMovieRating(idUser: m.idUser, rating: m.rating))
           .toList(),
-      isRated: isRated,
+      localRating: localRating,
       listTvShowAndMovieInfoStatusBySeason: tvShowAndMovieInfoStatusModel
           .map((item) => TvShowAndMovieInfoStatus(
               conclusiveCount: item.conclusiveCount,

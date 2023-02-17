@@ -20,7 +20,7 @@ class TvShowAndMovie extends Equatable {
   final int viewsCount;
   final List<TvShowAndMovieInfoStatus> listTvShowAndMovieInfoStatusBySeason;
   final bool isFavorite;
-  bool isRated;
+  int localRating;
   final List<TvShowAndMovieRating> ratingList;
 
   final double averageRating;
@@ -39,7 +39,7 @@ class TvShowAndMovie extends Equatable {
     required this.viewsCount,
     required this.listTvShowAndMovieInfoStatusBySeason,
     required this.isFavorite,
-    this.isRated = false,
+    this.localRating = -1,
     required this.ratingList,
     required this.averageRating,
   });

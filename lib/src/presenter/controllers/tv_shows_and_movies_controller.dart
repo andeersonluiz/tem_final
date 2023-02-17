@@ -25,7 +25,7 @@ class TvShowsAndMoviesController extends GetxController {
   final GetAllTvShowUseCase _getAllTvShowUseCase;
   final LoadMoreTvShowAndMovieMainPageUseCase
       _loadMoreTvShowAndMovieMainPageUseCase;
-  Rx<String> filterSelected = Filter.none.string.obs;
+  Rx<String> filterSelected = Filter.all.string.obs;
   RxList<Tuple2<String, List<TvShowAndMovie>>> listTvShowAndMovie =
       [Tuple2("", List<TvShowAndMovie>.empty())].obs;
   Rx<String> errorListTvShowAndMovie = "".obs;
@@ -132,8 +132,6 @@ class TvShowsAndMoviesController extends GetxController {
         return PaginationTypeMainPage.movie;
       case Filter.tvShow:
         return PaginationTypeMainPage.tvShow;
-      case Filter.none:
-        return PaginationTypeMainPage.all;
     }
   }
 

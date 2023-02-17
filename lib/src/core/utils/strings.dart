@@ -91,6 +91,8 @@ class Strings {
   static const tvShowAndNotFound = "Filme/Série não encontrado";
 
   static const ratingSuccessful = "Avaliação enviada com sucesso. Obrigado!!";
+  static const errorToUpdateRating =
+      "Erro ao atualizar avaliação, tente novamente mais tarde";
 
   //*Widgets names*//
   static const yourRatingText = "Sua avaliação";

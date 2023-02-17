@@ -9,7 +9,7 @@ enum PaginationType {
 
 enum PaginationTypeMainPage { all, tvShow, movie }
 
-enum Filter { none, all, movie, tvShow }
+enum Filter { all, movie, tvShow }
 
 enum GenreType {
   release,
@@ -105,8 +105,6 @@ extension GenreTypeDisplay on GenreType {
 extension FilterString on Filter {
   String get string {
     switch (this) {
-      case Filter.none:
-        return "";
       case Filter.all:
         return "Tudo";
       case Filter.movie:
@@ -119,6 +117,8 @@ extension FilterString on Filter {
   }
 }
 
+final List<GenreType> kGenresList =
+    GenreType.values.where((element) => element.string.isNotEmpty).toList();
 const int pageSize = 15;
 
 const int pageSizeMainPage = 5;

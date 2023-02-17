@@ -1,5 +1,5 @@
-import 'package:get/get.dart';
-import 'package:tem_final/src/core/resources/data_state.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tem_final/src/data/datasource/auth/firebase_auth_handler_service.dart';
 import 'package:tem_final/src/data/datasource/local/local_preferences_handler_service.dart';
 import 'package:tem_final/src/data/datasource/remote/firebase_handler_service.dart';
@@ -22,83 +22,168 @@ import 'package:tem_final/src/domain/usecases/load_more_tv_show_and_movie_main_p
 import 'package:tem_final/src/domain/usecases/load_more_tv_show_and_movie_usecase.dart';
 import 'package:tem_final/src/domain/usecases/log_out_usecase.dart';
 import 'package:tem_final/src/domain/usecases/login_via_google_usecase.dart';
-import 'package:tem_final/src/domain/usecases/update_tv_show_and_movie_rating_usecase.dart';
-import 'package:tem_final/src/domain/usecases/update_user_history_rating_usecase.dart';
+import 'package:tem_final/src/domain/usecases/update_rating_usecase.dart';
 import 'package:tem_final/src/domain/usecases/search_tv_show_and_movie_usecase.dart';
 import 'package:tem_final/src/domain/usecases/select_conclusion_usecase.dart';
 import 'package:tem_final/src/domain/usecases/set_tv_serie_and_movie_with_favorite_usecase.dart';
 import 'package:tem_final/src/domain/usecases/submit_report_usecase.dart';
 import 'package:tem_final/src/domain/usecases/update_view_count_usecase.dart';
 
-Future<void> initializeDependencies() async {
-  FirebaseHandlerService firebaseHandlerService =
-      Get.put(FirebaseHandlerService());
-
-  FirebaseAuthHandlerService firebaseAuthHandlerService =
-      Get.put(FirebaseAuthHandlerService());
-  LocalPreferencesHandlerService localPreferencesHandlerService =
-      Get.put(LocalPreferencesHandlerService());
-
-  TvShowAndMovieMapper mapper = Get.put(TvShowAndMovieMapper());
-  UserHistoryMapper userHistoryMapper = Get.put(UserHistoryMapper());
-
-  await localPreferencesHandlerService.init();
-
-  //var resultLocalUserId = await localPreferencesHandlerService.loadUserId();
-
-  UserRepository userRepository = Get.put(UserRepositoryImpl(
-    firebaseHandlerService: firebaseHandlerService,
-    firebaseAuthHandlerService: firebaseAuthHandlerService,
-    localPreferencesHandlerService: localPreferencesHandlerService,
-    userHistoryMapper: userHistoryMapper,
-  ));
-  DataIntegrityChecker dataIntegrityChecker =
-      Get.put(DataIntegrityCheckerRepositoryImpl(
-    firebaseHandlerService: firebaseHandlerService,
-    firebaseAuthHandlerService: firebaseAuthHandlerService,
-    localPreferencesHandlerService: localPreferencesHandlerService,
-    userRepository: userRepository,
-  ));
-  /**APENAS TESTE */
-  //await userRepository.loginViaGoogle();
-
-  await dataIntegrityChecker.checkIntegrity();
-
-  await dataIntegrityChecker.checkMultiDeviceLoginStatus();
-
-  String userId = "";
-  var resultUserId = await userRepository.getUserId();
-  if (resultUserId.isLeft) {
-    userId = resultUserId.left;
+Future<String> initializeDependencies(
+  LocalPreferencesHandlerService localPreferencesHandlerService,
+  DataIntegrityChecker dataIntegrityChecker,
+  UserRepository userRepository,
+) async {
+  try {
+    await localPreferencesHandlerService.init();
+    await dataIntegrityChecker.checkIntegrity();
+    await dataIntegrityChecker.checkMultiDeviceLoginStatus();
+    String userId = "";
+    var resultUserId = await userRepository.getUserId();
+    print(resultUserId);
+    if (resultUserId.isLeft) {
+      userId = resultUserId.left;
+      print("string é $userId");
+    }
+    await localPreferencesHandlerService.setUserId(userId);
+    return userId;
+  } catch (e) {
+    return "";
   }
-  print("userId $userId");
+}
 
-  /**APENAS TESTE */
-  TvShowAndMovieRepository tvShowAndMovieRepository = Get.put(
-      TvShowAndMovieRepositoryImpl(
-          firebaseHandlerService: firebaseHandlerService,
-          localPreferencesHandlerService: localPreferencesHandlerService,
-          mapper: mapper,
-          userHistoryMapper: userHistoryMapper,
-          userId: userId));
+class ProviderInjection extends StatelessWidget {
+  const ProviderInjection({super.key, required this.child});
 
-  Get.put(GetAllTvShowAndMovieWithFavoriteUseCase(tvShowAndMovieRepository));
-  Get.put(GetAllTvShowAndMovieUseCase(tvShowAndMovieRepository));
-  Get.put(GetAllMovieUseCase(tvShowAndMovieRepository));
-  Get.put(GetAllTvShowUseCase(tvShowAndMovieRepository));
-  Get.put(GetTvShowAndMovieByGenresUseCase(tvShowAndMovieRepository));
-  Get.put(GetTvShowAndMovieUseCase(tvShowAndMovieRepository));
-  Get.put(LoadMoreTvShowAndMovieUseCase(tvShowAndMovieRepository));
-  Get.put(LoadMoreTvShowAndMovieMainPageUseCase(tvShowAndMovieRepository));
-  Get.put(SearchTvShowAndMovieUseCase(tvShowAndMovieRepository));
-  Get.put(SelectConclusionUseCase(tvShowAndMovieRepository));
-  Get.put(SetTvSerieAndMovieWithFavoriteUseCase(tvShowAndMovieRepository));
-  Get.put(UpdateTvShowAndMovieViewCountUseCase(tvShowAndMovieRepository));
-  Get.put(UpdateTvShowAndMovieRatingUseCase(tvShowAndMovieRepository));
-  Get.put(UpdateUserHistoryRatingUseCase(tvShowAndMovieRepository));
-  print("Oi");
-  Get.put(SubmitReportUseCase(userRepository));
-  Get.put(LoginViaGoogleUseCase(userRepository));
-  Get.put(LogOutUseCase(userRepository));
-  Get.put(GetLocalUserHistoryUseCase(userRepository));
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        // Providers da camada de dados
+        Provider<FirebaseAuthHandlerService>(
+          create: (_) => FirebaseAuthHandlerService(),
+        ),
+        Provider<FirebaseHandlerService>(
+          create: (_) => FirebaseHandlerService(),
+        ),
+        Provider<TvShowAndMovieMapper>(
+          create: (context) => TvShowAndMovieMapper(),
+        ),
+        Provider<LocalPreferencesHandlerService>(
+          create: (context) {
+            return LocalPreferencesHandlerService();
+          },
+        ),
+        Provider<UserHistoryMapper>(
+          create: (context) => UserHistoryMapper(),
+        ),
+        Provider<UserRepository>(
+          create: (context) {
+            return UserRepositoryImpl(
+              firebaseAuthHandlerService:
+                  context.read<FirebaseAuthHandlerService>(),
+              firebaseHandlerService: context.read<FirebaseHandlerService>(),
+              localPreferencesHandlerService:
+                  context.read<LocalPreferencesHandlerService>(),
+              userHistoryMapper: context.read<UserHistoryMapper>(),
+            );
+          },
+        ),
+        Provider<DataIntegrityChecker>(
+          create: (context) {
+            return DataIntegrityCheckerRepositoryImpl(
+              firebaseAuthHandlerService:
+                  context.read<FirebaseAuthHandlerService>(),
+              firebaseHandlerService: context.read<FirebaseHandlerService>(),
+              localPreferencesHandlerService:
+                  context.read<LocalPreferencesHandlerService>(),
+              userRepository: context.read<UserRepository>(),
+            );
+          },
+        ),
+
+        Provider<SubmitReportUseCase>(
+            create: (context) =>
+                SubmitReportUseCase(context.read<UserRepository>())),
+        Provider<LoginViaGoogleUseCase>(
+            create: (context) =>
+                LoginViaGoogleUseCase(context.read<UserRepository>())),
+        Provider<LogOutUseCase>(
+            create: (context) => LogOutUseCase(context.read<UserRepository>())),
+        Provider<GetLocalUserHistoryUseCase>(
+            create: (context) =>
+                GetLocalUserHistoryUseCase(context.read<UserRepository>())),
+      ],
+      child: Builder(builder: (context) {
+        return FutureBuilder(
+            future: initializeDependencies(
+                context.read<LocalPreferencesHandlerService>(),
+                context.read<DataIntegrityChecker>(),
+                context.read<UserRepository>()),
+            builder: (ctx, snp) {
+              if (snp.connectionState == ConnectionState.done) {
+                return MultiProvider(providers: [
+                  Provider<TvShowAndMovieRepository>(
+                    create: (context) => TvShowAndMovieRepositoryImpl(
+                        mapper: context.read<TvShowAndMovieMapper>(),
+                        firebaseHandlerService:
+                            context.read<FirebaseHandlerService>(),
+                        localPreferencesHandlerService:
+                            context.read<LocalPreferencesHandlerService>(),
+                        userHistoryMapper: context.read<UserHistoryMapper>(),
+                        userId: snp.data!),
+                  ),
+                  Provider<GetAllTvShowAndMovieWithFavoriteUseCase>(
+                      create: (context) =>
+                          GetAllTvShowAndMovieWithFavoriteUseCase(
+                              context.read<TvShowAndMovieRepository>())),
+                  Provider<GetAllTvShowAndMovieUseCase>(
+                      create: (context) => GetAllTvShowAndMovieUseCase(
+                          context.read<TvShowAndMovieRepository>())),
+                  Provider<GetAllMovieUseCase>(
+                      create: (context) => GetAllMovieUseCase(
+                          context.read<TvShowAndMovieRepository>())),
+                  Provider<GetAllTvShowUseCase>(
+                      create: (context) => GetAllTvShowUseCase(
+                          context.read<TvShowAndMovieRepository>())),
+                  Provider<GetTvShowAndMovieByGenresUseCase>(
+                      create: (context) => GetTvShowAndMovieByGenresUseCase(
+                          context.read<TvShowAndMovieRepository>())),
+                  Provider<GetTvShowAndMovieUseCase>(
+                      create: (context) => GetTvShowAndMovieUseCase(
+                          context.read<TvShowAndMovieRepository>())),
+                  Provider<LoadMoreTvShowAndMovieUseCase>(
+                      create: (context) => LoadMoreTvShowAndMovieUseCase(
+                          context.read<TvShowAndMovieRepository>())),
+                  Provider<LoadMoreTvShowAndMovieMainPageUseCase>(
+                      create: (context) =>
+                          LoadMoreTvShowAndMovieMainPageUseCase(
+                              context.read<TvShowAndMovieRepository>())),
+                  Provider<SearchTvShowAndMovieUseCase>(
+                      create: (context) => SearchTvShowAndMovieUseCase(
+                          context.read<TvShowAndMovieRepository>())),
+                  Provider<SelectConclusionUseCase>(
+                      create: (context) => SelectConclusionUseCase(
+                          context.read<TvShowAndMovieRepository>())),
+                  Provider<SetTvSerieAndMovieWithFavoriteUseCase>(
+                      create: (context) =>
+                          SetTvSerieAndMovieWithFavoriteUseCase(
+                              context.read<TvShowAndMovieRepository>())),
+                  Provider<UpdateTvShowAndMovieViewCountUseCase>(
+                      create: (context) => UpdateTvShowAndMovieViewCountUseCase(
+                          context.read<TvShowAndMovieRepository>())),
+                  Provider<UpdateRatingUseCase>(
+                      create: (context) => UpdateRatingUseCase(
+                          context.read<TvShowAndMovieRepository>())),
+                ], child: child);
+              }
+              {
+                return SizedBox();
+              }
+            });
+      }),
+    );
+  }
 }

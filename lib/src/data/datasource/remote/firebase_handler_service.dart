@@ -37,15 +37,12 @@ class FirebaseHandlerService {
       _paginationNumber = 1;
       _isFinalList = false;
       List<Tuple2<String, List<Map<String, dynamic>>>> tuples = [];
-      List<GenreType> genresList = GenreType.values
-          .where((element) => element.string.isNotEmpty)
-          .toList();
 
-      for (GenreType genre in genresList.sublist(
+      for (GenreType genre in kGenresList.sublist(
           _offSet,
-          genresList.length > pageSizeMainPage
+          kGenresList.length > pageSizeMainPage
               ? pageSizeMainPage
-              : genresList.length)) {
+              : kGenresList.length)) {
         var queryDocumentData = await _instance
             .from(kDocumentTvShowAndMovies)
             .select()
@@ -86,15 +83,12 @@ class FirebaseHandlerService {
       _isFinalList = false;
       //TEM QUE SORTEAR
       List<Tuple2<String, List<Map<String, dynamic>>>> tuples = [];
-      List<GenreType> genresList = GenreType.values
-          .where((element) => element.string.isNotEmpty)
-          .toList();
 
-      for (GenreType genre in genresList.sublist(
+      for (GenreType genre in kGenresList.sublist(
           _offSet,
-          genresList.length > pageSizeMainPage
+          kGenresList.length > pageSizeMainPage
               ? pageSizeMainPage
-              : genresList.length)) {
+              : kGenresList.length)) {
         var queryDocumentData = await _instance
             .from(kDocumentTvShowAndMovies)
             .select()
@@ -138,15 +132,12 @@ class FirebaseHandlerService {
       print("_isFinalList é $_isFinalList");
       //TEM QUE SORTEAR
       List<Tuple2<String, List<Map<String, dynamic>>>> tuples = [];
-      List<GenreType> genresList = GenreType.values
-          .where((element) => element.string.isNotEmpty)
-          .toList();
 
-      for (GenreType genre in genresList.sublist(
+      for (GenreType genre in kGenresList.sublist(
           _offSet,
-          genresList.length > pageSizeMainPage
+          kGenresList.length > pageSizeMainPage
               ? pageSizeMainPage
-              : genresList.length)) {
+              : kGenresList.length)) {
         var queryDocumentData = await _instance
             .from(kDocumentTvShowAndMovies)
             .select()
@@ -399,7 +390,7 @@ class FirebaseHandlerService {
   Future<
       Either<List<Tuple2<String, List<Map<String, dynamic>>>>,
           Tuple2<String, StackTrace>>> loadMoreTvShowAndMoviesMainPage(
-      PaginationTypeMainPage paginationTypeMainPage) async {
+      Filter filterMainPage) async {
     print("_isFinalList é $_isFinalList");
 
     if (_isFinalList) return const Left([]);
@@ -409,9 +400,9 @@ class FirebaseHandlerService {
       //throw NoConnectionException(message: "teste erro connection");
       //throw FirebaseException(plugin: 'firebase');
       print("chmei moreData");
-      var moreData =
-          (await getQueryByPaginationMainPage(paginationTypeMainPage));
+      var moreData = (await getQueryByPaginationMainPage(filterMainPage));
       print("moreData ${moreData.length}");
+      print(pageSizeMainPage);
       if (moreData.length == pageSizeMainPage) {
         _offSet += pageSizeMainPage;
       } else {
@@ -625,17 +616,15 @@ class FirebaseHandlerService {
     }
   }
 
-  getQueryByPaginationMainPage(
-      PaginationTypeMainPage paginationTypeMainPage) async {
+  getQueryByPaginationMainPage(Filter filterMainPage) async {
     List<Tuple2<String, List<Map<String, dynamic>>>> tuples = [];
-    List<GenreType> genresList = GenreType.values;
-    switch (paginationTypeMainPage) {
-      case PaginationTypeMainPage.all:
-        for (GenreType genre in genresList.sublist(
+    switch (filterMainPage) {
+      case Filter.all:
+        for (GenreType genre in kGenresList.sublist(
             _offSet,
-            genresList.length > (pageSizeMainPage * _paginationNumber)
+            kGenresList.length > (pageSizeMainPage * _paginationNumber)
                 ? (pageSizeMainPage * _paginationNumber)
-                : genresList.length)) {
+                : kGenresList.length)) {
           var queryDocumentData = await _instance
               .from(kDocumentTvShowAndMovies)
               .select()
@@ -649,12 +638,12 @@ class FirebaseHandlerService {
           tuples.add(Tuple2(genre.string, map));
         }
         return tuples;
-      case PaginationTypeMainPage.tvShow:
-        for (GenreType genre in genresList.sublist(
+      case Filter.tvShow:
+        for (GenreType genre in kGenresList.sublist(
             _offSet,
-            genresList.length > (pageSizeMainPage * _paginationNumber)
+            kGenresList.length > (pageSizeMainPage * _paginationNumber)
                 ? (pageSizeMainPage * _paginationNumber)
-                : genresList.length)) {
+                : kGenresList.length)) {
           var queryDocumentData = await _instance
               .from(kDocumentTvShowAndMovies)
               .select()
@@ -670,12 +659,15 @@ class FirebaseHandlerService {
         }
         return tuples;
 
-      case PaginationTypeMainPage.movie:
-        for (GenreType genre in genresList.sublist(
+      case Filter.movie:
+        print(kGenresList);
+        print(
+            "from $_offSet to ${kGenresList.length > (pageSizeMainPage * _paginationNumber) ? (pageSizeMainPage * _paginationNumber) : kGenresList.length}");
+        for (GenreType genre in kGenresList.sublist(
             _offSet,
-            genresList.length > (pageSizeMainPage * _paginationNumber)
+            kGenresList.length > (pageSizeMainPage * _paginationNumber)
                 ? (pageSizeMainPage * _paginationNumber)
-                : genresList.length)) {
+                : kGenresList.length)) {
           var queryDocumentData = await _instance
               .from(kDocumentTvShowAndMovies)
               .select()

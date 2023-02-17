@@ -18,8 +18,7 @@ abstract class TvShowAndMovieRepository {
   Future<DataState<List<TvShowAndMovie>>> loadMoreTvShowAndMovie(
       PaginationType paginationType);
   Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>>
-      loadMoreTvShowAndMovieMainPage(
-          PaginationTypeMainPage paginationTypeMainPage);
+      loadMoreTvShowAndMovieMainPage(Filter filterMainPage);
   Future<DataState<TvShowAndMovie?>> getTvShowAndMovie(String id);
 
   Future<DataState<String>> setTvSerieAndMoveWithFavorite(
@@ -31,7 +30,5 @@ abstract class TvShowAndMovieRepository {
       Tuple2<String, ConclusionType> params);
 
   Future<void> updateTvShowAndMovieViewViewCount(String idTvShowAndMovie);
-  Future<DataState<bool>> updateUserHistoryRating(UserHistory userHistory);
-  Future<DataState<bool>> updateTvShowAndMovieRating(
-      Tuple2<TvShowAndMovie, int> params);
+  Future<DataState<bool>> updateRating(Tuple2<TvShowAndMovie, int> params);
 }
