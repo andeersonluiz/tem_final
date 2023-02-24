@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:equatable/equatable.dart';
 
 import 'package:tem_final/src/core/utils/constants.dart';

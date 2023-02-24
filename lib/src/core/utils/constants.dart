@@ -1,9 +1,19 @@
-enum ConclusionType { conclusive, openEnded, unknown }
+enum ConclusionType {
+  hasFinalAndOpened,
+  hasFinalAndClosed,
+  noHasfinalAndNewSeason,
+  noHasfinalAndNoNewSeason,
+}
+
+enum Conclusion { hasFinal, noHasFinal }
+
+enum ConclusionHasFinal { opened, closed }
+
+enum ConclusionNoHasFinal { newSeason, noNewSeason }
 
 enum ReportType { problem, feedback, changeData }
 
 enum PaginationType {
-  searchPage,
   genrePage,
 }
 
@@ -51,6 +61,21 @@ extension ReportTypeString on ReportType {
         return "Atualização";
       default:
         return "";
+    }
+  }
+}
+
+extension ConclusionTypeString on ConclusionType {
+  String get string {
+    switch (this) {
+      case ConclusionType.hasFinalAndClosed:
+        return "hasFinalAndClosed";
+      case ConclusionType.hasFinalAndOpened:
+        return "hasFinalAndOpened";
+      case ConclusionType.noHasfinalAndNewSeason:
+        return "noHasfinalAndNewSeason";
+      case ConclusionType.noHasfinalAndNoNewSeason:
+        return "noHasfinalAndNoNewSeason";
     }
   }
 }
@@ -130,12 +155,23 @@ const String kUserIdKeyEncrypted = "kUserIdKeyEncrypted";
 
 const String kViwedTvShowAndMoviesUserIdKeyEncrypted =
     "kViwedTvShowAndMoviesUserIdKeyEncrypted";
-
+const String kRecentsTvShowAndMovieViwedKeyEncrypted =
+    "kRecentsTvShowAndMovieViwedKeyEncrypted";
 const String kUserHistoryKeyEncrypted = "kUserHistoryKeyEncrypted";
 const String kUserGenreEncypted = "kUserGenreEncypted";
 
 const String kDocumentTvShowAndMovies = "tvShowAndMovies";
 const String kDocumentUserHistory = "usersHistory";
 const int kMaxTvShowAndMoviesByGenre = 10;
-
+const int kDurationAnimationOpacity = 300;
+const int kDurationAnimationResize = 500;
+const int kDurationAnimationScroll = 750;
+const int kDurationAnimationPadding = 500;
+const int kDurationAnimationFade = 400;
+const int kAwaitTimeToAnimation = 500;
 const String kViewAll = "Ver tudo";
+
+const double kAspectRatioCarousel = 1.82;
+const double kViewportCarousel = 0.55;
+
+const int minCountConclusion = 50;

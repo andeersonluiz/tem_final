@@ -1,16 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:either_dart/either.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tem_final/src/core/resources/cryto_tools.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_model.dart';
-import 'package:tem_final/src/data/models/user_choice_model.dart';
 import 'package:tem_final/src/data/models/user_history_model.dart';
-import 'package:tem_final/src/domain/entities/user_choice_entity.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../../core/utils/strings.dart';
@@ -44,10 +38,13 @@ class LocalPreferencesHandlerService {
             .toList();
 
         if (localListTvSerieAndMoviesModel.contains(tvShowAndMovieModel)) {
+          print("removendo");
           addFavorite = false;
           localListTvSerieAndMoviesModel
               .removeWhere((item) => item.id == tvShowAndMovieModel.id);
         } else {
+          print("add");
+
           localListTvSerieAndMoviesModel.add(tvShowAndMovieModel);
         }
       }
@@ -57,8 +54,12 @@ class LocalPreferencesHandlerService {
 
       await _instance.setString(
           kFavoritesTvShowAndMoviesKeyEncrypted, jsonStringNew);
-      return Left(
-          "${tvShowAndMovieModel.seasons == 0 ? "Filme" : "Série"}${addFavorite ? Strings.msgSucessAddFavorite : ""}");
+      if (addFavorite) {
+        return Left(
+            "${tvShowAndMovieModel.seasons == 0 ? "Filme" : "Série"}${addFavorite ? Strings.msgSucessAddFavorite : ""}");
+      } else {
+        return Left("");
+      }
     } catch (e, stacktrace) {
       return Right(Tuple2(Strings.msgErrorSetLocalPreferences,
           StackTrace.fromString("$e\n$stacktrace")));
@@ -85,7 +86,7 @@ class LocalPreferencesHandlerService {
 
       return Left(localListTvSerieAndMoviesModel);
     } catch (e, stacktrace) {
-      return Right(Tuple2(Strings.msgErrorSetLocalPreferences,
+      return Right(Tuple2(Strings.msgErrorGetLocalPreferences,
           StackTrace.fromString("$e\n$stacktrace")));
     }
   }
@@ -195,7 +196,6 @@ class LocalPreferencesHandlerService {
 
   Future<bool> checkUserHistoryIntegrity() async {
     String? jsonUserHistory = _instance.getString(kUserHistoryKeyEncrypted);
-    print(jsonUserHistory.toString());
     if (jsonUserHistory != null) {
       var result = _tryDecode(_cryptoTools.decrypt(jsonUserHistory));
       if (!result) {
@@ -237,10 +237,8 @@ class LocalPreferencesHandlerService {
       UserHistoryModel? userHistoryModel;
       if (jsonString == null) {
       } else {
-        print("GET");
         userHistoryModel = UserHistoryModel.fromJson(
             jsonDecode(_cryptoTools.decrypt(jsonString)));
-        print(userHistoryModel.listUserRatings);
       }
       return Left(userHistoryModel);
     } catch (e, stacktrace) {
@@ -297,8 +295,67 @@ class LocalPreferencesHandlerService {
     }
   }
 
+  Either<List<TvShowAndMovieModel>, Tuple2<String, StackTrace>>
+      getRecentsTvShowAndMovieViewed() {
+    try {
+      String? jsonString =
+          _instance.getString(kRecentsTvShowAndMovieViwedKeyEncrypted);
+      List<TvShowAndMovieModel> listTvShowAndMovieModel = [];
+      // _instance.remove(kRecentsTvShowAndMovieViwedKeyEncrypted);
+      if (jsonString == null) {
+        return Left(listTvShowAndMovieModel);
+      } else {
+        listTvShowAndMovieModel = jsonDecode(_cryptoTools.decrypt(jsonString))
+            .map<TvShowAndMovieModel>(
+                (item) => TvShowAndMovieModel.fromJson(item))
+            .toList();
+        return Left(listTvShowAndMovieModel);
+      }
+    } catch (e, stacktrace) {
+      return Right(Tuple2(Strings.msgErrorGetLocalPreferences,
+          StackTrace.fromString("$e\n$stacktrace")));
+    }
+  }
+
+  Future<Either<bool, Tuple2<String, StackTrace>>>
+      setRecentsTvShowAndMovieViewed(
+          TvShowAndMovieModel tvShowAndMovieModel) async {
+    try {
+      String? jsonString =
+          _instance.getString(kRecentsTvShowAndMovieViwedKeyEncrypted);
+
+      if (jsonString == null) {
+        await _instance.setString(kRecentsTvShowAndMovieViwedKeyEncrypted,
+            _cryptoTools.encrypt(jsonEncode([tvShowAndMovieModel])));
+      } else {
+        List<TvShowAndMovieModel> listTvShowAndMovieModel =
+            jsonDecode(_cryptoTools.decrypt(jsonString))
+                .map<TvShowAndMovieModel>(
+                    (item) => TvShowAndMovieModel.fromJson(item))
+                .toList();
+        var index = listTvShowAndMovieModel
+            .indexWhere((element) => element.id == tvShowAndMovieModel.id);
+        if (index != -1) {
+          var item = listTvShowAndMovieModel.removeAt(index);
+          listTvShowAndMovieModel.insert(listTvShowAndMovieModel.length, item);
+        } else {
+          if (listTvShowAndMovieModel.length >= 5) {
+            listTvShowAndMovieModel.removeAt(0);
+          }
+          listTvShowAndMovieModel.add(tvShowAndMovieModel);
+        }
+
+        await _instance.setString(kRecentsTvShowAndMovieViwedKeyEncrypted,
+            _cryptoTools.encrypt(jsonEncode(listTvShowAndMovieModel)));
+      }
+      return const Left(true);
+    } catch (e, stacktrace) {
+      return Right(Tuple2(Strings.msgErrorGetLocalPreferences,
+          StackTrace.fromString("$e\n$stacktrace")));
+    }
+  }
+
   bool _tryDecode(String data) {
-    print(data);
     try {
       jsonDecode(data);
       return true;

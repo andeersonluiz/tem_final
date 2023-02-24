@@ -3,15 +3,17 @@ import 'package:equatable/equatable.dart';
 
 class TvShowAndMovieInfoStatus extends Equatable {
   final int seasonNumber;
-  final int conclusiveCount;
-  final int openEndedCount;
-  final int unknownCount;
+  final int hasFinalAndOpened;
+  final int hasFinalAndClosed;
+  final int noHasfinalAndNewSeason;
+  final int noHasfinalAndNoNewSeason;
   final String posterImageUrl;
   const TvShowAndMovieInfoStatus({
     required this.seasonNumber,
-    required this.conclusiveCount,
-    required this.openEndedCount,
-    required this.unknownCount,
+    required this.hasFinalAndOpened,
+    required this.hasFinalAndClosed,
+    required this.noHasfinalAndNewSeason,
+    required this.noHasfinalAndNoNewSeason,
     required this.posterImageUrl,
   });
 
@@ -19,9 +21,10 @@ class TvShowAndMovieInfoStatus extends Equatable {
   List<Object> get props {
     return [
       seasonNumber,
-      conclusiveCount,
-      openEndedCount,
-      unknownCount,
+      hasFinalAndOpened,
+      hasFinalAndClosed,
+      noHasfinalAndNewSeason,
+      noHasfinalAndNoNewSeason,
       posterImageUrl,
     ];
   }

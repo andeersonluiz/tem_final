@@ -29,17 +29,20 @@ class TvShowAndMovieMapper
       isNewSeasonUpcoming: model.isNewSeasonUpcoming,
       seasons: model.seasons,
       viewsCount: model.viewsCount,
+      actualStatus: model.actualStatus,
       averageRating: model.averageRating,
+      countConclusion: model.countConclusions,
       ratingList: model.ratingList
           .map((m) => TvShowAndMovieRating(idUser: m.idUser, rating: m.rating))
           .toList(),
       localRating: localRating,
       listTvShowAndMovieInfoStatusBySeason: tvShowAndMovieInfoStatusModel
           .map((item) => TvShowAndMovieInfoStatus(
-              conclusiveCount: item.conclusiveCount,
-              openEndedCount: item.openEndedCount,
+              hasFinalAndClosed: item.hasFinalAndClosed,
+              hasFinalAndOpened: item.hasFinalAndOpened,
               seasonNumber: item.seasonNumber,
-              unknownCount: item.unknownCount,
+              noHasfinalAndNewSeason: item.noHasfinalAndNewSeason,
+              noHasfinalAndNoNewSeason: item.noHasfinalAndNoNewSeason,
               posterImageUrl: item.posterImageUrl))
           .toList(),
       isFavorite: isFavorite,
@@ -67,16 +70,19 @@ class TvShowAndMovieMapper
         seasons: entity.seasons,
         viewsCount: entity.viewsCount,
         averageRating: entity.averageRating,
+        countConclusions: entity.countConclusion,
+        actualStatus: entity.actualStatus,
         ratingList: entity.ratingList
             .map((e) =>
                 TvShowAndMovieRatingModel(idUser: e.idUser, rating: e.rating))
             .toList(),
         listTvShowAndMovieInfoStatusBySeason: tvShowAndMovieInfoStatus
             .map((item) => TvShowAndMovieInfoStatusModel(
-                conclusiveCount: item.conclusiveCount,
-                openEndedCount: item.openEndedCount,
+                hasFinalAndClosed: item.hasFinalAndClosed,
+                hasFinalAndOpened: item.hasFinalAndOpened,
                 seasonNumber: item.seasonNumber,
-                unknownCount: item.unknownCount,
+                noHasfinalAndNewSeason: item.noHasfinalAndNewSeason,
+                noHasfinalAndNoNewSeason: item.noHasfinalAndNoNewSeason,
                 posterImageUrl: item.posterImageUrl))
             .toList());
   }

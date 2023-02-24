@@ -1,7 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:tem_final/src/core/utils/routes_names.dart';
-import 'package:tem_final/src/presenter/pages/home_view_page.dart';
-import 'package:tem_final/src/presenter/pages/tv_show_and_movie_info_page.dart';
+import 'package:tem_final/src/presenter/pages/home/home_view_page.dart';
+import 'package:tem_final/src/presenter/pages/search/search_page.dart';
+import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/tv_show_and_movie_info_page.dart';
 
 class MyRouter {
   static final GoRouter router = GoRouter(routes: [

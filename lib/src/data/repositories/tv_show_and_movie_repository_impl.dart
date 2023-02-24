@@ -1,12 +1,12 @@
 import 'package:either_dart/either.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
-import 'package:tem_final/src/data/datasource/auth/firebase_auth_handler_service.dart';
 import 'package:tem_final/src/data/datasource/local/local_preferences_handler_service.dart';
 import 'package:tem_final/src/data/datasource/remote/firebase_handler_service.dart';
 import 'package:tem_final/src/data/mappers/tv_show_and_movie_mapper.dart';
 import 'package:tem_final/src/data/mappers/user_history_mapper.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_model.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_rating_model.dart';
+import 'package:tem_final/src/data/models/user_choice_model.dart';
 import 'package:tem_final/src/data/models/user_history_model.dart';
 import 'package:tem_final/src/data/models/user_rating_model.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
@@ -15,7 +15,6 @@ import 'package:tem_final/src/core/utils/constants.dart';
 
 import 'package:tem_final/src/core/resources/data_state.dart';
 import 'package:tem_final/src/domain/entities/user_history_entity.dart';
-import 'package:tem_final/src/domain/repositories/user_repository.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../domain/repositories/tv_show_and_movie_repository.dart';
@@ -88,7 +87,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     var result = await firebaseHandlerService.updateRatingInsideTvShowAndMovie(
         tvShowAndMovieModel.id, tvShowAndMovieRatingModel);
     if (result.isLeft) {
-      return Left(true);
+      return const Left(true);
     } else {
       return Right(result.right);
     }
@@ -197,19 +196,107 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
   }
 
   @override
-  Future<DataState<String>> selectConclusion(
-      Tuple2<String, ConclusionType> params) async {
-    Either<String, Tuple2<String, StackTrace>> resultData =
-        await firebaseHandlerService.selectConclusion(
-      0,
-      params.item1,
-      params.item2,
-    );
+  Future<DataState<List<TvShowAndMovie>>>
+      getRecentsTvShowAndMovieViewed() async {
+    var resultRecentsViewed =
+        localPreferencesHandlerService.getRecentsTvShowAndMovieViewed();
 
-    if (resultData.isLeft) {
-      return DataSucess(resultData.left);
+    if (resultRecentsViewed.isLeft) {
+      return DataSucess(resultRecentsViewed.left
+          .map((item) => mapper.modelToEntity(item))
+          .toList());
     } else {
-      return DataFailed(resultData.right, isLog: false);
+      return DataFailed(resultRecentsViewed.right, isLog: false);
+    }
+  }
+
+  @override
+  Future<DataState<bool>> setRecentsTvShowAndMovieViewed(
+      TvShowAndMovie tvShowAndMovie) async {
+    var resultRecentsViewed = await localPreferencesHandlerService
+        .setRecentsTvShowAndMovieViewed(mapper.entityToModel(tvShowAndMovie));
+
+    if (resultRecentsViewed.isLeft) {
+      return const DataSucess(true);
+    } else {
+      return DataFailed(resultRecentsViewed.right, isLog: false);
+    }
+  }
+
+  @override
+  Future<DataState<String>> selectConclusion(
+      Tuple2<TvShowAndMovie, ConclusionType> params) async {
+    String idTvShowAndMovie = params.item1.id;
+    int seasonSelected =
+        params.item1.listTvShowAndMovieInfoStatusBySeason.length;
+    ConclusionType conclusionType = params.item2;
+    var userHistory = localPreferencesHandlerService.getUserHistory();
+    if (userHistory.isLeft && userHistory.left != null) {
+      var resUpdateConclusionUser = await _updateConclusionUser(
+          idTvShowAndMovie, seasonSelected, conclusionType, userHistory.left!);
+      if (resUpdateConclusionUser.item1 is ConclusionType?) {
+        print("att $conclusionType ${resUpdateConclusionUser.item1} ");
+        Either<String, Tuple2<String, StackTrace>> resultData =
+            await firebaseHandlerService.selectConclusion(
+                seasonSelected - 1, idTvShowAndMovie, conclusionType,
+                conclusionToDecrease: resUpdateConclusionUser.item1);
+        print("resultData $resultData");
+        if (resultData.isLeft) {
+          return DataSucess(resultData.left);
+        } else {
+          return DataFailed(resultData.right, isLog: false);
+        }
+      } else {
+        print("cai aqui $resUpdateConclusionUser");
+
+        return DataFailed(
+            Tuple2(resUpdateConclusionUser.item1.toString(),
+                resUpdateConclusionUser.item2),
+            isLog: false);
+      }
+    } else {
+      print("cai aqui0");
+      return DataFailed(Tuple2(Strings.defaultError, StackTrace.empty),
+          isLog: false);
+    }
+  }
+
+  Future<Tuple2<dynamic, StackTrace>> _updateConclusionUser(
+      String idTvShowAndMovie,
+      int seasonSelected,
+      ConclusionType conclusionType,
+      UserHistoryModel userHistoryModel) async {
+    print(userHistoryModel.toMap());
+
+    int index = userHistoryModel.listUserChoices.indexWhere((element) =>
+        element.seasonSelected == seasonSelected &&
+        element.idTvShowAndMovie == idTvShowAndMovie);
+    UserChoiceModel userChoiceModel = UserChoiceModel(
+        idTvShowAndMovie: idTvShowAndMovie,
+        seasonSelected: seasonSelected,
+        conclusionSelected: conclusionType);
+    ConclusionType? oldConclusionType;
+    print("index é $index");
+    if (index == -1) {
+      userHistoryModel.listUserChoices.add(userChoiceModel);
+    } else {
+      oldConclusionType =
+          userHistoryModel.listUserChoices[index].conclusionSelected;
+      userHistoryModel.listUserChoices[index] = userChoiceModel;
+    }
+    var resDatabase =
+        await firebaseHandlerService.selectConclusionUser(userHistoryModel);
+    var resLocal = await localPreferencesHandlerService
+        .updateUserHistory(userHistoryModel);
+
+    print(resLocal.toString());
+    print(resDatabase.toString());
+    if (resLocal.isLeft && resDatabase.isLeft) {
+      return Tuple2(oldConclusionType, StackTrace.empty);
+    } else if (resLocal.isRight) {
+      return resLocal.right;
+    } else {
+      return resDatabase.right;
     }
   }
 

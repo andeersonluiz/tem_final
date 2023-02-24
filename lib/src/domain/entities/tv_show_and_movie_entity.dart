@@ -1,5 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable
 import 'package:equatable/equatable.dart';
+import 'package:tem_final/src/core/utils/constants.dart';
 
 import 'package:tem_final/src/domain/entities/imdb_entity.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_info_status_entity.dart';
@@ -19,7 +20,9 @@ class TvShowAndMovie extends Equatable {
   final int seasons;
   final int viewsCount;
   final List<TvShowAndMovieInfoStatus> listTvShowAndMovieInfoStatusBySeason;
+  final ConclusionType actualStatus;
   final bool isFavorite;
+  final int countConclusion;
   int localRating;
   final List<TvShowAndMovieRating> ratingList;
 
@@ -39,6 +42,8 @@ class TvShowAndMovie extends Equatable {
     required this.viewsCount,
     required this.listTvShowAndMovieInfoStatusBySeason,
     required this.isFavorite,
+    required this.actualStatus,
+    required this.countConclusion,
     this.localRating = -1,
     required this.ratingList,
     required this.averageRating,

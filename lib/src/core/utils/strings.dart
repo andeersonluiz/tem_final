@@ -77,7 +77,7 @@ class Strings {
   static const msgSufixReportChangedData = " enviada com sucesso.";
 
   static const msgNotFoundIdMovieAndSerie =
-      "Série ou filme encontrado, tente novamente mais tarde";
+      "Série ou filme não encontrado, tente novamente mais tarde";
 
   static const msgDataInconsistency = "Inconsistência nos dados locais";
 
@@ -93,6 +93,9 @@ class Strings {
   static const ratingSuccessful = "Avaliação enviada com sucesso. Obrigado!!";
   static const errorToUpdateRating =
       "Erro ao atualizar avaliação, tente novamente mais tarde";
+  static const unauthorizedUser = "Usuário não autorizado, faça o login.";
+
+  static const msgNotFoundSearch = "Não há resultados para sua busca :(";
 
   //*Widgets names*//
   static const yourRatingText = "Sua avaliação";
@@ -106,13 +109,46 @@ class Strings {
   static const classificationText = "Classificação";
   static const hasEndText = "Tem final?";
   static const infosText = "Informações";
+  static const backText = "Voltar";
+  static const confirmText = "Confirmar";
+  static const resultText = "Resultados";
+  static const viewResultsText = "Ver resultados";
+  static const hasFinalOpenedText = "TEM FINAL, E SEU FINAL É ABERTO";
+  static const hasFinalClosedText = "TEM FINAL, E SEU FINAL É FECHADO";
+  static const noHasFinalNewSeasonText =
+      "NÃO TEM FINAL, MAS HAVÉRA NOVA TEMPORADA";
+  static const noHasFinalNoNewSeasonText =
+      "NÃO TEM FINAL E NÃO HAVÉRA NOVA TEMPORADA";
+
+  static const hasFinalOptionText = "TEM FINAL";
+  static const noHasFinalOptionText = "NÃO TEM FINAL";
+
+  static const hasFinalConjuctionText = ", E SEU FINAL ESTÁ...";
+  static const noHasFinalConjuctionText = ", MAS...";
+
+  static const openedOptionText = "ABERTO";
+  static const closedOptionText = "FECHADO";
+  static const newSeasonOptionText = "HAVERÁ NOVA TEMPORADA";
+  static const noNewSeasonOptionText = "NÃO HAVERÁ NOVA TEMPORADA";
+
+  static const noEnoughData = "Sem avaliações suficientes";
+
+  static const headerSearchRecentText = "Visto recentemente";
+  static const headerSearchResultsText = "Resultados";
 
   static generateButtonText({required bool isMovie}) {
     return "Avalie ${isMovie ? "o filme" : "a série"}";
   }
 
+  static generateTypeTvShowAndMovie({required bool isMovie}) {
+    return isMovie ? "O filme" : "A série";
+  }
+
   static generateDateLastUpdate({required DateTime lastUpdate}) {
-    print(lastUpdate);
     return "(Atualizado em: ${DateFormat("dd/MM/yyyy").format(lastUpdate)})";
+  }
+
+  static generateHaderSearchResultsText({required String query}) {
+    return "Resultados para busca \"$query\"";
   }
 }

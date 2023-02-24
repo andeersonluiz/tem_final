@@ -1,11 +1,9 @@
-import 'package:either_dart/either.dart';
 import 'package:tem_final/src/core/resources/data_state.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
 import 'package:tem_final/src/data/datasource/auth/firebase_auth_handler_service.dart';
 import 'package:tem_final/src/data/datasource/local/local_preferences_handler_service.dart';
 import 'package:tem_final/src/data/datasource/remote/firebase_handler_service.dart';
 import 'package:tem_final/src/domain/repositories/data_integrity_checker_repository.dart';
-import 'package:tem_final/src/domain/repositories/tv_show_and_movie_repository.dart';
 import 'package:tem_final/src/domain/repositories/user_repository.dart';
 import 'package:tuple/tuple.dart';
 
@@ -37,7 +35,6 @@ class DataIntegrityCheckerRepositoryImpl implements DataIntegrityChecker {
 
   @override
   Future<DataState<bool>> checkMultiDeviceLoginStatus() async {
-    return const DataSucess(true);
     var idFromFirestore =
         await firebaseAuthHandlerService.getUserIdFromAuthFirestore();
     var localId = await localPreferencesHandlerService.loadUserId();

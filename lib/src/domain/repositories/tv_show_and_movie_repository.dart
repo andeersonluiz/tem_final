@@ -1,8 +1,6 @@
 import 'package:tem_final/src/core/resources/data_state.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
-import 'package:tem_final/src/data/models/user_history_model.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
-import 'package:tem_final/src/domain/entities/user_history_entity.dart';
 import 'package:tuple/tuple.dart';
 
 abstract class TvShowAndMovieRepository {
@@ -27,8 +25,12 @@ abstract class TvShowAndMovieRepository {
   Future<DataState<List<TvShowAndMovie>>> getAllTvShowAndMovieWithFavorite();
 
   Future<DataState<String>> selectConclusion(
-      Tuple2<String, ConclusionType> params);
+      Tuple2<TvShowAndMovie, ConclusionType> params);
 
   Future<void> updateTvShowAndMovieViewViewCount(String idTvShowAndMovie);
   Future<DataState<bool>> updateRating(Tuple2<TvShowAndMovie, int> params);
+
+  Future<DataState<List<TvShowAndMovie>>> getRecentsTvShowAndMovieViewed();
+  Future<DataState<bool>> setRecentsTvShowAndMovieViewed(
+      TvShowAndMovie tvShowAndMovie);
 }

@@ -1,4 +1,5 @@
 import 'package:either_dart/either.dart';
+import 'package:flutter/foundation.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/resources/data_state.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
@@ -50,7 +51,7 @@ class UserRepositoryImpl implements UserRepository {
         String stackTraceLoadUserHistory = resultLoadUserHistory is DataFailed
             ? resultLoadUserHistory.error!.toString()
             : "no has error";
-        print(
+        debugPrint(
             "entrei aqui setUserId: $stackTraceSetUserId | loadUserHistory: $stackTraceLoadUserHistory");
         return DataFailed(
             Tuple2(
@@ -60,11 +61,12 @@ class UserRepositoryImpl implements UserRepository {
             isLog: false);
       }
     } else {
-      print("entrei aqui ${loginResult.right}");
+      debugPrint("entrei aqui ${loginResult.right}");
       return DataFailed(loginResult.right, isLog: false);
     }
   }
 
+  @override
   Future<Either<String, Tuple2<String, StackTrace>>> getUserId() async {
     return await localPreferencesHandlerService.loadUserId();
   }
@@ -123,6 +125,19 @@ class UserRepositoryImpl implements UserRepository {
           userHistoryMapper.modelToEntity(resultGetUserHistory.left!));
     } else {
       return DataFailed(resultGetUserHistory.right, isLog: false);
+    }
+  }
+
+  @override
+  Future<bool> verifyUserIsLogged() async {
+    var resultLoadUserId = await localPreferencesHandlerService.loadUserId();
+    print("ac");
+    if (resultLoadUserId.isLeft && resultLoadUserId.left.isNotEmpty) {
+      print("ab");
+      print(resultLoadUserId.left);
+      return true;
+    } else {
+      return false;
     }
   }
 }

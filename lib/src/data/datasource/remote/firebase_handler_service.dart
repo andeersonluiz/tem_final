@@ -1,15 +1,12 @@
 import 'package:either_dart/either.dart';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tem_final/src/core/resources/connection_verifyer.dart';
 import 'package:tem_final/src/core/resources/no_connection_exception.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
-import 'package:tem_final/src/data/models/tv_show_and_movie_model.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_rating_model.dart';
+import 'package:tem_final/src/data/models/user_choice_model.dart';
 import 'package:tem_final/src/data/models/user_history_model.dart';
-import 'package:tem_final/src/data/models/user_rating_model.dart';
-import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
-import 'package:tem_final/src/domain/entities/tv_show_and_movie_rating_entity.dart';
-import 'package:tem_final/src/domain/entities/user_history_entity.dart';
 import 'package:tuple/tuple.dart';
 import '../../../core/utils/strings.dart';
 
@@ -129,7 +126,7 @@ class FirebaseHandlerService {
       _offSet = 0;
       _paginationNumber = 1;
       _isFinalList = false;
-      print("_isFinalList é $_isFinalList");
+      debugPrint("_isFinalList é $_isFinalList");
       //TEM QUE SORTEAR
       List<Tuple2<String, List<Map<String, dynamic>>>> tuples = [];
 
@@ -204,29 +201,30 @@ class FirebaseHandlerService {
       //throw Exception("teste");
       //throw NoConnectionException(message: "teste erro connection");
       //throw FirebaseException(plugin: 'firebase');
-      _offSet = 0;
+      /* _offSet = 0;
       _paginationNumber = 1;
-      _isFinalList = false;
+      _isFinalList = false;*/
       _querySearch = query.trim().toLowerCase();
       //TEM QUE ORDENAR
       var queryDocumentData = await _instance
           .from(kDocumentTvShowAndMovies)
           .select()
-          .contains("caseSearch", [_querySearch]).range(
-              _offSet, pageSize * _paginationNumber);
+          .contains("caseSearch", [_querySearch])
+          .order("popularity")
+          .limit(pageSize);
 
-      if (queryDocumentData.isNotEmpty) {
+      /* if (queryDocumentData.isNotEmpty) {
         if (queryDocumentData.length == pageSize) {
           _offSet += pageSize;
         } else {
-          _offSet += int.parse(queryDocumentData.length);
+          _offSet += queryDocumentData.length as int;
           _isFinalList = true;
         }
         _paginationNumber += 1;
       }
       if (queryDocumentData.isEmpty) {
         _isFinalList = true;
-      }
+      }*/
       List<Map<String, dynamic>> map = queryDocumentData
           .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
           .toList();
@@ -241,37 +239,105 @@ class FirebaseHandlerService {
 
   //* TESTADO *//
   Future<Either<String, Tuple2<String, StackTrace>>> selectConclusion(
-      int seasonId, String id, ConclusionType conclusionType) async {
+      int seasonId, String id, ConclusionType conclusionType,
+      {ConclusionType? conclusionToDecrease}) async {
     try {
       await ConnectionVerifyer.verify();
       //throw Exception("teste");
 
       //throw NoConnectionException(message: "teste erro connection");
       //throw FirebaseException(plugin: 'firebase');
-
-      switch (conclusionType) {
-        case ConclusionType.conclusive:
-          await _instance.rpc('increment_info_season', params: {
-            'p_index': seasonId,
-            'p_field': 'unknownCount',
-            'p_id': id
-          });
-          break;
-        case ConclusionType.openEnded:
-          await _instance.rpc('increment_info_season', params: {
-            'p_index': seasonId,
-            'p_field': 'openEndedCount',
-            'p_id': id
-          });
-          break;
-        case ConclusionType.unknown:
-          await _instance.rpc('increment_info_season', params: {
-            'p_index': seasonId,
-            'p_field': 'unknownCount',
-            'p_id': id
-          });
-          break;
+      if (conclusionToDecrease != null) {
+        switch (conclusionType) {
+          case ConclusionType.hasFinalAndOpened:
+            await _instance.rpc('increment_info_season_and_decrease', params: {
+              'p_index': seasonId,
+              'p_field': 'hasFinalAndOpened',
+              'p_id': id,
+              'p_field_decrease': conclusionToDecrease.string
+            });
+            break;
+          case ConclusionType.hasFinalAndClosed:
+            await _instance.rpc('increment_info_season_and_decrease', params: {
+              'p_index': seasonId,
+              'p_field': 'hasFinalAndClosed',
+              'p_id': id,
+              'p_field_decrease': conclusionToDecrease.string
+            });
+            break;
+          case ConclusionType.noHasfinalAndNewSeason:
+            await _instance.rpc('increment_info_season_and_decrease', params: {
+              'p_index': seasonId,
+              'p_field': 'noHasfinalAndNewSeason',
+              'p_id': id,
+              'p_field_decrease': conclusionToDecrease.string
+            });
+            break;
+          case ConclusionType.noHasfinalAndNoNewSeason:
+            await _instance.rpc('increment_info_season_and_decrease', params: {
+              'p_index': seasonId,
+              'p_field': 'noHasfinalAndNoNewSeason',
+              'p_id': id,
+              'p_field_decrease': conclusionToDecrease.string
+            });
+            break;
+        }
+      } else {
+        switch (conclusionType) {
+          case ConclusionType.hasFinalAndOpened:
+            await _instance.rpc('increment_info_season', params: {
+              'p_index': seasonId,
+              'p_field': 'hasFinalAndOpened',
+              'p_id': id
+            });
+            break;
+          case ConclusionType.hasFinalAndClosed:
+            await _instance.rpc('increment_info_season', params: {
+              'p_index': seasonId,
+              'p_field': 'hasFinalAndClosed',
+              'p_id': id,
+            });
+            break;
+          case ConclusionType.noHasfinalAndNewSeason:
+            await _instance.rpc('increment_info_season', params: {
+              'p_index': seasonId,
+              'p_field': 'noHasfinalAndNewSeason',
+              'p_id': id
+            });
+            break;
+          case ConclusionType.noHasfinalAndNoNewSeason:
+            await _instance.rpc('increment_info_season', params: {
+              'p_index': seasonId,
+              'p_field': 'noHasfinalAndNoNewSeason',
+              'p_id': id
+            });
+            break;
+        }
       }
+
+      return const Left(Strings.msgSucessSelectConclusion);
+    } on NoConnectionException catch (e) {
+      return Right(Tuple2(e.message, e.stackTrace));
+    } catch (e, stacktrace) {
+      return Right(Tuple2(Strings.msgErrorConnectionFirebase,
+          StackTrace.fromString("$e\n$stacktrace")));
+    }
+  }
+
+  Future<Either<String, Tuple2<String, StackTrace>>> selectConclusionUser(
+      UserHistoryModel userHistoryModel) async {
+    try {
+      await ConnectionVerifyer.verify();
+      //throw Exception("teste");
+
+      //throw NoConnectionException(message: "teste erro connection");
+      //throw FirebaseException(plugin: 'firebase');
+      print(userHistoryModel.toMap());
+      await _instance
+          .from(kDocumentUserHistory)
+          .update(userHistoryModel.toMap())
+          .eq("idUser", userHistoryModel.idUser);
+
       return const Left(Strings.msgSucessSelectConclusion);
     } on NoConnectionException catch (e) {
       return Right(Tuple2(e.message, e.stackTrace));
@@ -391,7 +457,7 @@ class FirebaseHandlerService {
       Either<List<Tuple2<String, List<Map<String, dynamic>>>>,
           Tuple2<String, StackTrace>>> loadMoreTvShowAndMoviesMainPage(
       Filter filterMainPage) async {
-    print("_isFinalList é $_isFinalList");
+    debugPrint("_isFinalList é $_isFinalList");
 
     if (_isFinalList) return const Left([]);
     try {
@@ -399,10 +465,10 @@ class FirebaseHandlerService {
       //throw Exception("teste");
       //throw NoConnectionException(message: "teste erro connection");
       //throw FirebaseException(plugin: 'firebase');
-      print("chmei moreData");
+      debugPrint("chmei moreData");
       var moreData = (await getQueryByPaginationMainPage(filterMainPage));
-      print("moreData ${moreData.length}");
-      print(pageSizeMainPage);
+      debugPrint("moreData ${moreData.length}");
+      debugPrint(pageSizeMainPage.toString());
       if (moreData.length == pageSizeMainPage) {
         _offSet += pageSizeMainPage;
       } else {
@@ -496,7 +562,7 @@ class FirebaseHandlerService {
           .from(kDocumentUserHistory)
           .insert(userHistoryModel.toMap());
 
-      return Left(true);
+      return const Left(true);
     } on NoConnectionException catch (e) {
       return Right(Tuple2(e.message, e.stackTrace));
     } catch (e, stacktrace) {
@@ -539,8 +605,8 @@ class FirebaseHandlerService {
           TvShowAndMovieRatingModel tvShowAndMovieRating) async {
     try {
       await ConnectionVerifyer.verify();
-      print(tvShowAndMovieRating.toMap().toString());
-      print(int.parse(idTvShowAndMovie));
+      debugPrint(tvShowAndMovieRating.toMap().toString());
+      debugPrint(int.parse(idTvShowAndMovie).toString());
 
       await _instance.rpc('update_rating_list', params: {
         'p_id': int.parse(idTvShowAndMovie),
@@ -556,57 +622,11 @@ class FirebaseHandlerService {
   }
 
   //* TESTADO *//
-  String _getErrorFromFirebaseExceptionByCode(String code) {
-    switch (code.toUpperCase()) {
-      case 'ABORTED':
-        return Strings.aborted;
-      case 'ALREADY_EXISTS':
-        return Strings.alreadyExists;
-      case 'CANCELLED':
-        return Strings.cancelled;
-      case 'DATA_LOSS':
-        return Strings.dataLoss;
-      case 'DEADLINE_EXCEEDED':
-        return Strings.deadlineExceeded;
-      case 'FAILED_PRECONDITION':
-        return Strings.failedPrecondition;
-      case 'INTERNAL':
-        return Strings.internal;
-      case 'INVALID_ARGUMENT':
-        return Strings.invalidArgument;
-      case 'NOT_FOUND':
-        return Strings.notFound;
-      case 'OK':
-        return Strings.ok;
-      case 'OUT_OF_RANGE':
-        return Strings.outOfRange;
-      case 'PERMISSION_DENIED':
-        return Strings.permissionDenied;
-      case 'RESOURCE_EXHAUSTED':
-        return Strings.resourceExhausted;
-      case 'UNAUTHENTICATED':
-        return Strings.unauthenticated;
-      case 'UNAVAILABLE':
-        return Strings.unavailable;
-      case 'UNIMPLEMENTED':
-        return Strings.unimplemented;
-      case 'UNKNOWN':
-        return Strings.unknown;
-      default:
-        return Strings.defaultErrorFirebase + code;
-    }
-  }
 
   //*TESTADO*//
   //Query<Map<String, dynamic>>
   getQueryByPagination(PaginationType paginationType) async {
     switch (paginationType) {
-      case PaginationType.searchPage:
-        return await _instance
-            .from(kDocumentTvShowAndMovies)
-            .select()
-            .contains("caseSearch", [_querySearch]).range(
-                _offSet, pageSize * _paginationNumber);
       case PaginationType.genrePage:
         return await _instance
             .from(kDocumentTvShowAndMovies)
@@ -660,8 +680,8 @@ class FirebaseHandlerService {
         return tuples;
 
       case Filter.movie:
-        print(kGenresList);
-        print(
+        debugPrint(kGenresList.toString());
+        debugPrint(
             "from $_offSet to ${kGenresList.length > (pageSizeMainPage * _paginationNumber) ? (pageSizeMainPage * _paginationNumber) : kGenresList.length}");
         for (GenreType genre in kGenresList.sublist(
             _offSet,

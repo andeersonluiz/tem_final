@@ -2,7 +2,6 @@
 import 'package:equatable/equatable.dart';
 
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
-import 'package:tuple/tuple.dart';
 
 abstract class TvShowAndMovieInfoState extends Equatable {
   final TvShowAndMovie? tvShowAndMovie;

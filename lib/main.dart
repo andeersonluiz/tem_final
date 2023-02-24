@@ -1,12 +1,23 @@
+import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show SystemChrome, SystemUiMode, SystemUiOverlay, rootBundle;
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
+import 'package:tem_final/src/core/utils/constants.dart';
+import 'package:tem_final/src/domain/entities/user_history_entity.dart';
+import 'package:tem_final/src/domain/repositories/user_repository.dart';
+import 'package:tem_final/src/domain/usecases/get_all_tv_show_and_move_with_favorite_usecase.dart';
+import 'package:tem_final/src/domain/usecases/get_recents_tv_show_and_movie_viewed.dart';
 import 'package:tem_final/src/domain/usecases/get_tv_show_and_movie_usecase.dart';
 import 'package:tem_final/src/domain/usecases/load_more_tv_show_and_movie_main_page_usecase.dart';
+import 'package:tem_final/src/domain/usecases/select_conclusion_usecase.dart';
+import 'package:tem_final/src/domain/usecases/set_recents_tv_show_and_movie_viewed.dart';
+import 'package:tem_final/src/domain/usecases/set_tv_serie_and_movie_with_favorite_usecase.dart';
 import 'package:tem_final/src/injection.dart';
+import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/rating/rating_bloc.dart';
 import 'package:tem_final/src/presenter/routes/router.dart';
 import 'package:tem_final/src/presenter/stateManagement/valueNoifier/local_rating_notifier.dart';
@@ -14,7 +25,11 @@ import 'package:tem_final/src/presenter/stateManagement/valueNoifier/local_ratin
 import 'src/domain/usecases/get_all_movie_usecase.dart';
 import 'src/domain/usecases/get_all_tv_show_and_movie_usecase.dart';
 import 'src/domain/usecases/get_all_tv_show_usecase.dart';
+import 'src/domain/usecases/search_tv_show_and_movie_usecase.dart';
 import 'src/domain/usecases/update_rating_usecase.dart';
+import 'src/domain/usecases/verifiy_user_is_logged_usecase.dart';
+import 'src/presenter/stateManagement/bloc/conclusion/conclusion_bloc.dart';
+import 'src/presenter/stateManagement/bloc/search/search_bloc.dart';
 import 'src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_bloc.dart';
 import 'package:provider/provider.dart';
 
@@ -30,11 +45,13 @@ void main() async {
   );
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
       overlays: [SystemUiOverlay.bottom]);
-  /* var file = await rootBundle.loadString('assets/dataUpdated.json');
+  /*var file = await rootBundle.loadString('assets/dataUpdated.json');
   var result = jsonDecode(file);
+  supabase.SupabaseClient client = supabase.Supabase.instance.client;
   for (var item in result) {
     try {
-      await supabase.from(kDocumentTvShowAndMovies).insert(item);
+      print("addd");
+      await client.from(kDocumentTvShowAndMovies).upsert(item);
     } catch (e) {
       print("${item["id"]} repetido");
     }
@@ -64,7 +81,6 @@ void main() async {
     break;
   }
 */
-  print("foise");
   runApp(ProviderInjection(
     child: MultiProvider(
       providers: [
@@ -80,23 +96,32 @@ void main() async {
               TvShowAndMovieInfoBloc(context.read<GetTvShowAndMovieUseCase>()),
         ),
         Provider<RatingBloc>(
-            create: (context) =>
-                RatingBloc(context.read<UpdateRatingUseCase>())),
+            create: (context) => RatingBloc(context.read<UpdateRatingUseCase>(),
+                context.read<VerifitUserIsLoggedUseCase>())),
+        Provider<ConclusionBloc>(
+            create: (context) => ConclusionBloc(
+                context.read<SelectConclusionUseCase>(),
+                context.read<VerifitUserIsLoggedUseCase>())),
+        Provider<SearchBloc>(
+            create: (context) => SearchBloc(
+                  context.read<SearchTvShowAndMovieUseCase>(),
+                  context.read<SetRecentsTvShowAndMovieViewedUseCase>(),
+                  context.read<GetRecentsTvShowAndMovieViewedUseCase>(),
+                )),
+        Provider<FavoriteBloc>(
+            create: (context) => FavoriteBloc(
+                  context.read<GetAllTvShowAndMovieWithFavoriteUseCase>(),
+                  context.read<SetTvSerieAndMovieWithFavoriteUseCase>(),
+                )),
         Provider<LocalRatingNotifier>(
             create: (context) => LocalRatingNotifier()),
       ],
       child: Builder(builder: (context) {
-        return FutureBuilder(
-            //future: initializeDependencies(context),
-            builder: (ctx, snp) {
-          if (snp.connectionState == ConnectionState.none) {
-            return MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              routerConfig: MyRouter.router,
-            );
-          } else {
-            return const SizedBox();
-          }
+        return ResponsiveSizer(builder: (ctx, orientation, screenType) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            routerConfig: MyRouter.router,
+          );
         });
       }),
     ),

@@ -6,4 +6,7 @@ class WidgetSize {
   static const widthPosterInfoPage = 166 / 1.3;
   static const heightPosterInfoPage = 236 / 1.3;
   static const heightPosterInfoPageOneSeason = 236.0;
+
+  static const double heightCard = 206;
+  static const double heightButton = 70.0;
 }

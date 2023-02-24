@@ -5,6 +5,35 @@ enum CarouselPageChangedReason { timed, manual, controller }
 enum CenterPageEnlargeStrategy { scale, height, zoom }
 
 class CarouselOptions {
+  CarouselOptions({
+    this.height,
+    this.aspectRatio = 16 / 9,
+    this.viewportFraction = 0.8,
+    this.initialPage = 0,
+    this.enableInfiniteScroll = true,
+    this.animateToClosest = true,
+    this.reverse = false,
+    this.autoPlay = false,
+    this.autoPlayInterval = const Duration(seconds: 4),
+    this.autoPlayAnimationDuration = const Duration(milliseconds: 800),
+    this.autoPlayCurve = Curves.fastOutSlowIn,
+    this.enlargeCenterPage = false,
+    this.onPageChanged,
+    this.onScrolled,
+    this.scrollPhysics,
+    this.pageSnapping = true,
+    this.scrollDirection = Axis.horizontal,
+    this.pauseAutoPlayOnTouch = true,
+    this.pauseAutoPlayOnManualNavigate = true,
+    this.pauseAutoPlayInFiniteScroll = false,
+    this.pageViewKey,
+    this.enlargeStrategy = CenterPageEnlargeStrategy.scale,
+    this.enlargeFactor = 0.3,
+    this.disableCenter = false,
+    this.padEnds = true,
+    this.clipBehavior = Clip.hardEdge,
+  });
+
   /// Set carousel height and overrides any existing [aspectRatio].
   final double? height;
 
@@ -132,35 +161,6 @@ class CarouselOptions {
 
   /// Exposed clipBehavior of PageView
   final Clip clipBehavior;
-
-  CarouselOptions({
-    this.height,
-    this.aspectRatio: 16 / 9,
-    this.viewportFraction: 0.8,
-    this.initialPage: 0,
-    this.enableInfiniteScroll: true,
-    this.animateToClosest: true,
-    this.reverse: false,
-    this.autoPlay: false,
-    this.autoPlayInterval: const Duration(seconds: 4),
-    this.autoPlayAnimationDuration = const Duration(milliseconds: 800),
-    this.autoPlayCurve: Curves.fastOutSlowIn,
-    this.enlargeCenterPage = false,
-    this.onPageChanged,
-    this.onScrolled,
-    this.scrollPhysics,
-    this.pageSnapping = true,
-    this.scrollDirection: Axis.horizontal,
-    this.pauseAutoPlayOnTouch: true,
-    this.pauseAutoPlayOnManualNavigate: true,
-    this.pauseAutoPlayInFiniteScroll: false,
-    this.pageViewKey,
-    this.enlargeStrategy: CenterPageEnlargeStrategy.scale,
-    this.enlargeFactor: 0.3,
-    this.disableCenter: false,
-    this.padEnds = true,
-    this.clipBehavior: Clip.hardEdge,
-  });
 
   ///Generate new [CarouselOptions] based on old ones.
   CarouselOptions copyWith(

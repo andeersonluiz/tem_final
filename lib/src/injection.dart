@@ -16,18 +16,21 @@ import 'package:tem_final/src/domain/usecases/get_all_tv_show_and_move_with_favo
 import 'package:tem_final/src/domain/usecases/get_all_tv_show_and_movie_usecase.dart';
 import 'package:tem_final/src/domain/usecases/get_all_tv_show_usecase.dart';
 import 'package:tem_final/src/domain/usecases/get_local_user_history_usecase.dart';
+import 'package:tem_final/src/domain/usecases/get_recents_tv_show_and_movie_viewed.dart';
 import 'package:tem_final/src/domain/usecases/get_tv_show_and_movie_by_genres_usecase.dart';
 import 'package:tem_final/src/domain/usecases/get_tv_show_and_movie_usecase.dart';
 import 'package:tem_final/src/domain/usecases/load_more_tv_show_and_movie_main_page_usecase.dart';
 import 'package:tem_final/src/domain/usecases/load_more_tv_show_and_movie_usecase.dart';
 import 'package:tem_final/src/domain/usecases/log_out_usecase.dart';
 import 'package:tem_final/src/domain/usecases/login_via_google_usecase.dart';
+import 'package:tem_final/src/domain/usecases/set_recents_tv_show_and_movie_viewed.dart';
 import 'package:tem_final/src/domain/usecases/update_rating_usecase.dart';
 import 'package:tem_final/src/domain/usecases/search_tv_show_and_movie_usecase.dart';
 import 'package:tem_final/src/domain/usecases/select_conclusion_usecase.dart';
 import 'package:tem_final/src/domain/usecases/set_tv_serie_and_movie_with_favorite_usecase.dart';
 import 'package:tem_final/src/domain/usecases/submit_report_usecase.dart';
 import 'package:tem_final/src/domain/usecases/update_view_count_usecase.dart';
+import 'package:tem_final/src/domain/usecases/verifiy_user_is_logged_usecase.dart';
 
 Future<String> initializeDependencies(
   LocalPreferencesHandlerService localPreferencesHandlerService,
@@ -37,13 +40,13 @@ Future<String> initializeDependencies(
   try {
     await localPreferencesHandlerService.init();
     await dataIntegrityChecker.checkIntegrity();
-    await dataIntegrityChecker.checkMultiDeviceLoginStatus();
+    //await dataIntegrityChecker.checkMultiDeviceLoginStatus();
     String userId = "";
     var resultUserId = await userRepository.getUserId();
-    print(resultUserId);
+    debugPrint(resultUserId.toString());
     if (resultUserId.isLeft) {
       userId = resultUserId.left;
-      print("string é $userId");
+      debugPrint("string é $userId");
     }
     await localPreferencesHandlerService.setUserId(userId);
     return userId;
@@ -115,6 +118,9 @@ class ProviderInjection extends StatelessWidget {
         Provider<GetLocalUserHistoryUseCase>(
             create: (context) =>
                 GetLocalUserHistoryUseCase(context.read<UserRepository>())),
+        Provider<VerifitUserIsLoggedUseCase>(
+            create: (context) =>
+                VerifitUserIsLoggedUseCase(context.read<UserRepository>())),
       ],
       child: Builder(builder: (context) {
         return FutureBuilder(
@@ -177,10 +183,18 @@ class ProviderInjection extends StatelessWidget {
                   Provider<UpdateRatingUseCase>(
                       create: (context) => UpdateRatingUseCase(
                           context.read<TvShowAndMovieRepository>())),
+                  Provider<SetRecentsTvShowAndMovieViewedUseCase>(
+                      create: (context) =>
+                          SetRecentsTvShowAndMovieViewedUseCase(
+                              context.read<TvShowAndMovieRepository>())),
+                  Provider<GetRecentsTvShowAndMovieViewedUseCase>(
+                      create: (context) =>
+                          GetRecentsTvShowAndMovieViewedUseCase(
+                              context.read<TvShowAndMovieRepository>())),
                 ], child: child);
               }
               {
-                return SizedBox();
+                return const SizedBox();
               }
             });
       }),

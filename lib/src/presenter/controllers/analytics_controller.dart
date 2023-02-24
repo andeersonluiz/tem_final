@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:get/get.dart';
-import 'package:tem_final/src/core/resources/data_state.dart';
 
 import 'package:tem_final/src/domain/usecases/update_view_count_usecase.dart';
 

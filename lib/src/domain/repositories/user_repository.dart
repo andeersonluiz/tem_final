@@ -11,7 +11,9 @@ abstract class UserRepository {
 
   Future<DataState<String>> loginViaGoogle();
   Future<DataState<String>> logOut();
+  Future<bool> verifyUserIsLogged();
 
   Future<DataState<UserHistory?>> getLocalUserHistory();
+
   Future<Either<String, Tuple2<String, StackTrace>>> getUserId();
 }

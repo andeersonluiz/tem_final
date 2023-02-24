@@ -1,13 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:tem_final/src/core/utils/constants.dart';
 
 import 'package:tem_final/src/data/models/imdb_model.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_info_status_model.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_rating_model.dart';
-import 'package:tem_final/src/domain/entities/tv_show_and_movie_rating_entity.dart';
+import 'package:tuple/tuple.dart';
 
 class TvShowAndMovieModel {
   final String id;
@@ -20,13 +20,14 @@ class TvShowAndMovieModel {
   final String ageClassification;
   final String posterImage;
   final String link;
-
+  final ConclusionType actualStatus;
   final bool isNewSeasonUpcoming;
   final int seasons;
   final int viewsCount;
 
   final List<TvShowAndMovieInfoStatusModel>
       listTvShowAndMovieInfoStatusBySeason;
+  final int countConclusions;
   final List<TvShowAndMovieRatingModel> ratingList;
   final double averageRating;
 
@@ -44,8 +45,10 @@ class TvShowAndMovieModel {
     required this.isNewSeasonUpcoming,
     required this.seasons,
     required this.viewsCount,
+    required this.actualStatus,
     required this.listTvShowAndMovieInfoStatusBySeason,
     required this.ratingList,
+    required this.countConclusions,
     required this.averageRating,
   });
 
@@ -61,32 +64,35 @@ class TvShowAndMovieModel {
     String? posterImage,
     String? link,
     bool? isNewSeasonUpcoming,
+    ConclusionType? actualStatus,
     int? seasons,
     int? viewsCount,
     List<TvShowAndMovieInfoStatusModel>? listTvShowAndMovieInfoStatusBySeason,
     List<TvShowAndMovieRatingModel>? ratingList,
     double? averageRating,
+    int? countConclusions,
   }) {
     return TvShowAndMovieModel(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      caseSearch: caseSearch ?? this.caseSearch,
-      synopsis: synopsis ?? this.synopsis,
-      imdbInfo: imdbInfo ?? this.imdbInfo,
-      genres: genres ?? this.genres,
-      runtime: runtime ?? this.runtime,
-      ageClassification: ageClassification ?? this.ageClassification,
-      posterImage: posterImage ?? this.posterImage,
-      link: link ?? this.link,
-      isNewSeasonUpcoming: isNewSeasonUpcoming ?? this.isNewSeasonUpcoming,
-      seasons: seasons ?? this.seasons,
-      viewsCount: viewsCount ?? this.viewsCount,
-      listTvShowAndMovieInfoStatusBySeason:
-          listTvShowAndMovieInfoStatusBySeason ??
-              this.listTvShowAndMovieInfoStatusBySeason,
-      ratingList: ratingList ?? this.ratingList,
-      averageRating: averageRating ?? this.averageRating,
-    );
+        id: id ?? this.id,
+        title: title ?? this.title,
+        caseSearch: caseSearch ?? this.caseSearch,
+        synopsis: synopsis ?? this.synopsis,
+        imdbInfo: imdbInfo ?? this.imdbInfo,
+        genres: genres ?? this.genres,
+        runtime: runtime ?? this.runtime,
+        ageClassification: ageClassification ?? this.ageClassification,
+        posterImage: posterImage ?? this.posterImage,
+        link: link ?? this.link,
+        isNewSeasonUpcoming: isNewSeasonUpcoming ?? this.isNewSeasonUpcoming,
+        seasons: seasons ?? this.seasons,
+        viewsCount: viewsCount ?? this.viewsCount,
+        listTvShowAndMovieInfoStatusBySeason:
+            listTvShowAndMovieInfoStatusBySeason ??
+                this.listTvShowAndMovieInfoStatusBySeason,
+        ratingList: ratingList ?? this.ratingList,
+        averageRating: averageRating ?? this.averageRating,
+        actualStatus: actualStatus ?? this.actualStatus,
+        countConclusions: countConclusions ?? this.countConclusions);
   }
 
   Map<String, dynamic> toMap() {
@@ -106,40 +112,68 @@ class TvShowAndMovieModel {
       'viewsCount': viewsCount,
       'listTvShowAndMovieInfoStatusBySeason':
           listTvShowAndMovieInfoStatusBySeason.map((x) => x.toMap()).toList(),
-      'ratingList': ratingList,
+      'ratingList': ratingList.map((e) => e.toMap()).toList(),
+      'countConclusions': countConclusions,
       'averageRating': averageRating,
     };
   }
 
   factory TvShowAndMovieModel.fromMap(Map<String, dynamic> map) {
-    var ratingList = List<TvShowAndMovieRatingModel>.from((map['ratingList'])
-        .map<TvShowAndMovieRatingModel>((x) =>
-            TvShowAndMovieRatingModel.fromMap(x as Map<String, dynamic>)));
-    return TvShowAndMovieModel(
-      id: map['id'].toString(),
-      title: map['title'] as String,
-      caseSearch: List<String>.from(map['caseSearch']),
-      synopsis: map['synopsis'] as String,
-      imdbInfo: ImdbModel.fromMap(map['imdbInfo'] as Map<String, dynamic>),
-      genres: List<String>.from(map['genres']),
-      runtime: map['runtime'] as int,
-      ageClassification: map['ageClassification'] as String,
-      posterImage: map['posterImage'] as String,
-      link: map['link'] as String,
-      isNewSeasonUpcoming: map['isNewSeasonUpcoming'] as bool,
-      seasons: map['seasons'] as int,
-      viewsCount: map['viewsCount'] as int,
-      listTvShowAndMovieInfoStatusBySeason:
-          List<TvShowAndMovieInfoStatusModel>.from(
-        (map['listTvShowAndMovieInfoStatusBySeason'])
-            .map<TvShowAndMovieInfoStatusModel>(
-          (x) =>
-              TvShowAndMovieInfoStatusModel.fromMap(x as Map<String, dynamic>),
-        ),
+    List<TvShowAndMovieRatingModel> ratingList =
+        List<TvShowAndMovieRatingModel>.from(
+            (map['ratingList']).map<TvShowAndMovieRatingModel>((x) {
+      return TvShowAndMovieRatingModel.fromMap(x as Map<String, dynamic>);
+    })).toList();
+    var listTvShowAndMovieInfoStatusBySeason =
+        List<TvShowAndMovieInfoStatusModel>.from(
+      (map['listTvShowAndMovieInfoStatusBySeason'])
+          .map<TvShowAndMovieInfoStatusModel>(
+        (x) => TvShowAndMovieInfoStatusModel.fromMap(x as Map<String, dynamic>),
       ),
-      ratingList: ratingList,
-      averageRating: map['averageRating'].toDouble(),
     );
+    TvShowAndMovieInfoStatusModel tvShowAndMovieInfoStatusModelLast =
+        listTvShowAndMovieInfoStatusBySeason.last;
+    Tuple2<ConclusionType, int> tuple = Tuple2(ConclusionType.hasFinalAndClosed,
+        tvShowAndMovieInfoStatusModelLast.hasFinalAndClosed);
+    if (tuple.item2 < tvShowAndMovieInfoStatusModelLast.hasFinalAndOpened) {
+      tuple = Tuple2(ConclusionType.hasFinalAndOpened,
+          tvShowAndMovieInfoStatusModelLast.hasFinalAndOpened);
+    }
+    if (tuple.item2 <
+        tvShowAndMovieInfoStatusModelLast.noHasfinalAndNewSeason) {
+      tuple = Tuple2(ConclusionType.noHasfinalAndNewSeason,
+          tvShowAndMovieInfoStatusModelLast.noHasfinalAndNewSeason);
+    }
+    if (tuple.item2 <
+        tvShowAndMovieInfoStatusModelLast.noHasfinalAndNoNewSeason) {
+      tuple = Tuple2(ConclusionType.noHasfinalAndNoNewSeason,
+          tvShowAndMovieInfoStatusModelLast.noHasfinalAndNoNewSeason);
+    }
+    int countConclusions = tvShowAndMovieInfoStatusModelLast.hasFinalAndClosed +
+        tvShowAndMovieInfoStatusModelLast.hasFinalAndOpened +
+        tvShowAndMovieInfoStatusModelLast.noHasfinalAndNewSeason +
+        tvShowAndMovieInfoStatusModelLast.noHasfinalAndNoNewSeason;
+
+    return TvShowAndMovieModel(
+        id: map['id'].toString(),
+        title: map['title'] as String,
+        caseSearch: List<String>.from(map['caseSearch']),
+        synopsis: map['synopsis'] as String,
+        imdbInfo: ImdbModel.fromMap(map['imdbInfo'] as Map<String, dynamic>),
+        genres: List<String>.from(map['genres']),
+        runtime: map['runtime'] as int,
+        ageClassification: map['ageClassification'] as String,
+        posterImage: map['posterImage'] as String,
+        link: map['link'] as String,
+        isNewSeasonUpcoming: map['isNewSeasonUpcoming'] as bool,
+        seasons: map['seasons'] as int,
+        viewsCount: map['viewsCount'] as int,
+        listTvShowAndMovieInfoStatusBySeason:
+            listTvShowAndMovieInfoStatusBySeason,
+        ratingList: ratingList,
+        averageRating: map['averageRating'].toDouble(),
+        countConclusions: countConclusions,
+        actualStatus: tuple.item1);
   }
 
   String toJson() => json.encode(toMap());
@@ -149,7 +183,7 @@ class TvShowAndMovieModel {
 
   @override
   String toString() {
-    return 'TvShowAndMovieModel(id: $id, title: $title, caseSearch: $caseSearch, synopsis: $synopsis, imdbInfo: $imdbInfo, genres: $genres, runtime: $runtime, ageClassification: $ageClassification, posterImage: $posterImage, link: $link, isNewSeasonUpcoming: $isNewSeasonUpcoming, seasons: $seasons, viewsCount: $viewsCount, listTvShowAndMovieInfoStatusBySeason: $listTvShowAndMovieInfoStatusBySeason, ratingList: $ratingList, averageRating: $averageRating)';
+    return 'TvShowAndMovieModel(id: $id, title: $title, caseSearch: $caseSearch, synopsis: $synopsis, imdbInfo: $imdbInfo, genres: $genres, runtime: $runtime, ageClassification: $ageClassification, posterImage: $posterImage, link: $link, actualStatus: $actualStatus, isNewSeasonUpcoming: $isNewSeasonUpcoming, seasons: $seasons, viewsCount: $viewsCount, countConclusions: $countConclusions, ratingList: $ratingList, averageRating: $averageRating)';
   }
 
   @override
@@ -166,11 +200,11 @@ class TvShowAndMovieModel {
         other.ageClassification == ageClassification &&
         other.posterImage == posterImage &&
         other.link == link &&
+        other.actualStatus == actualStatus &&
         other.isNewSeasonUpcoming == isNewSeasonUpcoming &&
         other.seasons == seasons &&
         other.viewsCount == viewsCount &&
-        listEquals(other.listTvShowAndMovieInfoStatusBySeason,
-            listTvShowAndMovieInfoStatusBySeason) &&
+        other.countConclusions == countConclusions &&
         listEquals(other.ratingList, ratingList) &&
         other.averageRating == averageRating;
   }
@@ -187,10 +221,11 @@ class TvShowAndMovieModel {
         ageClassification.hashCode ^
         posterImage.hashCode ^
         link.hashCode ^
+        actualStatus.hashCode ^
         isNewSeasonUpcoming.hashCode ^
         seasons.hashCode ^
         viewsCount.hashCode ^
-        listTvShowAndMovieInfoStatusBySeason.hashCode ^
+        countConclusions.hashCode ^
         ratingList.hashCode ^
         averageRating.hashCode;
   }

@@ -1,7 +1,4 @@
-import 'package:bloc/src/transition.dart';
-import 'package:bloc/src/change.dart';
-import 'package:bloc/src/bloc.dart';
-import 'package:tem_final/src/core/bloc/bloc_with_state.dart';
+import 'package:bloc/bloc.dart';
 import 'package:tem_final/src/core/resources/data_state.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';

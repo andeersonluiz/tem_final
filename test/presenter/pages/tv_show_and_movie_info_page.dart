@@ -13,7 +13,6 @@ import 'package:tem_final/src/core/utils/widget_size.dart';
 
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_info_status_entity.dart';
-import 'package:tem_final/src/presenter/controllers/tv_shows_and_movies_controller.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
 import 'package:auto_size_text/auto_size_text.dart';

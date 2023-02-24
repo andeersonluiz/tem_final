@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/core/utils/widget_size.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:tem_final/src/presenter/reusableWidgets/custom_image.dart';
 
 class TvShowAndMovieTile extends StatelessWidget {
   const TvShowAndMovieTile({super.key, required this.tvShowAndMovie});
@@ -21,16 +21,9 @@ class TvShowAndMovieTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: CachedNetworkImage(
-                fadeInDuration: const Duration(milliseconds: 400),
-                fit: BoxFit.cover,
-                imageUrl: tvShowAndMovie.posterImage,
-                placeholder: (context, url) => Image.asset(
-                      "assets/placeholderImage.gif",
-                      fit: BoxFit.fill,
-                    ) // Your default image here
-                ),
-          ),
+              child: CustomImage(
+            urlImage: tvShowAndMovie.posterImage,
+          )),
           const SizedBox(
             height: 7,
           ),

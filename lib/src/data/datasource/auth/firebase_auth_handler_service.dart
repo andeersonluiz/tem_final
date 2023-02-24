@@ -73,7 +73,6 @@ class FirebaseAuthHandlerService {
   }
 
   String _getErrorFromFirebaseAuthExceptionByCode(String code) {
-    print(code);
     switch (code.toUpperCase()) {
       case 'ACCOUNT-EXISTS-WITH-DIFFERENT-CREDENTIAL':
         return Strings.accountExistsWithDifferentCredential;

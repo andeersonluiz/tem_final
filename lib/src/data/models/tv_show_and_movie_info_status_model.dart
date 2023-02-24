@@ -4,36 +4,40 @@
 import 'dart:convert';
 
 // ignore: depend_on_referenced_packages
-import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 
 class TvShowAndMovieInfoStatusModel {
   final int seasonNumber;
-  final int conclusiveCount;
-  final int openEndedCount;
-  final int unknownCount;
+  final int hasFinalAndOpened;
+  final int hasFinalAndClosed;
+  final int noHasfinalAndNewSeason;
+  final int noHasfinalAndNoNewSeason;
   final String posterImageUrl;
 
   const TvShowAndMovieInfoStatusModel({
     required this.seasonNumber,
-    required this.conclusiveCount,
-    required this.openEndedCount,
-    required this.unknownCount,
+    required this.hasFinalAndOpened,
+    required this.hasFinalAndClosed,
+    required this.noHasfinalAndNewSeason,
+    required this.noHasfinalAndNoNewSeason,
     required this.posterImageUrl,
   });
 
   TvShowAndMovieInfoStatusModel copyWith({
     int? seasonNumber,
-    int? conclusiveCount,
-    int? openEndedCount,
-    int? unknownCount,
+    int? hasFinalAndOpened,
+    int? hasFinalAndClosed,
+    int? noHasfinalAndNewSeason,
+    int? noHasfinalAndNoNewSeason,
     String? posterImageUrl,
   }) {
     return TvShowAndMovieInfoStatusModel(
       seasonNumber: seasonNumber ?? this.seasonNumber,
-      conclusiveCount: conclusiveCount ?? this.conclusiveCount,
-      openEndedCount: openEndedCount ?? this.openEndedCount,
-      unknownCount: unknownCount ?? this.unknownCount,
+      hasFinalAndOpened: hasFinalAndOpened ?? this.hasFinalAndOpened,
+      hasFinalAndClosed: hasFinalAndClosed ?? this.hasFinalAndClosed,
+      noHasfinalAndNewSeason:
+          noHasfinalAndNewSeason ?? this.noHasfinalAndNewSeason,
+      noHasfinalAndNoNewSeason:
+          noHasfinalAndNoNewSeason ?? this.noHasfinalAndNoNewSeason,
       posterImageUrl: posterImageUrl ?? this.posterImageUrl,
     );
   }
@@ -41,9 +45,10 @@ class TvShowAndMovieInfoStatusModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'seasonNumber': seasonNumber,
-      'conclusiveCount': conclusiveCount,
-      'openEndedCount': openEndedCount,
-      'unknownCount': unknownCount,
+      'hasFinalAndOpened': hasFinalAndOpened,
+      'hasFinalAndClosed': hasFinalAndClosed,
+      'noHasfinalAndNewSeason': noHasfinalAndNewSeason,
+      'noHasfinalAndNoNewSeason': noHasfinalAndNoNewSeason,
       'posterImageUrl': posterImageUrl,
     };
   }
@@ -51,9 +56,10 @@ class TvShowAndMovieInfoStatusModel {
   factory TvShowAndMovieInfoStatusModel.fromMap(Map<String, dynamic> map) {
     return TvShowAndMovieInfoStatusModel(
       seasonNumber: map['seasonNumber'] as int,
-      conclusiveCount: map['conclusiveCount'] as int,
-      openEndedCount: map['openEndedCount'] as int,
-      unknownCount: map['unknownCount'] as int,
+      hasFinalAndOpened: map['hasFinalAndOpened'] as int,
+      hasFinalAndClosed: map['hasFinalAndClosed'] as int,
+      noHasfinalAndNewSeason: map['noHasfinalAndNewSeason'] as int,
+      noHasfinalAndNoNewSeason: map['noHasfinalAndNoNewSeason'] as int,
       posterImageUrl: map['posterImageUrl'] as String,
     );
   }
@@ -66,7 +72,7 @@ class TvShowAndMovieInfoStatusModel {
 
   @override
   String toString() {
-    return 'TvShowAndMovieInfoStatusModel(seasonNumber: $seasonNumber, conclusiveCount: $conclusiveCount, openEndedCount: $openEndedCount, unknownCount: $unknownCount, posterImageUrl: $posterImageUrl)';
+    return 'TvShowAndMovieInfoStatusModel(seasonNumber: $seasonNumber, hasFinalAndOpened: $hasFinalAndOpened, hasFinalAndClosed: $hasFinalAndClosed, noHasfinalAndNewSeason: $noHasfinalAndNewSeason, noHasfinalAndNoNewSeason: $noHasfinalAndNoNewSeason, posterImageUrl: $posterImageUrl)';
   }
 
   @override
@@ -74,18 +80,20 @@ class TvShowAndMovieInfoStatusModel {
     if (identical(this, other)) return true;
 
     return other.seasonNumber == seasonNumber &&
-        other.conclusiveCount == conclusiveCount &&
-        other.openEndedCount == openEndedCount &&
-        other.unknownCount == unknownCount &&
+        other.hasFinalAndOpened == hasFinalAndOpened &&
+        other.hasFinalAndClosed == hasFinalAndClosed &&
+        other.noHasfinalAndNewSeason == noHasfinalAndNewSeason &&
+        other.noHasfinalAndNoNewSeason == noHasfinalAndNoNewSeason &&
         other.posterImageUrl == posterImageUrl;
   }
 
   @override
   int get hashCode {
     return seasonNumber.hashCode ^
-        conclusiveCount.hashCode ^
-        openEndedCount.hashCode ^
-        unknownCount.hashCode ^
+        hasFinalAndOpened.hashCode ^
+        hasFinalAndClosed.hashCode ^
+        noHasfinalAndNewSeason.hashCode ^
+        noHasfinalAndNoNewSeason.hashCode ^
         posterImageUrl.hashCode;
   }
 }
