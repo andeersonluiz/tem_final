@@ -15,11 +15,20 @@ enum ReportType { problem, feedback, changeData }
 
 enum PaginationType {
   genrePage,
+  genrePageFilter,
 }
+
+enum PageType { home, favorite, settings }
 
 enum PaginationTypeMainPage { all, tvShow, movie }
 
 enum Filter { all, movie, tvShow }
+
+enum FilterGenre {
+  popularity,
+  mostViewed,
+  mostRating,
+}
 
 enum GenreType {
   release,
@@ -41,7 +50,8 @@ enum GenreType {
   warMilitary,
   western,
   realityTV,
-  madeInEurope
+  madeInEurope,
+  none
 }
 
 enum StatusLoadingTvShowAndMovie { firstRun, loading, error, sucess }
@@ -131,11 +141,41 @@ extension FilterString on Filter {
   String get string {
     switch (this) {
       case Filter.all:
-        return "Tudo";
+        return "Todos";
       case Filter.movie:
         return "Filmes";
       case Filter.tvShow:
         return "Séries";
+      default:
+        return "";
+    }
+  }
+}
+
+extension FilterGenreValue on FilterGenre {
+  String get value {
+    switch (this) {
+      case FilterGenre.popularity:
+        return "popularity";
+      case FilterGenre.mostViewed:
+        return "viewsCount";
+      case FilterGenre.mostRating:
+        return "averageRating";
+      default:
+        return "";
+    }
+  }
+}
+
+extension FilterGenreString on FilterGenre {
+  String get string {
+    switch (this) {
+      case FilterGenre.popularity:
+        return "Popularidade";
+      case FilterGenre.mostViewed:
+        return "Mais vistos";
+      case FilterGenre.mostRating:
+        return "Avaliações";
       default:
         return "";
     }
@@ -152,6 +192,7 @@ const String kFavoritesTvShowAndMoviesKeyEncrypted =
     "kFavoritesTvShowAndMoviesKeyEncrypted";
 
 const String kUserIdKeyEncrypted = "kUserIdKeyEncrypted";
+const String kUserNameKeyEncrypted = "kUserNameKeyEncrypted";
 
 const String kViwedTvShowAndMoviesUserIdKeyEncrypted =
     "kViwedTvShowAndMoviesUserIdKeyEncrypted";

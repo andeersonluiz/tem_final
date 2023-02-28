@@ -6,14 +6,17 @@ import 'package:tuple/tuple.dart';
 
 abstract class UserRepository {
   Future<DataState<String>> submitReport(
-    Tuple4<String, String, ReportType, String> params,
+    Tuple3<String, ReportType, String> params,
   );
 
   Future<DataState<String>> loginViaGoogle();
   Future<DataState<String>> logOut();
+  // Future<DataState<String>> removeUser();
+
   Future<bool> verifyUserIsLogged();
 
   Future<DataState<UserHistory?>> getLocalUserHistory();
 
   Future<Either<String, Tuple2<String, StackTrace>>> getUserId();
+  Future<String> getUsername();
 }

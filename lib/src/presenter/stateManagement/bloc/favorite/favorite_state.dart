@@ -20,6 +20,13 @@ class FavoriteDone extends FavoriteState {
       required super.isFavorite});
 }
 
+class FavoriteToastDone extends FavoriteState {
+  const FavoriteToastDone(
+      {required super.favoriteList,
+      required super.msg,
+      required super.isFavorite});
+}
+
 class FavoriteLoading extends FavoriteState {
   const FavoriteLoading(
       {required super.favoriteList,

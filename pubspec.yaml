@@ -74,6 +74,8 @@ dependencies:
   percent_indicator: ^4.2.2
   search_app_bar_page: ^2.1.5
   stream_transform: ^2.1.0
+  icons_plus: ^4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

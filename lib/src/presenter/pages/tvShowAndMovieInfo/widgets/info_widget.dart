@@ -8,6 +8,7 @@ import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/core/utils/icons.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
+import 'package:tem_final/src/presenter/pages/login/login_dialog_page.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_button.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
@@ -15,7 +16,7 @@ import 'package:tem_final/src/presenter/stateManagement/bloc/rating/rating_bloc.
 import 'package:tem_final/src/presenter/stateManagement/bloc/rating/rating_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/rating/rating_state.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovieInfo/tv_show_and_movie_info_bloc.dart';
-import 'package:tem_final/src/presenter/stateManagement/valueNoifier/local_rating_notifier.dart';
+import 'package:tem_final/src/presenter/stateManagement/valueNotifier/local_rating_notifier.dart';
 
 class InfoWidget extends StatefulWidget {
   const InfoWidget({super.key});
@@ -156,6 +157,11 @@ class InfoWidgetState extends State<InfoWidget> {
                             msg: state.error!, toastLength: Toast.LENGTH_SHORT);
                         ratingBloc
                             .add(UpdateRatingEvent(tvShowAndMovie.localRating));
+                        WidgetsBinding.instance.addPostFrameCallback((_) =>
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => const LoginDialogPage()));
                         return Row(
                           children: [
                             Padding(
@@ -168,7 +174,7 @@ class InfoWidgetState extends State<InfoWidget> {
                             ),
                             CustomButton(
                               onPressed: () async {
-                                await _showModalBottomSheet(context,
+                                await _showModalBottomSheet(
                                     tvShowAndMovie, Strings.yourRatingText);
                               },
                               text: Strings.generateButtonText(
@@ -204,7 +210,6 @@ class InfoWidgetState extends State<InfoWidget> {
                                 ? GestureDetector(
                                     onTap: () async {
                                       await _showModalBottomSheet(
-                                          context,
                                           tvShowAndMovie,
                                           Strings.updateRatingText);
                                     },
@@ -229,7 +234,6 @@ class InfoWidgetState extends State<InfoWidget> {
                                 : CustomButton(
                                     onPressed: () async {
                                       await _showModalBottomSheet(
-                                          context,
                                           tvShowAndMovie,
                                           Strings.yourRatingText);
                                     },
@@ -310,7 +314,6 @@ class InfoWidgetState extends State<InfoWidget> {
   }
 
   _showModalBottomSheet(
-    BuildContext context,
     TvShowAndMovie tvShowAndMovie,
     String text,
   ) {
@@ -346,8 +349,8 @@ class InfoWidgetState extends State<InfoWidget> {
                   builder: (_, state, w) {
                     return RatingBar.builder(
                       onRatingUpdate: localRatingNotifier.update,
-                      minRating: 1.0,
-                      initialRating: state,
+                      minRating: 1,
+                      initialRating: localRatingNotifier.state.value,
                       direction: Axis.horizontal,
                       itemCount: 5,
                       itemSize: 45,
@@ -373,7 +376,7 @@ class InfoWidgetState extends State<InfoWidget> {
                       CustomToast(
                           msg: state.sucess!, toastLength: Toast.LENGTH_SHORT);
                       ratingBloc.add(UpdateRatingEvent(ratingBloc.ratingValue));
-                      GoRouter.of(context).pop();
+                      Navigator.of(context).pop();
                     }
                     if (state is RatingError) {
                       CustomToast(msg: state.error!);
@@ -404,6 +407,6 @@ class InfoWidgetState extends State<InfoWidget> {
               ],
             ),
           );
-        }).whenComplete(() {});
+        });
   }
 }

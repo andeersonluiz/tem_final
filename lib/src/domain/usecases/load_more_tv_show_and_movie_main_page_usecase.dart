@@ -7,13 +7,14 @@ import 'package:tuple/tuple.dart';
 
 class LoadMoreTvShowAndMovieMainPageUseCase
     implements
-        UseCase<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>, Filter> {
+        UseCase<DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>,
+            Filter> {
   LoadMoreTvShowAndMovieMainPageUseCase(this._tvShowAndMovieRepository);
 
   final TvShowAndMovieRepository _tvShowAndMovieRepository;
 
   @override
-  Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>> call(
+  Future<DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>> call(
       Filter params) {
     return _tvShowAndMovieRepository.loadMoreTvShowAndMovieMainPage(params);
   }

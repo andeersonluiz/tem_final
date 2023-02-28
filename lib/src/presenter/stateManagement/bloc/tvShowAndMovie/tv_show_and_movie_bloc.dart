@@ -36,19 +36,19 @@ class TvShowAndMovieBloc
 Rx<StatusLoadingTvShowAndMovie> statusLoadingTvSHowAndMovie =
       StatusLoadingTvShowAndMovie.firstRun.obs;
   Rx<int> indexSelected = 0.obs;*/
-  List<Tuple2<String, List<TvShowAndMovie>>> listTvShowAndMovie = [
-    Tuple2("", List<TvShowAndMovie>.empty())
+  List<Tuple2<GenreType, List<TvShowAndMovie>>> listTvShowAndMovie = [
+    Tuple2(GenreType.none, List<TvShowAndMovie>.empty())
   ];
 
   Future<void> _getAllTvShowsAndMovies(GetAllTvShowAndMovieEvent event,
       Emitter<TvShowAndMovieState> emit) async {
     const Filter filter = Filter.all;
-
-    if (filterSelected == filter) return;
+    print(filterSelected == filter && !event.refresh);
+    if (filterSelected == filter && !event.refresh) return;
     filterSelected = filter;
     isFinalList = false;
     emit(TvShowAndMovieLoading(filter));
-    DataState<List<Tuple2<String, List<TvShowAndMovie>>>>
+    DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>
         resultGetAllTvShowAndMovie = await _getAllTvShowAndMovieUseCase();
     if (resultGetAllTvShowAndMovie is DataSucess) {
       listTvShowAndMovie = resultGetAllTvShowAndMovie.data!;
@@ -62,12 +62,12 @@ Rx<StatusLoadingTvShowAndMovie> statusLoadingTvSHowAndMovie =
   void _getAllMovies(
       GetAllMovieEvent event, Emitter<TvShowAndMovieState> emit) async {
     const Filter filter = Filter.movie;
-    if (filterSelected == filter) return;
+    if (filterSelected == filter && !event.refresh) return;
 
     filterSelected = filter;
     isFinalList = false;
     emit(TvShowAndMovieLoading(filter));
-    DataState<List<Tuple2<String, List<TvShowAndMovie>>>>
+    DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>
         resultGetAllTvShowAndMovie = await _getAllMovieUseCase();
     if (resultGetAllTvShowAndMovie is DataSucess) {
       listTvShowAndMovie = resultGetAllTvShowAndMovie.data!;
@@ -82,12 +82,12 @@ Rx<StatusLoadingTvShowAndMovie> statusLoadingTvSHowAndMovie =
   void _getAllTvShoW(
       GetAllTvShowEvent event, Emitter<TvShowAndMovieState> emit) async {
     const Filter filter = Filter.tvShow;
-    if (filterSelected == filter) return;
+    if (filterSelected == filter && !event.refresh) return;
     filterSelected = filter;
     isFinalList = false;
 
     emit(TvShowAndMovieLoading(filter));
-    DataState<List<Tuple2<String, List<TvShowAndMovie>>>>
+    DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>
         resultGetAllTvShowAndMovie = await _getAllTvShowUseCase();
     if (resultGetAllTvShowAndMovie is DataSucess) {
       listTvShowAndMovie = resultGetAllTvShowAndMovie.data!;
@@ -106,7 +106,7 @@ Rx<StatusLoadingTvShowAndMovie> statusLoadingTvSHowAndMovie =
     Filter filter = Filter.values
         .where((element) => event.filterSelected == element.string)
         .first;
-    DataState<List<Tuple2<String, List<TvShowAndMovie>>>>
+    DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>
         resultGetAllTvShowAndMovie =
         await _loadMoreTvShowAndMovieMainPageUseCase(filter);
     if (resultGetAllTvShowAndMovie is DataSucess) {

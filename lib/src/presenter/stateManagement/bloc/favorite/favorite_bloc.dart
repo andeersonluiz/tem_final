@@ -14,6 +14,8 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
             favoriteList: [], msg: '', isFavorite: false)) {
     on<SetFavoriteEvent>(_setFavorite);
     on<GetFavoriteEvent>(_getFavorite);
+    on<UpdateFavoriteEvent>(_updateFavorite);
+
     on<ResetFavoriteEvent>(_resetFavorite);
   }
 
@@ -30,13 +32,14 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
       bool isFavorite = false;
       var index = favoriteListUpdated
           .indexWhere((element) => element.id == event.tvShowAndMovie!.id);
+
       if (index != -1) {
         favoriteListUpdated.removeAt(index);
       } else {
         favoriteListUpdated.add(event.tvShowAndMovie!);
         isFavorite = true;
       }
-      emit(FavoriteDone(
+      emit(FavoriteToastDone(
           favoriteList: favoriteListUpdated,
           msg: result.data,
           isFavorite: isFavorite));
@@ -48,20 +51,34 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     }
   }
 
+  Future<void> _updateFavorite(
+      UpdateFavoriteEvent event, Emitter<FavoriteState> emit) async {
+    emit(FavoriteDone(
+        favoriteList: state.favoriteList,
+        msg: "",
+        isFavorite: state.isFavorite));
+  }
+
   Future<void> _getFavorite(
       GetFavoriteEvent event, Emitter<FavoriteState> emit) async {
     DataState result = await _getAllTvShowAndMovieWithFavoriteUseCase();
     if (result is DataSucess) {
       if (event.idTvShowAndMovie == null) {
         emit(FavoriteDone(
-            favoriteList: result.data, msg: "", isFavorite: false));
+            favoriteList: result.data.reversed.toList(),
+            msg: "",
+            isFavorite: false));
       } else {
         bool isFavorite = result.data!
             .where((item) => item.id == event.idTvShowAndMovie)
             .toList()
             .isNotEmpty;
+        print(isFavorite.toString());
+
         emit(FavoriteDone(
-            favoriteList: result.data, msg: "", isFavorite: isFavorite));
+            favoriteList: result.data.reversed.toList(),
+            msg: "",
+            isFavorite: isFavorite));
       }
     } else {
       emit(FavoriteError(

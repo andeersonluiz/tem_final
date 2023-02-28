@@ -20,18 +20,17 @@ import 'package:tuple/tuple.dart';
 import '../../domain/repositories/tv_show_and_movie_repository.dart';
 
 class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
-  TvShowAndMovieRepositoryImpl(
-      {required this.firebaseHandlerService,
-      required this.localPreferencesHandlerService,
-      required this.mapper,
-      required this.userHistoryMapper,
-      required this.userId});
+  TvShowAndMovieRepositoryImpl({
+    required this.firebaseHandlerService,
+    required this.localPreferencesHandlerService,
+    required this.mapper,
+    required this.userHistoryMapper,
+  });
 
   final FirebaseHandlerService firebaseHandlerService;
   final LocalPreferencesHandlerService localPreferencesHandlerService;
   final TvShowAndMovieMapper mapper;
   final UserHistoryMapper userHistoryMapper;
-  String userId;
   // ignore: slash_for_doc_comments
   /** 
    * remote_datasource
@@ -41,6 +40,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     String idTvShowAndMovie,
     int ratingValue,
   ) async {
+    String userId = localPreferencesHandlerService.getUserId();
     Either<UserHistoryModel?, Tuple2<String, StackTrace>> resultGetUserHistory =
         localPreferencesHandlerService.getUserHistory();
     if (resultGetUserHistory.isLeft) {
@@ -80,6 +80,8 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
 
   Future<Either<bool, Tuple2<String, StackTrace>>> _updateTvShowAndMovieRating(
       TvShowAndMovie tvShowAndMovie, int ratingValue) async {
+    String userId = localPreferencesHandlerService.getUserId();
+
     TvShowAndMovieModel tvShowAndMovieModel =
         mapper.entityToModel(tvShowAndMovie);
     late TvShowAndMovieRatingModel tvShowAndMovieRatingModel =
@@ -124,7 +126,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
   }
 
   @override
-  Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>>
+  Future<DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>>
       getAllTvShowAndMovie() async {
     var firebaseResponse = await firebaseHandlerService.getAllTvShowAndMovie();
 
@@ -137,7 +139,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
   }
 
   @override
-  Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>>
+  Future<DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>>
       getAllMovie() async {
     var firebaseResponse = await firebaseHandlerService.getAllMovie();
 
@@ -148,7 +150,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
   }
 
   @override
-  Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>>
+  Future<DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>>
       getAllTvShow() async {
     var firebaseResponse = await firebaseHandlerService.getAllTvShow();
 
@@ -161,6 +163,8 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
   @override
   Future<DataState<TvShowAndMovie?>> getTvShowAndMovie(String id) async {
     var firebaseResponse = await firebaseHandlerService.getTvShowAndMovie(id);
+    String userId = localPreferencesHandlerService.getUserId();
+
     if (firebaseResponse.isLeft) {
       if (firebaseResponse.left.isEmpty) return const DataSucess(null);
 
@@ -235,27 +239,22 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
       var resUpdateConclusionUser = await _updateConclusionUser(
           idTvShowAndMovie, seasonSelected, conclusionType, userHistory.left!);
       if (resUpdateConclusionUser.item1 is ConclusionType?) {
-        print("att $conclusionType ${resUpdateConclusionUser.item1} ");
         Either<String, Tuple2<String, StackTrace>> resultData =
             await firebaseHandlerService.selectConclusion(
                 seasonSelected - 1, idTvShowAndMovie, conclusionType,
                 conclusionToDecrease: resUpdateConclusionUser.item1);
-        print("resultData $resultData");
         if (resultData.isLeft) {
           return DataSucess(resultData.left);
         } else {
           return DataFailed(resultData.right, isLog: false);
         }
       } else {
-        print("cai aqui $resUpdateConclusionUser");
-
         return DataFailed(
             Tuple2(resUpdateConclusionUser.item1.toString(),
                 resUpdateConclusionUser.item2),
             isLog: false);
       }
     } else {
-      print("cai aqui0");
       return DataFailed(Tuple2(Strings.defaultError, StackTrace.empty),
           isLog: false);
     }
@@ -266,8 +265,6 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
       int seasonSelected,
       ConclusionType conclusionType,
       UserHistoryModel userHistoryModel) async {
-    print(userHistoryModel.toMap());
-
     int index = userHistoryModel.listUserChoices.indexWhere((element) =>
         element.seasonSelected == seasonSelected &&
         element.idTvShowAndMovie == idTvShowAndMovie);
@@ -276,7 +273,6 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
         seasonSelected: seasonSelected,
         conclusionSelected: conclusionType);
     ConclusionType? oldConclusionType;
-    print("index é $index");
     if (index == -1) {
       userHistoryModel.listUserChoices.add(userChoiceModel);
     } else {
@@ -289,8 +285,6 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     var resLocal = await localPreferencesHandlerService
         .updateUserHistory(userHistoryModel);
 
-    print(resLocal.toString());
-    print(resDatabase.toString());
     if (resLocal.isLeft && resDatabase.isLeft) {
       return Tuple2(oldConclusionType, StackTrace.empty);
     } else if (resLocal.isRight) {
@@ -370,10 +364,10 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
 
   //* TESTADO *//
   @override
-  Future<DataState<List<TvShowAndMovie>>> loadMoreTvShowAndMovie(
+  Future<DataState<List<TvShowAndMovie>>> loadMoreTvShowAndMovieGenrePage(
       PaginationType paginationType) async {
-    var resultData =
-        await firebaseHandlerService.loadMoreTvShowAndMovies(paginationType);
+    var resultData = await firebaseHandlerService
+        .loadMoreTvShowAndMoviesGenrePage(paginationType);
     if (resultData.isLeft) {
       List<TvShowAndMovie> listTvShowAndMovie = resultData.left
           .map(
@@ -386,7 +380,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
   }
 
   @override
-  Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>>
+  Future<DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>>
       loadMoreTvShowAndMovieMainPage(Filter filterMainPage) async {
     var resultData = await firebaseHandlerService
         .loadMoreTvShowAndMoviesMainPage(filterMainPage);
@@ -402,7 +396,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
   Future<DataState<List<TvShowAndMovie>>> getTvShowAndMovieByGenres(
       List<GenreType> genres) async {
     var resultGenres =
-        await firebaseHandlerService.getTvSeriesAndMovieByGenres(genres);
+        await firebaseHandlerService.getTvShowAndMovieByGenres(genres);
     if (resultGenres.isLeft) {
       List<TvShowAndMovie> listTvShowAndMovie = resultGenres.left
           .map((e) => mapper.modelToEntity(TvShowAndMovieModel.fromMap(e)))
@@ -413,9 +407,10 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     }
   }
 
-  List<Tuple2<String, List<TvShowAndMovie>>> _convertTuple(
-      List<Tuple2<String, List<Map<String, dynamic>>>> listTvShowAndMovieJson) {
-    List<Tuple2<String, List<TvShowAndMovie>>> tupleList = [];
+  List<Tuple2<GenreType, List<TvShowAndMovie>>> _convertTuple(
+      List<Tuple2<GenreType, List<Map<String, dynamic>>>>
+          listTvShowAndMovieJson) {
+    List<Tuple2<GenreType, List<TvShowAndMovie>>> tupleList = [];
     for (var tupleItem in listTvShowAndMovieJson) {
       for (Map<String, dynamic> tvShowAndMovieMap in tupleItem.item2) {
         TvShowAndMovie tvShowAndMovie = mapper
@@ -437,7 +432,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     if (resultGetGenres.isLeft) {
       Map<String, int> values = resultGetGenres.left;
       if (values.isEmpty) {
-        tupleList.sort((a, b) => a.item1.compareTo(b.item1));
+        tupleList.sort((a, b) => a.item1.string.compareTo(b.item1.string));
       }
       tupleList.sort((a, b) {
         int valueA = values[a.item1] ?? 0;
@@ -445,8 +440,21 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
         return valueB.compareTo(valueA);
       });
     } else {
-      tupleList.sort((a, b) => a.item1.compareTo(b.item1));
+      tupleList.sort((a, b) => a.item1.string.compareTo(b.item1.string));
     }
     return tupleList;
+  }
+
+  @override
+  Future<DataState<List<TvShowAndMovie>>> filterGenres(
+      Tuple2<Filter, FilterGenre> params) async {
+    var result = await firebaseHandlerService.filterGenres(params);
+    if (result.isLeft) {
+      return DataSucess(result.left
+          .map((e) => mapper.modelToEntity(TvShowAndMovieModel.fromMap(e)))
+          .toList());
+    } else {
+      return DataFailed(result.right, isLog: false);
+    }
   }
 }

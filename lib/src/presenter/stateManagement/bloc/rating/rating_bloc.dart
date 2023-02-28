@@ -14,7 +14,7 @@ class RatingBloc extends Bloc<RatingEvent, RatingState> {
     on<SaveRatingEvent>(_saveRatingTvShowAndMovie);
   }
   final UpdateRatingUseCase _updateRatingUseCase;
-  final VerifitUserIsLoggedUseCase _verifitUserIsLoggedUseCase;
+  final VerifiyUserIsLoggedUseCase _verifitUserIsLoggedUseCase;
 
   bool isLoading = false;
 

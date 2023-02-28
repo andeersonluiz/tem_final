@@ -20,6 +20,8 @@ class SetFavoriteEvent extends FavoriteEvent {
   const SetFavoriteEvent({required super.tvShowAndMovie});
 }
 
+class UpdateFavoriteEvent extends FavoriteEvent {}
+
 class GetFavoriteEvent extends FavoriteEvent {
   const GetFavoriteEvent({super.idTvShowAndMovie});
 }

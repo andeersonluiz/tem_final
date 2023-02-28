@@ -190,43 +190,11 @@ class TvShowAndMovieModel {
   bool operator ==(covariant TvShowAndMovieModel other) {
     if (identical(this, other)) return true;
 
-    return other.id == id &&
-        other.title == title &&
-        listEquals(other.caseSearch, caseSearch) &&
-        other.synopsis == synopsis &&
-        other.imdbInfo == imdbInfo &&
-        listEquals(other.genres, genres) &&
-        other.runtime == runtime &&
-        other.ageClassification == ageClassification &&
-        other.posterImage == posterImage &&
-        other.link == link &&
-        other.actualStatus == actualStatus &&
-        other.isNewSeasonUpcoming == isNewSeasonUpcoming &&
-        other.seasons == seasons &&
-        other.viewsCount == viewsCount &&
-        other.countConclusions == countConclusions &&
-        listEquals(other.ratingList, ratingList) &&
-        other.averageRating == averageRating;
+    return other.id == id;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        title.hashCode ^
-        caseSearch.hashCode ^
-        synopsis.hashCode ^
-        imdbInfo.hashCode ^
-        genres.hashCode ^
-        runtime.hashCode ^
-        ageClassification.hashCode ^
-        posterImage.hashCode ^
-        link.hashCode ^
-        actualStatus.hashCode ^
-        isNewSeasonUpcoming.hashCode ^
-        seasons.hashCode ^
-        viewsCount.hashCode ^
-        countConclusions.hashCode ^
-        ratingList.hashCode ^
-        averageRating.hashCode;
+    return id.hashCode;
   }
 }

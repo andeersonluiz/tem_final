@@ -7,6 +7,7 @@ import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_rating_model.dart';
 import 'package:tem_final/src/data/models/user_choice_model.dart';
 import 'package:tem_final/src/data/models/user_history_model.dart';
+import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tuple/tuple.dart';
 import '../../../core/utils/strings.dart';
 
@@ -16,14 +17,19 @@ class FirebaseHandlerService {
   }
   late SupabaseClient _instance;
   late bool _isFinalList;
+  late bool _isFinalListGenrePage;
   late String _querySearch;
   late List<String> _listGenres;
   late int _offSet = 0;
+  late int _offSetGenrePage = 0;
+
   late int _paginationNumber = 1;
+  late int _paginationNumberGenrePage = 1;
+  late Tuple2<Filter, FilterGenre> filterParams;
 
 //* TESTADO *//
   Future<
-      Either<List<Tuple2<String, List<Map<String, dynamic>>>>,
+      Either<List<Tuple2<GenreType, List<Map<String, dynamic>>>>,
           Tuple2<String, StackTrace>>> getAllTvShowAndMovie() async {
     try {
       await ConnectionVerifyer.verify();
@@ -33,7 +39,7 @@ class FirebaseHandlerService {
       _offSet = 0;
       _paginationNumber = 1;
       _isFinalList = false;
-      List<Tuple2<String, List<Map<String, dynamic>>>> tuples = [];
+      List<Tuple2<GenreType, List<Map<String, dynamic>>>> tuples = [];
 
       for (GenreType genre in kGenresList.sublist(
           _offSet,
@@ -49,7 +55,7 @@ class FirebaseHandlerService {
         List<Map<String, dynamic>> map = queryDocumentData
             .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
             .toList();
-        tuples.add(Tuple2(genre.string, map));
+        tuples.add(Tuple2(genre, map));
       }
       if (tuples.length == pageSizeMainPage) {
         _offSet += pageSizeMainPage;
@@ -67,7 +73,7 @@ class FirebaseHandlerService {
   }
 
   Future<
-      Either<List<Tuple2<String, List<Map<String, dynamic>>>>,
+      Either<List<Tuple2<GenreType, List<Map<String, dynamic>>>>,
           Tuple2<String, StackTrace>>> getAllMovie() async {
     try {
       await ConnectionVerifyer.verify();
@@ -79,7 +85,7 @@ class FirebaseHandlerService {
       _paginationNumber = 1;
       _isFinalList = false;
       //TEM QUE SORTEAR
-      List<Tuple2<String, List<Map<String, dynamic>>>> tuples = [];
+      List<Tuple2<GenreType, List<Map<String, dynamic>>>> tuples = [];
 
       for (GenreType genre in kGenresList.sublist(
           _offSet,
@@ -97,7 +103,7 @@ class FirebaseHandlerService {
         List<Map<String, dynamic>> map = queryDocumentData
             .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
             .toList();
-        tuples.add(Tuple2(genre.string, map));
+        tuples.add(Tuple2(genre, map));
       }
       if (tuples.length == pageSizeMainPage) {
         _offSet += pageSizeMainPage;
@@ -115,7 +121,7 @@ class FirebaseHandlerService {
   }
 
   Future<
-      Either<List<Tuple2<String, List<Map<String, dynamic>>>>,
+      Either<List<Tuple2<GenreType, List<Map<String, dynamic>>>>,
           Tuple2<String, StackTrace>>> getAllTvShow() async {
     try {
       await ConnectionVerifyer.verify();
@@ -126,9 +132,8 @@ class FirebaseHandlerService {
       _offSet = 0;
       _paginationNumber = 1;
       _isFinalList = false;
-      debugPrint("_isFinalList é $_isFinalList");
       //TEM QUE SORTEAR
-      List<Tuple2<String, List<Map<String, dynamic>>>> tuples = [];
+      List<Tuple2<GenreType, List<Map<String, dynamic>>>> tuples = [];
 
       for (GenreType genre in kGenresList.sublist(
           _offSet,
@@ -146,7 +151,7 @@ class FirebaseHandlerService {
         List<Map<String, dynamic>> map = queryDocumentData
             .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
             .toList();
-        tuples.add(Tuple2(genre.string, map));
+        tuples.add(Tuple2(genre, map));
       }
       if (tuples.length == pageSizeMainPage) {
         _offSet += pageSizeMainPage;
@@ -332,7 +337,6 @@ class FirebaseHandlerService {
 
       //throw NoConnectionException(message: "teste erro connection");
       //throw FirebaseException(plugin: 'firebase');
-      print(userHistoryModel.toMap());
       await _instance
           .from(kDocumentUserHistory)
           .update(userHistoryModel.toMap())
@@ -366,48 +370,32 @@ class FirebaseHandlerService {
 
   //* TESTADO *//
   Future<Either<String, Tuple2<String, StackTrace>>> submitReport(
-      String subject,
-      String message,
-      ReportType reportType,
-      String idTvShowAndMovie) async {
+      String message, ReportType reportType, String idTvShowAndMovie) async {
     try {
       await ConnectionVerifyer.verify();
-
       //throw Exception("teste");
       //throw NoConnectionException(message: "teste erro connection");
-      //throw FirebaseException(plugin: 'firebase');
-
-      String messageResult = reportType.string;
-      var result = await _instance
-          .from(kDocumentTvShowAndMovies)
-          .select()
-          .eq("id", idTvShowAndMovie);
+      //throw FirebaseException(plugin: 'firebase');      bool hasErrorFindId = false;
       bool hasErrorFindId = false;
-
-      if (result.isEmpty) {
-        hasErrorFindId = true;
+      if (idTvShowAndMovie.isNotEmpty) {
+        var result = await _instance
+            .from(kDocumentTvShowAndMovies)
+            .select()
+            .eq("id", idTvShowAndMovie);
+        if (result.isEmpty) {
+          hasErrorFindId = true;
+        }
       }
+
       await _instance.from("reports").insert({
-        "subject": subject,
         "message": message,
-        "reportType": messageResult,
-        "idTvShowAndMovie": int.parse(idTvShowAndMovie),
+        "reportType": reportType.string,
+        "idTvShowAndMovie":
+            idTvShowAndMovie.isEmpty ? -1 : int.parse(idTvShowAndMovie),
         "hasErrorId": hasErrorFindId
       });
 
-      switch (reportType) {
-        case ReportType.problem:
-          messageResult += Strings.msgSufixReportProblem;
-          break;
-        case ReportType.feedback:
-          messageResult += Strings.msgSufixReportFeedback;
-          break;
-        case ReportType.changeData:
-          messageResult += Strings.msgSufixReportChangedData;
-          break;
-      }
-
-      return Left(messageResult);
+      return Left("");
     } on NoConnectionException catch (e) {
       return Right(Tuple2(e.message, e.stackTrace));
     } catch (e, stacktrace) {
@@ -418,32 +406,29 @@ class FirebaseHandlerService {
 
   //*TESTADO*//
   Future<Either<List<Map<String, dynamic>>, Tuple2<String, StackTrace>>>
-      loadMoreTvShowAndMovies(PaginationType paginationType) async {
-    if (_isFinalList) return const Left([]);
+      loadMoreTvShowAndMoviesGenrePage(PaginationType paginationType) async {
+    if (_isFinalListGenrePage) return const Left([]);
     try {
       await ConnectionVerifyer.verify();
       //throw Exception("teste");
       //throw NoConnectionException(message: "teste erro connection");
       //throw FirebaseException(plugin: 'firebase');
-      var moreData = (await getQueryByPagination(paginationType));
-
+      var moreData = await getQueryByPagination(paginationType);
       if (moreData.isNotEmpty) {
         if (moreData.length == pageSize) {
-          _offSet += pageSize;
+          _offSetGenrePage += pageSize;
         } else {
-          _offSet += int.parse(moreData.length);
-          _isFinalList = true;
+          _offSetGenrePage += moreData.length as int;
+          _isFinalListGenrePage = true;
         }
-        _paginationNumber += 1;
+        _paginationNumberGenrePage += 1;
       }
       if (moreData.isEmpty) {
-        _isFinalList = true;
+        _isFinalListGenrePage = true;
       }
-
       List<Map<String, dynamic>> map = moreData
           .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
           .toList();
-
       return Left(map);
     } on NoConnectionException catch (e) {
       return Right(Tuple2(e.message, e.stackTrace));
@@ -454,21 +439,16 @@ class FirebaseHandlerService {
   }
 
   Future<
-      Either<List<Tuple2<String, List<Map<String, dynamic>>>>,
+      Either<List<Tuple2<GenreType, List<Map<String, dynamic>>>>,
           Tuple2<String, StackTrace>>> loadMoreTvShowAndMoviesMainPage(
       Filter filterMainPage) async {
-    debugPrint("_isFinalList é $_isFinalList");
-
     if (_isFinalList) return const Left([]);
     try {
       await ConnectionVerifyer.verify();
       //throw Exception("teste");
       //throw NoConnectionException(message: "teste erro connection");
       //throw FirebaseException(plugin: 'firebase');
-      debugPrint("chmei moreData");
       var moreData = (await getQueryByPaginationMainPage(filterMainPage));
-      debugPrint("moreData ${moreData.length}");
-      debugPrint(pageSizeMainPage.toString());
       if (moreData.length == pageSizeMainPage) {
         _offSet += pageSizeMainPage;
       } else {
@@ -487,33 +467,35 @@ class FirebaseHandlerService {
 
   //*TESTADO*//
   Future<Either<List<Map<String, dynamic>>, Tuple2<String, StackTrace>>>
-      getTvSeriesAndMovieByGenres(List<GenreType> genres) async {
+      getTvShowAndMovieByGenres(List<GenreType> genres) async {
     try {
       await ConnectionVerifyer.verify();
       //throw Exception("teste");
       //throw NoConnectionException(message: "teste erro connection");
       //throw FirebaseException(plugin: 'firebase');
-      _offSet = 0;
-      _isFinalList = false;
-      _paginationNumber = 1;
       _listGenres = genres.map((e) => e.string).toList();
+      _offSetGenrePage = 0;
+      _isFinalListGenrePage = false;
+      _paginationNumberGenrePage = 1;
       var data = await _instance
           .from(kDocumentTvShowAndMovies)
           .select()
-          .containedBy("genres", _listGenres)
-          .range(_offSet, pageSize * _paginationNumber);
-
+          .contains("genres", _listGenres)
+          .order("popularity")
+          .range(_offSetGenrePage,
+              ((pageSize * _paginationNumberGenrePage) - 1)); //0 15
+      print(data.length);
       if (data.isNotEmpty) {
         if (data.length == pageSize) {
-          _offSet += pageSize;
+          _offSetGenrePage += pageSize;
         } else {
-          _offSet += int.parse(data.length);
-          _isFinalList = true;
+          _offSetGenrePage += data.length as int;
+          _isFinalListGenrePage = true;
         }
-        _paginationNumber += 1;
+        _paginationNumberGenrePage += 1;
       }
       if (data.isEmpty) {
-        _isFinalList = true;
+        _isFinalListGenrePage = true;
       }
 
       List<Map<String, dynamic>> map = data
@@ -605,8 +587,6 @@ class FirebaseHandlerService {
           TvShowAndMovieRatingModel tvShowAndMovieRating) async {
     try {
       await ConnectionVerifyer.verify();
-      debugPrint(tvShowAndMovieRating.toMap().toString());
-      debugPrint(int.parse(idTvShowAndMovie).toString());
 
       await _instance.rpc('update_rating_list', params: {
         'p_id': int.parse(idTvShowAndMovie),
@@ -621,23 +601,139 @@ class FirebaseHandlerService {
     }
   }
 
-  //* TESTADO *//
+  Future<Either<List<Map<String, dynamic>>, Tuple2<String, StackTrace>>>
+      filterGenres(Tuple2<Filter, FilterGenre> params) async {
+    try {
+      await ConnectionVerifyer.verify();
+      //throw NoConnectionException(message: "teste erro connection");
+
+      List<dynamic> data;
+      _offSetGenrePage = 0;
+      _isFinalListGenrePage = false;
+      _paginationNumberGenrePage = 1;
+      filterParams = params;
+
+      switch (params.item1) {
+        case Filter.all:
+          data = await _instance
+              .from(kDocumentTvShowAndMovies)
+              .select()
+              .contains("genres", _listGenres)
+              .order(params.item2.value)
+              .range(_offSetGenrePage,
+                  (pageSize * _paginationNumberGenrePage) - 1);
+          break;
+        case Filter.movie:
+          data = await _instance
+              .from(kDocumentTvShowAndMovies)
+              .select()
+              .contains("genres", _listGenres)
+              .eq("seasons", -1)
+              .order(params.item2.value)
+              .range(_offSetGenrePage,
+                  (pageSize * _paginationNumberGenrePage) - 1);
+          break;
+        case Filter.tvShow:
+          data = await _instance
+              .from(kDocumentTvShowAndMovies)
+              .select()
+              .contains("genres", _listGenres)
+              .neq("seasons", -1)
+              .order(params.item2.value)
+              .range(_offSetGenrePage,
+                  (pageSize * _paginationNumberGenrePage) - 1);
+          break;
+      }
+      if (data.isNotEmpty) {
+        if (data.length == pageSize) {
+          _offSetGenrePage += pageSize;
+        } else {
+          _offSetGenrePage += data.length;
+          _isFinalListGenrePage = true;
+        }
+        _paginationNumberGenrePage += 1;
+      }
+      if (data.isEmpty) {
+        _isFinalListGenrePage = true;
+      }
+      List<Map<String, dynamic>> map = data
+          .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
+          .toList();
+
+      return Left(map);
+    } on NoConnectionException catch (e) {
+      return Right(Tuple2(e.message, e.stackTrace));
+    } catch (e, stacktrace) {
+      return Right(Tuple2(Strings.msgErrorConnectionFirebase,
+          StackTrace.fromString("$e\n$stacktrace")));
+    }
+  }
+
+  Future<Either<String, Tuple2<String, StackTrace>>> removeUser(
+      String userId) async {
+    try {
+      await ConnectionVerifyer.verify();
+
+      await _instance.rpc('remove_user_rating', params: {
+        'id_user': userId,
+      });
+      await _instance.from(kDocumentUserHistory).delete().eq("idUser", userId);
+      return const Left(Strings.sucessRemoveUser);
+    } on NoConnectionException catch (e) {
+      return Right(Tuple2(e.message, e.stackTrace));
+    } catch (e, stacktrace) {
+      return Right(Tuple2(Strings.msgErrorConnectionFirebase,
+          StackTrace.fromString("$e\n$stacktrace")));
+    }
+  }
 
   //*TESTADO*//
   //Query<Map<String, dynamic>>
-  getQueryByPagination(PaginationType paginationType) async {
+  getQueryByPagination(
+    PaginationType paginationType,
+  ) async {
     switch (paginationType) {
       case PaginationType.genrePage:
         return await _instance
             .from(kDocumentTvShowAndMovies)
             .select()
-            .containedBy("genres", _listGenres)
-            .range(_offSet, pageSize * _paginationNumber);
+            .contains("genres", _listGenres)
+            .range(
+                _offSetGenrePage, (pageSize * _paginationNumberGenrePage) - 1);
+      case PaginationType.genrePageFilter:
+        switch (filterParams.item1) {
+          case Filter.all:
+            return await _instance
+                .from(kDocumentTvShowAndMovies)
+                .select()
+                .contains("genres", _listGenres)
+                .order(filterParams.item2.value)
+                .range(_offSetGenrePage,
+                    (pageSize * _paginationNumberGenrePage) - 1);
+          case Filter.movie:
+            return await _instance
+                .from(kDocumentTvShowAndMovies)
+                .select()
+                .contains("genres", _listGenres)
+                .eq("seasons", -1)
+                .order(filterParams.item2.value)
+                .range(_offSetGenrePage,
+                    (pageSize * _paginationNumberGenrePage) - 1);
+          case Filter.tvShow:
+            return await _instance
+                .from(kDocumentTvShowAndMovies)
+                .select()
+                .contains("genres", _listGenres)
+                .neq("seasons", -1)
+                .order(filterParams.item2.value)
+                .range(_offSetGenrePage,
+                    (pageSize * _paginationNumberGenrePage) - 1);
+        }
     }
   }
 
   getQueryByPaginationMainPage(Filter filterMainPage) async {
-    List<Tuple2<String, List<Map<String, dynamic>>>> tuples = [];
+    List<Tuple2<GenreType, List<Map<String, dynamic>>>> tuples = [];
     switch (filterMainPage) {
       case Filter.all:
         for (GenreType genre in kGenresList.sublist(
@@ -655,7 +751,7 @@ class FirebaseHandlerService {
           List<Map<String, dynamic>> map = queryDocumentData
               .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
               .toList();
-          tuples.add(Tuple2(genre.string, map));
+          tuples.add(Tuple2(genre, map));
         }
         return tuples;
       case Filter.tvShow:
@@ -675,7 +771,7 @@ class FirebaseHandlerService {
           List<Map<String, dynamic>> map = queryDocumentData
               .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
               .toList();
-          tuples.add(Tuple2(genre.string, map));
+          tuples.add(Tuple2(genre, map));
         }
         return tuples;
 
@@ -699,7 +795,7 @@ class FirebaseHandlerService {
           List<Map<String, dynamic>> map = queryDocumentData
               .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)
               .toList();
-          tuples.add(Tuple2(genre.string, map));
+          tuples.add(Tuple2(genre, map));
         }
         return tuples;
     }

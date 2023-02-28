@@ -4,18 +4,21 @@ import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tuple/tuple.dart';
 
 abstract class TvShowAndMovieRepository {
-  Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>>
+  Future<DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>>
       getAllTvShowAndMovie();
-  Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>> getAllTvShow();
-  Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>> getAllMovie();
+  Future<DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>>
+      getAllTvShow();
+  Future<DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>>
+      getAllMovie();
   Future<DataState<List<TvShowAndMovie>>> getTvShowAndMovieByGenres(
       List<GenreType> genres);
-
+  Future<DataState<List<TvShowAndMovie>>> filterGenres(
+      Tuple2<Filter, FilterGenre> params);
   Future<DataState<List<TvShowAndMovie>>> searchTvShowAndMovie(String query);
 
-  Future<DataState<List<TvShowAndMovie>>> loadMoreTvShowAndMovie(
+  Future<DataState<List<TvShowAndMovie>>> loadMoreTvShowAndMovieGenrePage(
       PaginationType paginationType);
-  Future<DataState<List<Tuple2<String, List<TvShowAndMovie>>>>>
+  Future<DataState<List<Tuple2<GenreType, List<TvShowAndMovie>>>>>
       loadMoreTvShowAndMovieMainPage(Filter filterMainPage);
   Future<DataState<TvShowAndMovie?>> getTvShowAndMovie(String id);
 

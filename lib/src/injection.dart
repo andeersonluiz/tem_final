@@ -11,6 +11,7 @@ import 'package:tem_final/src/data/repositories/user_repository_impl.dart';
 import 'package:tem_final/src/domain/repositories/data_integrity_checker_repository.dart';
 import 'package:tem_final/src/domain/repositories/tv_show_and_movie_repository.dart';
 import 'package:tem_final/src/domain/repositories/user_repository.dart';
+import 'package:tem_final/src/domain/usecases/filter_genres_usecase.dart';
 import 'package:tem_final/src/domain/usecases/get_all_movie_usecase.dart';
 import 'package:tem_final/src/domain/usecases/get_all_tv_show_and_move_with_favorite_usecase.dart';
 import 'package:tem_final/src/domain/usecases/get_all_tv_show_and_movie_usecase.dart';
@@ -19,10 +20,12 @@ import 'package:tem_final/src/domain/usecases/get_local_user_history_usecase.dar
 import 'package:tem_final/src/domain/usecases/get_recents_tv_show_and_movie_viewed.dart';
 import 'package:tem_final/src/domain/usecases/get_tv_show_and_movie_by_genres_usecase.dart';
 import 'package:tem_final/src/domain/usecases/get_tv_show_and_movie_usecase.dart';
+import 'package:tem_final/src/domain/usecases/get_username_usecase.dart';
 import 'package:tem_final/src/domain/usecases/load_more_tv_show_and_movie_main_page_usecase.dart';
 import 'package:tem_final/src/domain/usecases/load_more_tv_show_and_movie_usecase.dart';
 import 'package:tem_final/src/domain/usecases/log_out_usecase.dart';
 import 'package:tem_final/src/domain/usecases/login_via_google_usecase.dart';
+import 'package:tem_final/src/domain/usecases/remove_user_usecase.dart';
 import 'package:tem_final/src/domain/usecases/set_recents_tv_show_and_movie_viewed.dart';
 import 'package:tem_final/src/domain/usecases/update_rating_usecase.dart';
 import 'package:tem_final/src/domain/usecases/search_tv_show_and_movie_usecase.dart';
@@ -46,7 +49,6 @@ Future<String> initializeDependencies(
     debugPrint(resultUserId.toString());
     if (resultUserId.isLeft) {
       userId = resultUserId.left;
-      debugPrint("string é $userId");
     }
     await localPreferencesHandlerService.setUserId(userId);
     return userId;
@@ -118,9 +120,15 @@ class ProviderInjection extends StatelessWidget {
         Provider<GetLocalUserHistoryUseCase>(
             create: (context) =>
                 GetLocalUserHistoryUseCase(context.read<UserRepository>())),
-        Provider<VerifitUserIsLoggedUseCase>(
+        Provider<VerifiyUserIsLoggedUseCase>(
             create: (context) =>
-                VerifitUserIsLoggedUseCase(context.read<UserRepository>())),
+                VerifiyUserIsLoggedUseCase(context.read<UserRepository>())),
+        Provider<GetUsernameUseCase>(
+            create: (context) =>
+                GetUsernameUseCase(context.read<UserRepository>())),
+        /*Provider<RemoveUserUseCase>(
+            create: (context) =>
+                RemoveUserUseCase(context.read<UserRepository>())),*/
       ],
       child: Builder(builder: (context) {
         return FutureBuilder(
@@ -133,13 +141,13 @@ class ProviderInjection extends StatelessWidget {
                 return MultiProvider(providers: [
                   Provider<TvShowAndMovieRepository>(
                     create: (context) => TvShowAndMovieRepositoryImpl(
-                        mapper: context.read<TvShowAndMovieMapper>(),
-                        firebaseHandlerService:
-                            context.read<FirebaseHandlerService>(),
-                        localPreferencesHandlerService:
-                            context.read<LocalPreferencesHandlerService>(),
-                        userHistoryMapper: context.read<UserHistoryMapper>(),
-                        userId: snp.data!),
+                      mapper: context.read<TvShowAndMovieMapper>(),
+                      firebaseHandlerService:
+                          context.read<FirebaseHandlerService>(),
+                      localPreferencesHandlerService:
+                          context.read<LocalPreferencesHandlerService>(),
+                      userHistoryMapper: context.read<UserHistoryMapper>(),
+                    ),
                   ),
                   Provider<GetAllTvShowAndMovieWithFavoriteUseCase>(
                       create: (context) =>
@@ -160,9 +168,10 @@ class ProviderInjection extends StatelessWidget {
                   Provider<GetTvShowAndMovieUseCase>(
                       create: (context) => GetTvShowAndMovieUseCase(
                           context.read<TvShowAndMovieRepository>())),
-                  Provider<LoadMoreTvShowAndMovieUseCase>(
-                      create: (context) => LoadMoreTvShowAndMovieUseCase(
-                          context.read<TvShowAndMovieRepository>())),
+                  Provider<LoadMoreTvShowAndMovieGenrePageUseCase>(
+                      create: (context) =>
+                          LoadMoreTvShowAndMovieGenrePageUseCase(
+                              context.read<TvShowAndMovieRepository>())),
                   Provider<LoadMoreTvShowAndMovieMainPageUseCase>(
                       create: (context) =>
                           LoadMoreTvShowAndMovieMainPageUseCase(
@@ -191,6 +200,9 @@ class ProviderInjection extends StatelessWidget {
                       create: (context) =>
                           GetRecentsTvShowAndMovieViewedUseCase(
                               context.read<TvShowAndMovieRepository>())),
+                  Provider<FilterGenresUseCase>(
+                      create: (context) => FilterGenresUseCase(
+                          context.read<TvShowAndMovieRepository>())),
                 ], child: child);
               }
               {

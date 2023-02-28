@@ -12,7 +12,7 @@ abstract class TvShowAndMovieState extends Equatable {
     this.data,
     this.error,
   });
-  final List<Tuple2<String, List<TvShowAndMovie>>>? data;
+  final List<Tuple2<GenreType, List<TvShowAndMovie>>>? data;
   final String? error;
   final String filterSelected;
   @override
@@ -28,7 +28,7 @@ class TvShowAndMovieLoading extends TvShowAndMovieState {
 
 class TvShowAndMovieDone extends TvShowAndMovieState {
   TvShowAndMovieDone(
-      List<Tuple2<String, List<TvShowAndMovie>>> data, Filter filterSelected)
+      List<Tuple2<GenreType, List<TvShowAndMovie>>> data, Filter filterSelected)
       : super(data: data, filterSelected: filterSelected.string);
 }
 

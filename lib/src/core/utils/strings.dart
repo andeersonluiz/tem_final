@@ -11,6 +11,14 @@ class Strings {
       "Não foi possível conectar ao banco de dados. Verifique sua conexão com a internet e tente novamente.";
   static const String multiDeviceError =
       "Mais de um dispositivo conectado e/ou violação da integridade de login";
+  static const String errorRemoveUser =
+      "Erro ao remover usuário, tente novamente mais tarde.";
+  static const String sucessRemoveUser = "Usuário removido com sucesso!";
+  static const String sendFeedbackSucess =
+      "Seu feedback foi enviado com sucesso. Agradecemos por compartilhar suas ideias conosco!";
+  static const String sendProblemSucess =
+      "Obrigado por relatar o problema. Iremos analisar e trabalhar para resolvê-lo o mais rápido possível.";
+  static const String errorEmptyFeedback = "Seu texto não pode ser vazio.";
 
   static const aborted =
       "Operação foi abortada devido a um problema de concorrência, como aborto de transação, etc.";

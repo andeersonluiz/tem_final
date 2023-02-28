@@ -14,7 +14,8 @@ class FirebaseAuthHandlerService {
   }
   late FirebaseAuth _instance;
   late GoogleSignIn _googleSignIn;
-  Future<Either<String, Tuple2<String, StackTrace>>> loginViaGoogle() async {
+  Future<Either<Tuple2<String, String>, Tuple2<String, StackTrace>>>
+      loginViaGoogle() async {
     try {
       await ConnectionVerifyer.verify();
 
@@ -27,7 +28,8 @@ class FirebaseAuthHandlerService {
       );
       await _instance.signInWithCredential(credential);
       String userId = _instance.currentUser!.uid;
-      return Left(userId);
+      String username = _instance.currentUser!.displayName!;
+      return Left(Tuple2(userId, username));
     } on NoConnectionException catch (e) {
       return Right(Tuple2(e.message, e.stackTrace));
     } on FirebaseAuthException catch (e, stacktrace) {

@@ -7,6 +7,7 @@ import 'package:tem_final/src/core/utils/icons.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
 import 'package:tem_final/src/core/utils/widget_size.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
+import 'package:tem_final/src/presenter/pages/login/login_dialog_page.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/sub_item_result.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_button.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
@@ -90,6 +91,10 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
       final bool showButton = conclusionSelectionStatus.showButton;
       if (state is Unauthorized) {
         CustomToast(msg: state.msg!);
+        WidgetsBinding.instance.addPostFrameCallback((_) => showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => const LoginDialogPage()));
         conclusionBloc.add(ResetConclusionEvent());
       }
 
@@ -313,11 +318,9 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
                                         conclusionBloc.add(
                                             const SelectFirstConclusionEvent(
                                                 Conclusion.hasFinal));
-                                        print("ab cd");
                                         await Future.delayed(const Duration(
                                             milliseconds:
                                                 kAwaitTimeToAnimation));
-                                        print("ab cd1 ${state.msg}");
                                         conclusionBloc.add(const ShowAnimation(
                                             Conclusion.hasFinal));
                                       },

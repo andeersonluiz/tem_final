@@ -30,11 +30,10 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
   }
 
   final SelectConclusionUseCase _selectConclusionUseCase;
-  final VerifitUserIsLoggedUseCase _verifitUserIsLoggedUseCase;
+  final VerifiyUserIsLoggedUseCase _verifitUserIsLoggedUseCase;
 
   Future<void> _selectFirstConclusion(
       SelectFirstConclusionEvent event, Emitter<ConclusionState> emit) async {
-    print("Ooi");
     var resultVerifyIsLogged = await _verifitUserIsLoggedUseCase();
     if (!resultVerifyIsLogged) {
       emit(Unauthorized(

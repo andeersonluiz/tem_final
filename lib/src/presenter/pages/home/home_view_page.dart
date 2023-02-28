@@ -8,17 +8,21 @@ import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/core/utils/routes_names.dart';
 import 'package:tem_final/src/core/utils/widget_size.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
+import 'package:tem_final/src/presenter/pages/favorite/favorite_page.dart';
 import 'package:tem_final/src/presenter/pages/home/widgets/list_tv_show_and_movie_widget.dart';
 import 'package:tem_final/src/presenter/pages/search/search_page.dart';
+import 'package:tem_final/src/presenter/pages/settings/settings_page.dart';
+import 'package:tem_final/src/presenter/reusableWidgets/custom_bottom_navigation.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_outline_button.dart';
+import 'package:tem_final/src/presenter/stateManagement/bloc/bottomNavBar/bottom_nav_bar_bloc.dart';
+import 'package:tem_final/src/presenter/stateManagement/bloc/bottomNavBar/bottom_nav_bar_event.dart';
+import 'package:tem_final/src/presenter/stateManagement/bloc/bottomNavBar/bottom_nav_bar_state.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/search/search_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_event.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
-import 'package:tem_final/src/presenter/tiles/tv_show_and_movie_tile.dart';
-import 'package:tuple/tuple.dart';
 
 import '../../stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_bloc.dart';
 import '../../stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_state.dart';
@@ -30,24 +34,24 @@ class HomeViewPage extends StatefulWidget {
   State<HomeViewPage> createState() => _HomeViewPageState();
 }
 
-class _HomeViewPageState extends State<HomeViewPage> {
+class _HomeViewPageState extends State<HomeViewPage>
+    with SingleTickerProviderStateMixin {
   late ScrollController controller;
   late TvShowAndMovieBloc bloc;
   late FavoriteBloc favoriteBloc;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
   @override
   void initState() {
     super.initState();
     bloc = context.read<TvShowAndMovieBloc>();
-    favoriteBloc = context.read<FavoriteBloc>();
-
     bloc.add(GetAllTvShowAndMovieEvent(Filter.tvShow));
-    favoriteBloc.add(const GetFavoriteEvent());
     controller = ScrollController()..addListener(_scrollListener);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 750),
+    );
+    _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
   }
 
   void _scrollListener() {
@@ -92,12 +96,14 @@ class _HomeViewPageState extends State<HomeViewPage> {
               children: [
                 CustomOutlineButton(
                     onPressed: () {
+                      _animationController.reset();
                       bloc.add(GetAllTvShowAndMovieEvent(Filter.all));
                     },
                     text: Filter.all.string,
                     selectedText: state.filterSelected),
                 CustomOutlineButton(
                   onPressed: () {
+                    _animationController.reset();
                     bloc.add(GetAllMovieEvent(Filter.movie));
                   },
                   text: Filter.movie.string,
@@ -105,6 +111,7 @@ class _HomeViewPageState extends State<HomeViewPage> {
                 ),
                 CustomOutlineButton(
                   onPressed: () {
+                    _animationController.reset();
                     bloc.add(GetAllTvShowEvent(Filter.tvShow));
                   },
                   text: Filter.tvShow.string,
@@ -125,33 +132,25 @@ class _HomeViewPageState extends State<HomeViewPage> {
               return Container();
             }
             if (state is TvShowAndMovieDone) {
-              return ListTvShowAndMovie(state.data!, controller);
+              _animationController.forward();
+              return Expanded(
+                child: FadeTransition(
+                    opacity: _animation,
+                    child: ListTvShowAndMovie(state.data!, controller)),
+              );
             }
             return const SizedBox();
           })
         ],
       ),
-      bottomNavigationBar: Builder(builder: (context) {
-        return FloatingNavbar(
-          onTap: null, //tvShowAndMovieController.updateIndexSelected,
-          backgroundColor: appBarColor,
-          currentIndex: 0, //tvShowAndMovieController.indexSelected.value,
-          unselectedItemColor: optionFilledColor,
-          selectedItemColor: textColorFilledOption,
-          selectedBackgroundColor: optionFilledColor,
-          items: [
-            FloatingNavbarItem(icon: Icons.home, title: 'Início'),
-            FloatingNavbarItem(icon: Icons.favorite, title: 'Favoritos'),
-            FloatingNavbarItem(icon: Icons.settings, title: 'Configurações'),
-          ],
-        );
-      }),
+      bottomNavigationBar: const CustomBottomNavigation(),
     );
   }
 
   @override
   void dispose() {
     controller.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 }

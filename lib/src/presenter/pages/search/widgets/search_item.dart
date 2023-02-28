@@ -38,13 +38,10 @@ class SearchItem extends StatelessWidget {
           children: [
             Expanded(
                 flex: 3,
-                child: Container(
-                  color: Colors.green,
-                  child: CustomImage(
-                    urlImage: tvShowAndMovieItem.posterImage,
-                    height: WidgetSize.heightCard,
-                    fit: BoxFit.fill,
-                  ),
+                child: CustomImage(
+                  urlImage: tvShowAndMovieItem.posterImage,
+                  height: WidgetSize.heightCard,
+                  fit: BoxFit.fill,
                 )),
             Expanded(
               flex: 7,
@@ -65,6 +62,7 @@ class SearchItem extends StatelessWidget {
                             style: const TextStyle(
                                 fontFamily: fontFamily,
                                 fontSize: kSizeTitleCard,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold),
                           ),
                         ),

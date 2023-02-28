@@ -99,7 +99,6 @@ class SearchPage extends SearchDelegate {
                 behavior: MyBehavior(),
                 child: BlocBuilder<FavoriteBloc, FavoriteState>(
                     builder: (context, stateFavorite) {
-                  print("refizz lista");
                   return ListView.builder(
                     itemCount: state.queryResultList.length,
                     itemBuilder: (ctx, index) {
@@ -108,7 +107,8 @@ class SearchPage extends SearchDelegate {
                           searchBloc.add(SetRecentsEvent(
                               query: query,
                               tvShowAndMovie: state.queryResultList[index]));
-                          GoRouter.of(context).pushNamed(Routes.info, params: {
+                          Navigator.of(context)
+                              .pushNamed(Routes.info, arguments: {
                             "title": state.queryResultList[index].title,
                             "idTvShowAndMovie": state.queryResultList[index].id
                           });
@@ -153,11 +153,14 @@ class SearchPage extends SearchDelegate {
           } else if (state is SearchDone) {
             return BlocBuilder<FavoriteBloc, FavoriteState>(
                 builder: (context, stateFavorite) {
-              print("refiz");
-              CustomToast(msg: stateFavorite.msg);
               if (stateFavorite is FavoriteError) {
-                print("error");
                 favoriteBloc.add(ResetFavoriteEvent());
+              }
+              if (stateFavorite is FavoriteToastDone) {
+                if (stateFavorite.isFavorite) {
+                  CustomToast(msg: stateFavorite.msg);
+                }
+                favoriteBloc.add(UpdateFavoriteEvent());
               }
               return ScrollConfiguration(
                   behavior: MyBehavior(),
@@ -186,8 +189,8 @@ class SearchPage extends SearchDelegate {
                                       query: query,
                                       tvShowAndMovie:
                                           state.queryResultList[index]));
-                                  GoRouter.of(context)
-                                      .pushNamed(Routes.info, params: {
+                                  Navigator.of(context)
+                                      .pushNamed(Routes.info, arguments: {
                                     "title": state.queryResultList[index].title,
                                     "idTvShowAndMovie":
                                         state.queryResultList[index].id
@@ -208,7 +211,8 @@ class SearchPage extends SearchDelegate {
                           searchBloc.add(SetRecentsEvent(
                               query: query,
                               tvShowAndMovie: state.queryResultList[index]));
-                          GoRouter.of(context).pushNamed(Routes.info, params: {
+                          Navigator.of(context)
+                              .pushNamed(Routes.info, arguments: {
                             "title": state.queryResultList[index].title,
                             "idTvShowAndMovie": state.queryResultList[index].id
                           });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tem_final/src/core/resources/my_behavior.dart';
+import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/core/utils/routes_names.dart';
 import 'package:tem_final/src/core/utils/widget_size.dart';
@@ -10,30 +11,37 @@ import 'package:tuple/tuple.dart';
 import '../../../../domain/entities/tv_show_and_movie_entity.dart';
 
 class ListTvShowAndMovie extends StatelessWidget {
-  const ListTvShowAndMovie(this.listTvShowAndMovie, this.controller);
+  const ListTvShowAndMovie(this.listTvShowAndMovie, this.controller,
+      {super.key});
   final ScrollController controller;
-  final List<Tuple2<String, List<TvShowAndMovie>>> listTvShowAndMovie;
+  final List<Tuple2<GenreType, List<TvShowAndMovie>>> listTvShowAndMovie;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ScrollConfiguration(
-          behavior: MyBehavior(),
-          child: ListView.builder(
-              controller: controller,
-              itemCount: listTvShowAndMovie.length,
-              itemBuilder: (ctx, index) {
-                if (listTvShowAndMovie[index].item1.isNotEmpty) {
-                  Tuple2<String, List<TvShowAndMovie>> tuple =
-                      listTvShowAndMovie[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24.0),
-                    child: SizedBox(
-                      height: WidgetSize.sizeSectionGenre,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
+    return ScrollConfiguration(
+        behavior: MyBehavior(),
+        child: ListView.builder(
+            controller: controller,
+            itemCount: listTvShowAndMovie.length,
+            itemBuilder: (ctx, index) {
+              if (listTvShowAndMovie[index].item1.string.isNotEmpty) {
+                Tuple2<GenreType, List<TvShowAndMovie>> tuple =
+                    listTvShowAndMovie[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0),
+                  child: SizedBox(
+                    height: WidgetSize.sizeSectionGenre,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pushNamed(Routes.genre,
+                                arguments: {
+                                  "index": tuple.item1.index.toString()
+                                });
+                          },
+                          child: Padding(
                             padding: const EdgeInsets.all(
                               12.0,
                             ),
@@ -43,7 +51,7 @@ class ListTvShowAndMovie extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 4),
                                   child: Text(
-                                    tuple.item1,
+                                    tuple.item1.string,
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                         fontFamily: fontFamily,
@@ -60,33 +68,33 @@ class ListTvShowAndMovie extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Expanded(
-                            child: ListView(
-                              physics: const BouncingScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              children: tuple.item2
-                                  .map((item) => GestureDetector(
-                                        onTap: () {
-                                          GoRouter.of(context)
-                                              .pushNamed(Routes.info, params: {
-                                            "title": item.title,
-                                            "idTvShowAndMovie": item.id
-                                          });
-                                        },
-                                        child: TvShowAndMovieTile(
-                                          tvShowAndMovie: item,
-                                        ),
-                                      ))
-                                  .toList(),
-                            ),
-                          )
-                        ],
-                      ),
+                        ),
+                        Expanded(
+                          child: ListView(
+                            physics: const BouncingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            children: tuple.item2
+                                .map((item) => GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushNamed(Routes.info, arguments: {
+                                          "title": item.title,
+                                          "idTvShowAndMovie": item.id
+                                        });
+                                      },
+                                      child: TvShowAndMovieTile(
+                                        tvShowAndMovie: item,
+                                      ),
+                                    ))
+                                .toList(),
+                          ),
+                        )
+                      ],
                     ),
-                  );
-                }
-                return Container();
-              })),
-    );
+                  ),
+                );
+              }
+              return Container();
+            }));
   }
 }

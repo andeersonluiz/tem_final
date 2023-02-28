@@ -60,7 +60,7 @@ class MockLocalPreferencesHandlerService {
       await _instance.setString(
           kFavoritesTvShowAndMoviesKeyEncrypted, jsonStringNew);
       return Left(
-          "${tvShowAndMovieModel.seasons == 0 ? "Filme" : "Série"}${addFavorite ? Strings.msgSucessAddFavorite : ""}");
+          "${tvShowAndMovieModel.seasons == -1 ? "Filme" : "Série"}${addFavorite ? Strings.msgSucessAddFavorite : ""}");
     } catch (e, stacktrace) {
       return Right(Tuple2(Strings.msgErrorSetLocalPreferences,
           StackTrace.fromString("$e\n$stacktrace")));

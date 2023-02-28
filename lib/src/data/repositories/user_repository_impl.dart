@@ -28,6 +28,8 @@ class UserRepositoryImpl implements UserRepository {
     if (logOutResult.isLeft) {
       await localPreferencesHandlerService.clearUserHistory();
       await localPreferencesHandlerService.clearUserId();
+      await localPreferencesHandlerService.clearUsername();
+
       return DataSucess(logOutResult.left);
     } else {
       return DataFailed(logOutResult.right, isLog: false);
@@ -39,9 +41,11 @@ class UserRepositoryImpl implements UserRepository {
     var loginResult = await firebaseAuthHandlerService.loginViaGoogle();
     if (loginResult.isLeft) {
       Either<bool, Tuple2<String, StackTrace>> resulSetUserId =
-          await localPreferencesHandlerService.setUserId(loginResult.left);
+          await localPreferencesHandlerService
+              .setUserId(loginResult.left.item1);
+      await localPreferencesHandlerService.setUsername(loginResult.left.item2);
       DataState<bool> resultLoadUserHistory =
-          await _loadUserHistory(loginResult.left);
+          await _loadUserHistory(loginResult.left.item1);
       if (resulSetUserId.isLeft && resultLoadUserHistory is DataSucess) {
         return const DataSucess(Strings.loginSucess);
       } else {
@@ -51,8 +55,7 @@ class UserRepositoryImpl implements UserRepository {
         String stackTraceLoadUserHistory = resultLoadUserHistory is DataFailed
             ? resultLoadUserHistory.error!.toString()
             : "no has error";
-        debugPrint(
-            "entrei aqui setUserId: $stackTraceSetUserId | loadUserHistory: $stackTraceLoadUserHistory");
+
         return DataFailed(
             Tuple2(
                 Strings.loginError,
@@ -61,10 +64,31 @@ class UserRepositoryImpl implements UserRepository {
             isLog: false);
       }
     } else {
-      debugPrint("entrei aqui ${loginResult.right}");
       return DataFailed(loginResult.right, isLog: false);
     }
   }
+
+/*
+  @override
+  Future<DataState<String>> removeUser() async {
+    var userIdResult = await localPreferencesHandlerService.loadUserId();
+    StackTrace stacktrace = StackTrace.empty;
+    if (userIdResult.isLeft) {
+      var resultRemoveUser =
+          await firebaseHandlerService.removeUser(userIdResult.left);
+      if (resultRemoveUser.isLeft) {
+        await logOut();
+        return DataSucess(resultRemoveUser.left);
+      } else {
+        stacktrace = resultRemoveUser.right.item2;
+      }
+    } else {
+      stacktrace = userIdResult.right.item2;
+    }
+    print("n foi $stacktrace");
+    return DataFailed(Tuple2(Strings.errorRemoveUser, stacktrace),
+        isLog: false);
+  }*/
 
   @override
   Future<Either<String, Tuple2<String, StackTrace>>> getUserId() async {
@@ -72,12 +96,17 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<String> getUsername() async {
+    return await localPreferencesHandlerService.loadUsername();
+  }
+
+  @override
   Future<DataState<String>> submitReport(
-    Tuple4<String, String, ReportType, String> params,
+    Tuple3<String, ReportType, String> params,
   ) async {
     Either<String, Tuple2<String, StackTrace>> submitResponse =
         await firebaseHandlerService.submitReport(
-            params.item1, params.item2, params.item3, params.item4);
+            params.item1, params.item2, params.item3);
 
     if (submitResponse.isLeft) {
       return DataSucess(submitResponse.left);
@@ -131,10 +160,7 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<bool> verifyUserIsLogged() async {
     var resultLoadUserId = await localPreferencesHandlerService.loadUserId();
-    print("ac");
     if (resultLoadUserId.isLeft && resultLoadUserId.left.isNotEmpty) {
-      print("ab");
-      print(resultLoadUserId.left);
       return true;
     } else {
       return false;

@@ -36,15 +36,11 @@ class LocalPreferencesHandlerService {
         localListTvSerieAndMoviesModel = tvShowAndMovieJson
             .map((e) => TvShowAndMovieModel.fromJson(e))
             .toList();
-
         if (localListTvSerieAndMoviesModel.contains(tvShowAndMovieModel)) {
-          print("removendo");
           addFavorite = false;
           localListTvSerieAndMoviesModel
               .removeWhere((item) => item.id == tvShowAndMovieModel.id);
         } else {
-          print("add");
-
           localListTvSerieAndMoviesModel.add(tvShowAndMovieModel);
         }
       }
@@ -56,9 +52,9 @@ class LocalPreferencesHandlerService {
           kFavoritesTvShowAndMoviesKeyEncrypted, jsonStringNew);
       if (addFavorite) {
         return Left(
-            "${tvShowAndMovieModel.seasons == 0 ? "Filme" : "Série"}${addFavorite ? Strings.msgSucessAddFavorite : ""}");
+            "${tvShowAndMovieModel.seasons == -1 ? "Filme" : "Série"}${addFavorite ? Strings.msgSucessAddFavorite : ""}");
       } else {
-        return Left("");
+        return const Left("");
       }
     } catch (e, stacktrace) {
       return Right(Tuple2(Strings.msgErrorSetLocalPreferences,
@@ -101,11 +97,32 @@ class LocalPreferencesHandlerService {
     }
   }
 
+  Future<String> loadUsername() async {
+    String? usernameValue = _instance.getString(kUserNameKeyEncrypted);
+    if (usernameValue == null) {
+      return "";
+    } else {
+      return _cryptoTools.decrypt(usernameValue);
+    }
+  }
+
   Future<Either<bool, Tuple2<String, StackTrace>>> setUserId(
       String userId) async {
     try {
       var result = await _instance.setString(
           kUserIdKeyEncrypted, _cryptoTools.encrypt(userId));
+      return Left(result);
+    } catch (e, stacktrace) {
+      return Right(Tuple2(
+          Strings.defaultError, StackTrace.fromString("$e\n$stacktrace")));
+    }
+  }
+
+  Future<Either<bool, Tuple2<String, StackTrace>>> setUsername(
+      String userId) async {
+    try {
+      var result = await _instance.setString(
+          kUserNameKeyEncrypted, _cryptoTools.encrypt(userId));
       return Left(result);
     } catch (e, stacktrace) {
       return Right(Tuple2(
@@ -126,7 +143,7 @@ class LocalPreferencesHandlerService {
         listIdTvShowAndMoviesJsonModel.add(id);
       } else {
         listIdTvShowAndMoviesJsonModel =
-            jsonDecode(_cryptoTools.decrypt(jsonStringOld));
+            List<String>.from(jsonDecode(_cryptoTools.decrypt(jsonStringOld)));
         listIdTvShowAndMoviesJsonModel.add(id);
       }
       String jsonStringNew =
@@ -180,6 +197,19 @@ class LocalPreferencesHandlerService {
 
   clearUserId() async {
     return await _instance.remove(kUserIdKeyEncrypted);
+  }
+
+  clearUsername() async {
+    return await _instance.remove(kUserNameKeyEncrypted);
+  }
+
+  getUserId() {
+    String? stringUserId = _instance.getString(kUserIdKeyEncrypted);
+    String userId = "";
+    if (stringUserId != null) {
+      userId = _cryptoTools.decrypt(stringUserId);
+    }
+    return userId;
   }
 
   Future<void> checkFavoriteTvShowAndMovieIntegrity() async {
