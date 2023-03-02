@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import '../config/keys.dart';
+import 'package:tem_final/src/config/keys.dart';
 
 class AdHelper {
   static String get bannerAdUnitId {
