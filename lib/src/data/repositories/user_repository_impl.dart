@@ -1,8 +1,4 @@
-import 'dart:io';
-
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:either_dart/either.dart';
-import 'package:flutter/foundation.dart';
 import 'package:tem_final/src/core/resources/device_info.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/resources/data_state.dart';
@@ -36,7 +32,9 @@ class UserRepositoryImpl implements UserRepository {
 
       return DataSucess(logOutResult.left);
     } else {
-      return DataFailed(logOutResult.right, isLog: false);
+      return DataFailed(
+        logOutResult.right,
+      );
     }
   }
 
@@ -61,14 +59,16 @@ class UserRepositoryImpl implements UserRepository {
             : "no has error";
 
         return DataFailed(
-            Tuple2(
-                Strings.loginError,
-                StackTrace.fromString(
-                    "setUserId: $stackTraceSetUserId | loadUserHistory: $stackTraceLoadUserHistory")),
-            isLog: false);
+          Tuple2(
+              Strings.loginError,
+              StackTrace.fromString(
+                  "setUserId: $stackTraceSetUserId | loadUserHistory: $stackTraceLoadUserHistory")),
+        );
       }
     } else {
-      return DataFailed(loginResult.right, isLog: false);
+      return DataFailed(
+        loginResult.right,
+      );
     }
   }
 
@@ -91,7 +91,7 @@ class UserRepositoryImpl implements UserRepository {
     }
     print("n foi $stacktrace");
     return DataFailed(Tuple2(Strings.errorRemoveUser, stacktrace),
-        isLog: false);
+      );
   }*/
 
   @override
@@ -115,7 +115,9 @@ class UserRepositoryImpl implements UserRepository {
     if (submitResponse.isLeft) {
       return DataSucess(submitResponse.left);
     }
-    return DataFailed(submitResponse.right, isLog: false);
+    return DataFailed(
+      submitResponse.right,
+    );
   }
 
   Future<DataState<bool>> _loadUserHistory(String userId) async {
@@ -136,7 +138,9 @@ class UserRepositoryImpl implements UserRepository {
       var resultSetUserHistory =
           await firebaseHandlerService.setUserHistory(userHistoryModel);
       if (resultSetUserHistory.isRight) {
-        return DataFailed(resultSetUserHistory.right, isLog: false);
+        return DataFailed(
+          resultSetUserHistory.right,
+        );
       }
       Either<bool, Tuple2<String, StackTrace>> resultUpdateUserHistory =
           await localPreferencesHandlerService
@@ -144,10 +148,14 @@ class UserRepositoryImpl implements UserRepository {
       if (resultUpdateUserHistory.isLeft) {
         return DataSucess(resultUpdateUserHistory.left);
       } else {
-        return DataFailed(resultUpdateUserHistory.right, isLog: false);
+        return DataFailed(
+          resultUpdateUserHistory.right,
+        );
       }
     } else {
-      return DataFailed(resultUserHistory.right, isLog: false);
+      return DataFailed(
+        resultUserHistory.right,
+      );
     }
   }
 
@@ -162,7 +170,9 @@ class UserRepositoryImpl implements UserRepository {
       return DataSucess(
           userHistoryMapper.modelToEntity(resultGetUserHistory.left!));
     } else {
-      return DataFailed(resultGetUserHistory.right, isLog: false);
+      return DataFailed(
+        resultGetUserHistory.right,
+      );
     }
   }
 

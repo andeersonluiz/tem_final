@@ -1,8 +1,5 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/core/utils/icons.dart';
@@ -11,11 +8,9 @@ import 'package:tem_final/src/core/utils/widget_size.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/presenter/pages/search/widgets/icon_rounded.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_image.dart';
-import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_event.dart';
 
 import '../../../stateManagement/bloc/favorite/favorite_bloc.dart';
-import '../../../stateManagement/bloc/favorite/favorite_state.dart';
 
 class SearchItem extends StatelessWidget {
   const SearchItem(

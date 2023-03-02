@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:either_dart/either.dart';
 import 'package:tem_final/src/core/resources/device_info.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
@@ -18,7 +15,6 @@ import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 
 import 'package:tem_final/src/core/resources/data_state.dart';
-import 'package:tem_final/src/domain/entities/user_history_entity.dart';
 import 'package:tem_final/src/domain/repositories/user_repository.dart';
 import 'package:tuple/tuple.dart';
 
@@ -109,8 +105,9 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     if (await _checkUserIsLoggedOtherDevice()) {
       await userRepository.logOut();
 
-      return DataFailed(Tuple2(Strings.userLoggedOtherDevice, StackTrace.empty),
-          isLog: false);
+      return DataFailed(
+        const Tuple2(Strings.userLoggedOtherDevice, StackTrace.empty),
+      );
     }
     /**atualizar o rating na parte do usuário */
     var resultUpdateUserHistory =
@@ -129,11 +126,11 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
           : "no has error";
 
       return DataFailed(
-          Tuple2(
-              Strings.errorToUpdateRating,
-              StackTrace.fromString(
-                  "UpdateUserHistory: $stackTraceUpdateUserHistory | TvShowAndMovie : $stackTraceTvShowAndMovie")),
-          isLog: true);
+        Tuple2(
+            Strings.errorToUpdateRating,
+            StackTrace.fromString(
+                "UpdateUserHistory: $stackTraceUpdateUserHistory | TvShowAndMovie : $stackTraceTvShowAndMovie")),
+      );
     }
   }
 
@@ -147,7 +144,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
 
       return DataSucess(tuples);
     }
-    return DataFailed(firebaseResponse.right, isLog: false);
+    return DataFailed(firebaseResponse.right);
   }
 
   @override
@@ -158,7 +155,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     if (firebaseResponse.isLeft) {
       return DataSucess(_convertTuple(firebaseResponse.left));
     }
-    return DataFailed(firebaseResponse.right, isLog: false);
+    return DataFailed(firebaseResponse.right);
   }
 
   @override
@@ -169,7 +166,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     if (firebaseResponse.isLeft) {
       return DataSucess(_convertTuple(firebaseResponse.left));
     }
-    return DataFailed(firebaseResponse.right, isLog: false);
+    return DataFailed(firebaseResponse.right);
   }
 
   @override
@@ -203,7 +200,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
 
       return DataSucess(tvShowAndMovie);
     } else {
-      return DataFailed(firebaseResponse.right, isLog: false);
+      return DataFailed(firebaseResponse.right);
     }
   }
 
@@ -221,7 +218,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
 
       return DataSucess(listTvShowAndMovie);
     } else {
-      return DataFailed(firebaseResponse.right, isLog: false);
+      return DataFailed(firebaseResponse.right);
     }
   }
 
@@ -236,7 +233,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
           .map((item) => mapper.modelToEntity(item))
           .toList());
     } else {
-      return DataFailed(resultRecentsViewed.right, isLog: false);
+      return DataFailed(resultRecentsViewed.right);
     }
   }
 
@@ -249,7 +246,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     if (resultRecentsViewed.isLeft) {
       return const DataSucess(true);
     } else {
-      return DataFailed(resultRecentsViewed.right, isLog: false);
+      return DataFailed(resultRecentsViewed.right);
     }
   }
 
@@ -258,8 +255,9 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
       Tuple2<TvShowAndMovie, ConclusionType> params) async {
     if (await _checkUserIsLoggedOtherDevice()) {
       await userRepository.logOut();
-      return DataFailed(Tuple2(Strings.userLoggedOtherDevice, StackTrace.empty),
-          isLog: false);
+      return DataFailed(
+        const Tuple2(Strings.userLoggedOtherDevice, StackTrace.empty),
+      );
     }
     String idTvShowAndMovie = params.item1.id;
     int seasonSelected =
@@ -277,17 +275,18 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
         if (resultData.isLeft) {
           return DataSucess(resultData.left);
         } else {
-          return DataFailed(resultData.right, isLog: false);
+          return DataFailed(resultData.right);
         }
       } else {
         return DataFailed(
-            Tuple2(resUpdateConclusionUser.item1.toString(),
-                resUpdateConclusionUser.item2),
-            isLog: false);
+          Tuple2(resUpdateConclusionUser.item1.toString(),
+              resUpdateConclusionUser.item2),
+        );
       }
     } else {
-      return DataFailed(Tuple2(Strings.defaultError, StackTrace.empty),
-          isLog: false);
+      return DataFailed(
+        const Tuple2(Strings.defaultError, StackTrace.empty),
+      );
     }
   }
 
@@ -340,7 +339,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     if (resultPersistence.isLeft) {
       return DataSucess(resultPersistence.left);
     } else {
-      return DataFailed(resultPersistence.right, isLog: false);
+      return DataFailed(resultPersistence.right);
     }
   }
 
@@ -358,7 +357,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
           .toList();
       return DataSucess(listTvShowAndMovie);
     } else {
-      return DataFailed(resultPersistence.right, isLog: false);
+      return DataFailed(resultPersistence.right);
     }
   }
 
@@ -382,14 +381,14 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
           var resultSetId = await localPreferencesHandlerService
               .setIdsTvShowsAndMoviesViewedFromDevice(idTvShowAndMovie);
           if (resultSetId.isRight) {
-            DataFailed(resultSetId.right, isLog: true);
+            DataFailed(resultSetId.right);
           }
         } else {
-          DataFailed(firebaseResponse.right, isLog: true);
+          DataFailed(firebaseResponse.right);
         }
       }
     } else {
-      DataFailed(resultData.right, isLog: true);
+      DataFailed(resultData.right);
     }
   }
 
@@ -406,7 +405,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
           .toList();
       return DataSucess(listTvShowAndMovie);
     } else {
-      return DataFailed(resultData.right, isLog: false);
+      return DataFailed(resultData.right);
     }
   }
 
@@ -419,7 +418,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
       var tuples = _convertTuple(resultData.left);
       return DataSucess(tuples);
     } else {
-      return DataFailed(resultData.right, isLog: false);
+      return DataFailed(resultData.right);
     }
   }
 
@@ -434,7 +433,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
           .toList();
       return DataSucess(listTvShowAndMovie);
     } else {
-      return DataFailed(resultGenres.right, isLog: false);
+      return DataFailed(resultGenres.right);
     }
   }
 
@@ -485,7 +484,7 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
           .map((e) => mapper.modelToEntity(TvShowAndMovieModel.fromMap(e)))
           .toList());
     } else {
-      return DataFailed(result.right, isLog: false);
+      return DataFailed(result.right);
     }
   }
 

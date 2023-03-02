@@ -13,9 +13,10 @@ abstract class TvShowAndMovieInfoEvent extends Equatable {
 }
 
 class GetTvShowAndMovieEvent extends TvShowAndMovieInfoEvent {
-  GetTvShowAndMovieEvent({required super.id});
+  const GetTvShowAndMovieEvent({required super.id});
 }
 
 class UpdateTvShowAndMovieInfoStatus extends TvShowAndMovieInfoEvent {
-  UpdateTvShowAndMovieInfoStatus({required super.tvShowAndMovieInfoStatus});
+  const UpdateTvShowAndMovieInfoStatus(
+      {required super.tvShowAndMovieInfoStatus});
 }

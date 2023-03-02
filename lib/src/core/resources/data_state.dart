@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:tuple/tuple.dart';
 
 abstract class DataState<T> {
@@ -13,13 +13,8 @@ class DataSucess<T> extends DataState<T> {
 }
 
 class DataFailed<T> extends DataState<T> {
-  DataFailed(Tuple2<String, StackTrace> error, {required this.isLog})
-      : super(error: error) {
-    debugPrint(error.item1);
-    debugPrint(error.item2.toString());
-    debugPrint("send log to FirebaseCrashlytics/removo o coment dps");
-    //FirebaseCrashlytics.instance.recordError(super.error!.item1, super.error!.item2);
+  DataFailed(Tuple2<String, StackTrace> error) : super(error: error) {
+    FirebaseCrashlytics.instance
+        .recordError(super.error!.item1, super.error!.item2);
   }
-
-  final bool isLog;
 }

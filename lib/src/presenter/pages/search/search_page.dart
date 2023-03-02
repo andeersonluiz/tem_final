@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:tem_final/src/core/resources/my_behavior.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/core/utils/routes_names.dart';
-import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/presenter/pages/search/widgets/search_item.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/empty_list_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/error_widget.dart';
@@ -23,6 +20,7 @@ class SearchPage extends SearchDelegate {
   SearchPage(this.searchBloc, this.favoriteBloc);
   final SearchBloc searchBloc;
   final FavoriteBloc favoriteBloc;
+
   @override
   ThemeData appBarTheme(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -125,7 +123,12 @@ class SearchPage extends SearchDelegate {
                 }));
           } else {
             CustomToast(msg: state.errorMsg.toString());
-            return Container();
+            return CustomErrorWidget(
+              errorText: "",
+              onRefresh: () async {
+                searchBloc.add(SearchQueryEvent(query: query));
+              },
+            );
           }
         },
       ),
@@ -154,7 +157,7 @@ class SearchPage extends SearchDelegate {
             return BlocBuilder<FavoriteBloc, FavoriteState>(
                 builder: (context, stateFavorite) {
               if (stateFavorite is FavoriteError) {
-                favoriteBloc.add(ResetFavoriteEvent());
+                favoriteBloc.add(const ResetFavoriteEvent());
               }
               if (stateFavorite is FavoriteToastDone) {
                 if (stateFavorite.isFavorite) {
@@ -229,7 +232,12 @@ class SearchPage extends SearchDelegate {
             });
           } else {
             CustomToast(msg: state.errorMsg.toString());
-            return Container();
+            return CustomErrorWidget(
+              errorText: "",
+              onRefresh: () async {
+                searchBloc.add(SearchQueryEvent(query: query, refresh: true));
+              },
+            );
           }
         },
       ),

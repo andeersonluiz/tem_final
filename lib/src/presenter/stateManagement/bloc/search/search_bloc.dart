@@ -36,8 +36,9 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   String lastQuery = "";
   Future<void> _searchQuery(
       SearchQueryEvent event, Emitter<SearchState> emit) async {
-    if (event.query == lastQuery ||
-        state.header == Strings.headerSearchRecentText) return;
+    if ((event.query == lastQuery ||
+            state.header == Strings.headerSearchRecentText) &&
+        !event.refresh) return;
     lastQuery = event.query;
     DataState<List<TvShowAndMovie>> results =
         await _searchTvShowAndMovieUseCase(event.query);
@@ -55,7 +56,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       }
     } else {
       emit(SearchError(
-          queryResultList: [],
+          queryResultList: const [],
           notFoundList: "",
           errorMsg: results.error!.item1));
     }

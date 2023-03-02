@@ -1,4 +1,5 @@
 import 'package:encrypt/encrypt.dart';
+import 'package:tem_final/src/config/keys.dart';
 
 class CryptoTools {
   CryptoTools() {
@@ -6,7 +7,7 @@ class CryptoTools {
   }
 
   static late Encrypter encrypter;
-  final Key key = Key.fromUtf8("&a=bZ-AXayakaehutaomainB-=a=#bXY");
+  final Key key = Key.fromUtf8(cryptoKey);
   final IV iv = IV.fromLength(16);
 
   String encrypt(String data) {

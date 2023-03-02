@@ -6,20 +6,18 @@ class TitleItem extends StatelessWidget {
   final String title;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: 16.0,
-          top: 18.0,
-          bottom: 8.0,
-        ),
-        child: Text(title,
-            style: const TextStyle(
-                fontFamily: fontFamily,
-                fontSize: 16,
-                color: Colors.grey,
-                fontWeight: FontWeight.w400)),
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 16.0,
+        top: 18.0,
+        bottom: 8.0,
       ),
+      child: Text(title,
+          style: const TextStyle(
+              fontFamily: fontFamily,
+              fontSize: 16,
+              color: Colors.grey,
+              fontWeight: FontWeight.w400)),
     );
   }
 }

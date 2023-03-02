@@ -27,14 +27,15 @@ class GenreBloc extends Bloc<GenreEvent, GenreState> {
   bool isLoadingMore = false;
   bool isFinalList = false;
   Future<void> _getGenres(GetGenreEvent event, Emitter<GenreState> emit) async {
-    emit(GenreLoading(listTvShowAndMovie: [], msg: '', filters: state.filters));
+    emit(GenreLoading(
+        listTvShowAndMovie: const [], msg: '', filters: state.filters));
     var result = await _getTvShowAndMovieByGenresUseCase([event.genreType!]);
     if (result is DataSucess) {
       emit(GenreDone(
           listTvShowAndMovie: result.data!, msg: '', filters: state.filters));
     } else {
       emit(GenreError(
-          listTvShowAndMovie: [],
+          listTvShowAndMovie: const [],
           msg: result.error!.item1,
           filters: state.filters));
     }
@@ -42,7 +43,8 @@ class GenreBloc extends Bloc<GenreEvent, GenreState> {
 
   Future<void> _filterGenres(
       FilterGenreEvent event, Emitter<GenreState> emit) async {
-    emit(GenreLoading(listTvShowAndMovie: [], msg: '', filters: state.filters));
+    emit(GenreLoading(
+        listTvShowAndMovie: const [], msg: '', filters: state.filters));
     var result = await _filterGenresUseCase(event.filters!);
 
     if (result is DataSucess) {
@@ -50,7 +52,7 @@ class GenreBloc extends Bloc<GenreEvent, GenreState> {
           listTvShowAndMovie: result.data!, msg: '', filters: event.filters!));
     } else {
       emit(GenreError(
-          listTvShowAndMovie: [],
+          listTvShowAndMovie: const [],
           msg: result.error!.item1,
           filters: event.filters!));
     }
@@ -74,7 +76,7 @@ class GenreBloc extends Bloc<GenreEvent, GenreState> {
           filters: state.filters));
     } else {
       emit(GenreError(
-          listTvShowAndMovie: [],
+          listTvShowAndMovie: const [],
           msg: result.error!.item1,
           filters: state.filters));
     }

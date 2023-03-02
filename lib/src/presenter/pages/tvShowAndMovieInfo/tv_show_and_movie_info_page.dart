@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get_navigation/src/routes/default_transitions.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:tem_final/src/core/resources/my_behavior.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
@@ -12,17 +11,15 @@ import 'package:tem_final/src/core/utils/widget_size.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_info_status_entity.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_feedback.dart';
+import 'package:tem_final/src/presenter/reusableWidgets/error_widget.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/analytics/analytics_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/analytics/analytics_event.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/info_widget.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/poster_info_widget.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/select_option_widget.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/conclusion/conclusion_bloc.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/conclusion/conclusion_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_state.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/rating/rating_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovieInfo/tv_show_and_movie_info_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovieInfo/tv_show_and_movie_info_event.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
@@ -252,7 +249,43 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
         );
       } else if (state is TvShowAndMovieInfoError) {
         CustomToast(msg: state.error!);
-        return Scaffold(backgroundColor: backgroundColor, body: Container());
+        return Scaffold(
+            backgroundColor: backgroundColor,
+            appBar: AppBar(
+              backgroundColor: appBarColor,
+              elevation: 0.0,
+              title: AutoSizeText(widget.titleTvShowAndMovie,
+                  minFontSize: kMinSizeTitleInfoPage,
+                  maxFontSize: kMaxSizeTitleInfoPage,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontFamily: fontFamily)),
+              actions: [
+                IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      FontAwesome.triangle_exclamation,
+                      color: Colors.white,
+                    )),
+                IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.favorite_border,
+                      color: Colors.white,
+                    )),
+              ],
+            ),
+            body: CustomErrorWidget(
+              errorText: "",
+              onRefresh: () async {
+                tvShowAndMovieInfoBloc
+                    .add(GetTvShowAndMovieEvent(id: widget.idTvShowAndMovie));
+                favoriteBloc.add(GetFavoriteEvent(
+                    idTvShowAndMovie: widget.idTvShowAndMovie));
+                analyticsBloc.add(UpdateViewCountEvent(
+                    idTvShowAndMovie: widget.idTvShowAndMovie));
+              },
+            ));
       } else {
         return const Scaffold(
           backgroundColor: backgroundColor,

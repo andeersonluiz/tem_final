@@ -25,7 +25,6 @@ import 'package:tem_final/src/domain/usecases/load_more_tv_show_and_movie_main_p
 import 'package:tem_final/src/domain/usecases/load_more_tv_show_and_movie_usecase.dart';
 import 'package:tem_final/src/domain/usecases/log_out_usecase.dart';
 import 'package:tem_final/src/domain/usecases/login_via_google_usecase.dart';
-import 'package:tem_final/src/domain/usecases/remove_user_usecase.dart';
 import 'package:tem_final/src/domain/usecases/set_recents_tv_show_and_movie_viewed.dart';
 import 'package:tem_final/src/domain/usecases/update_rating_usecase.dart';
 import 'package:tem_final/src/domain/usecases/search_tv_show_and_movie_usecase.dart';

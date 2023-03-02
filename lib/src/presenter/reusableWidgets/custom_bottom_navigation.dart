@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
-import 'package:tem_final/src/core/utils/routes_names.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/bottomNavBar/bottom_nav_bar_state.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_bloc.dart';
@@ -52,7 +51,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
                   refresh: state.page != pageType));
               break;
             case PageType.favorite:
-              favoriteBloc.add(GetFavoriteEvent());
+              favoriteBloc.add(const GetFavoriteEvent());
 
               break;
             case PageType.settings:

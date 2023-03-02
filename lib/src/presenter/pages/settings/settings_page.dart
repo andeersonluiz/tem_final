@@ -1,5 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,32 +5,19 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:tem_final/src/core/resources/my_behavior.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
-import 'package:tem_final/src/core/utils/icons.dart';
-import 'package:tem_final/src/core/utils/strings.dart';
+import 'package:tem_final/src/core/utils/routes_names.dart';
 import 'package:tem_final/src/presenter/pages/login/login_dialog_page.dart';
 import 'package:tem_final/src/presenter/pages/settings/widgets/content_item_widget.dart';
 import 'package:tem_final/src/presenter/pages/settings/widgets/title_tile_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_bottom_navigation.dart';
-import 'package:tem_final/src/presenter/reusableWidgets/custom_button.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_feedback.dart';
-import 'package:tem_final/src/presenter/reusableWidgets/custom_image.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/analytics/analytics_bloc.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/analytics/analytics_event.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/bottomNavBar/bottom_nav_bar_event.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_bloc.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_event.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_bloc.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/user/user_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/user/user_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/user/user_state.dart';
-import 'package:tuple/tuple.dart';
 import 'dart:math' as math;
-
-import '../../stateManagement/bloc/bottomNavBar/bottom_nav_bar_bloc.dart';
-import '../../stateManagement/bloc/bottomNavBar/bottom_nav_bar_state.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -71,77 +56,75 @@ class _SettingsPageState extends State<SettingsPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            child: BlocBuilder<UserBloc, UserState>(builder: (context, state) {
-              return state.username.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: foregroundColor),
-                                padding: const EdgeInsets.all(0.0),
+          BlocBuilder<UserBloc, UserState>(builder: (context, state) {
+            return state.username.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: foregroundColor),
+                              padding: const EdgeInsets.all(0.0),
+                              child: Image.asset(
+                                "assets/user_no_logged.png",
+                                width: 9.h,
+                                height: 9.h,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("Anônimo",
+                                style: TextStyle(
+                                    fontFamily: fontFamily,
+                                    color: Colors.blueGrey.shade200,
+                                    fontSize: 23)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: foregroundColor),
+                              padding: const EdgeInsets.all(16.0),
+                              child: Transform.rotate(
+                                angle: -math.pi / 20.0,
                                 child: Image.asset(
-                                  "assets/user_no_logged.png",
-                                  width: 9.h,
-                                  height: 9.h,
+                                  "assets/profile_image.png",
+                                  color: ratingColorPosterMainPage,
+                                  width: 5.h,
+                                  height: 5.h,
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text("Anônimo",
-                                  style: TextStyle(
-                                      fontFamily: fontFamily,
-                                      color: Colors.blueGrey.shade200,
-                                      fontSize: 23)),
-                            ),
-                          ],
-                        ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(state.username,
+                                style: TextStyle(
+                                    fontFamily: fontFamily,
+                                    color: Colors.blueGrey.shade200,
+                                    fontSize: 23)),
+                          ),
+                        ],
                       ),
-                    )
-                  : Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: foregroundColor),
-                                padding: const EdgeInsets.all(16.0),
-                                child: Transform.rotate(
-                                  angle: -math.pi / 20.0,
-                                  child: Image.asset(
-                                    "assets/profile_image.png",
-                                    color: ratingColorPosterMainPage,
-                                    width: 5.h,
-                                    height: 5.h,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(state.username,
-                                  style: TextStyle(
-                                      fontFamily: fontFamily,
-                                      color: Colors.blueGrey.shade200,
-                                      fontSize: 23)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-            }),
-          ),
+                    ),
+                  );
+          }),
           Expanded(
             child: ScrollConfiguration(
               behavior: MyBehavior(),
@@ -230,7 +213,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         FontAwesomeIcons.fileShield,
                         color: Colors.white,
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).pushNamed(Routes.privacyPolicy);
+                      },
                     ),
                     const SizedBox(
                       height: 1,
@@ -241,7 +226,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         FontAwesomeIcons.fileCircleCheck,
                         color: Colors.white,
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed(Routes.termsAndConditions);
+                      },
                     ),
                   ],
                 ),

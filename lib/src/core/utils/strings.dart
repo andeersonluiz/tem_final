@@ -102,7 +102,8 @@ class Strings {
   static const ratingSuccessful = "Avaliação enviada com sucesso. Obrigado!!";
   static const errorToUpdateRating =
       "Erro ao atualizar avaliação, tente novamente mais tarde";
-  static const unauthorizedUser = "Usuário não autorizado, faça o login.";
+  static const unauthorizedUser =
+      "Você precisa estar logado para realizar essa ação";
 
   static const msgNotFoundSearch = "Não há resultados para sua busca :(";
 

@@ -33,17 +33,15 @@ class PosterInfo extends StatelessWidget {
         ),
         isMovie
             ? Center(child: Container())
-            : Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Text(
-                    "${Strings.seasonSingularText} $seasonNumber",
-                    style: const TextStyle(
-                        fontFamily: fontFamily,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: textColorGenreMainPage),
-                  ),
+            : Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(
+                  "${Strings.seasonSingularText} $seasonNumber",
+                  style: const TextStyle(
+                      fontFamily: fontFamily,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: textColorGenreMainPage),
                 ),
               )
       ],

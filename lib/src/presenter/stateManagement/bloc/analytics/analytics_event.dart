@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
 import 'package:tem_final/src/core/utils/constants.dart';

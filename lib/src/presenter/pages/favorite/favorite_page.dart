@@ -1,29 +1,18 @@
-import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:tem_final/src/core/resources/my_behavior.dart';
-import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/core/utils/routes_names.dart';
 import 'package:tem_final/src/presenter/pages/favorite/widgets/favorite_card_widget.dart';
 import 'package:tem_final/src/presenter/pages/search/search_page.dart';
-import 'package:tem_final/src/presenter/pages/search/widgets/search_item.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_bottom_navigation.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/error_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/bottomNavBar/bottom_nav_bar_bloc.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/bottomNavBar/bottom_nav_bar_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_state.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/search/search_bloc.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_bloc.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_event.dart';
-
-import '../../stateManagement/bloc/bottomNavBar/bottom_nav_bar_state.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -44,7 +33,7 @@ class _FavoritePageState extends State<FavoritePage>
     favoriteBloc.add(const GetFavoriteEvent());
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 750),
+      duration: const Duration(milliseconds: 750),
     );
     _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
     _animationController.forward();
@@ -93,9 +82,13 @@ class _FavoritePageState extends State<FavoritePage>
           BlocBuilder<FavoriteBloc, FavoriteState>(builder: (context, state) {
             if (state is FavoriteDone) {
               if (state.favoriteList.isEmpty) {
-                return const Expanded(
+                return Expanded(
                   child: CustomErrorWidget(
-                      errorText: "Sua lista de favoritos está vazia"),
+                    errorText: "Sua lista de favoritos está vazia",
+                    onRefresh: () async {
+                      favoriteBloc.add(const GetFavoriteEvent());
+                    },
+                  ),
                 );
               }
               if (state is FavoriteToastDone) {
@@ -137,7 +130,7 @@ class _FavoritePageState extends State<FavoritePage>
           }),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavigation(),
+      bottomNavigationBar: const CustomBottomNavigation(),
     );
   }
 

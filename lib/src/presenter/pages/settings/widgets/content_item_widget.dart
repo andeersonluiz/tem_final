@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
-import 'dart:math' as math;
 
 class ContentItem extends StatelessWidget {
   const ContentItem(

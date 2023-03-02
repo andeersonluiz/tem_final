@@ -1,24 +1,13 @@
-import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:tem_final/src/core/resources/my_behavior.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
-import 'package:tem_final/src/core/utils/routes_names.dart';
-import 'package:tem_final/src/core/utils/widget_size.dart';
-import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
-import 'package:tem_final/src/presenter/pages/favorite/favorite_page.dart';
 import 'package:tem_final/src/presenter/pages/home/widgets/list_tv_show_and_movie_widget.dart';
 import 'package:tem_final/src/presenter/pages/search/search_page.dart';
-import 'package:tem_final/src/presenter/pages/settings/settings_page.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_bottom_navigation.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_outline_button.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/bottomNavBar/bottom_nav_bar_bloc.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/bottomNavBar/bottom_nav_bar_event.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/bottomNavBar/bottom_nav_bar_state.dart';
+import 'package:tem_final/src/presenter/reusableWidgets/error_widget.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_bloc.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/search/search_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_event.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
@@ -41,6 +30,7 @@ class _HomeViewPageState extends State<HomeViewPage>
   late FavoriteBloc favoriteBloc;
   late AnimationController _animationController;
   late Animation<double> _animation;
+
   @override
   void initState() {
     super.initState();
@@ -49,7 +39,7 @@ class _HomeViewPageState extends State<HomeViewPage>
     controller = ScrollController()..addListener(_scrollListener);
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 750),
+      duration: const Duration(milliseconds: 750),
     );
     _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
   }
@@ -129,7 +119,18 @@ class _HomeViewPageState extends State<HomeViewPage>
             }
             if (state is TvShowAndMovieError) {
               CustomToast(msg: state.error!);
-              return Container();
+              return Expanded(
+                child: CustomErrorWidget(
+                  errorText: "",
+                  onRefresh: () async {
+                    Filter filter = Filter.values
+                        .where(
+                            (element) => element.string == state.filterSelected)
+                        .first;
+                    bloc.add(GetAllTvShowAndMovieEvent(filter, refresh: true));
+                  },
+                ),
+              );
             }
             if (state is TvShowAndMovieDone) {
               _animationController.forward();

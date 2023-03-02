@@ -25,9 +25,9 @@ class GetGenreEvent extends GenreEvent {
 }
 
 class FilterGenreEvent extends GenreEvent {
-  FilterGenreEvent({required super.genreType, required super.filters});
+  const FilterGenreEvent({required super.genreType, required super.filters});
 }
 
 class LoadMoreGenreEvent extends GenreEvent {
-  LoadMoreGenreEvent();
+  const LoadMoreGenreEvent();
 }

@@ -10,7 +10,7 @@ class EmptyListWidget extends StatelessWidget {
       child: Text(
         msg,
         textAlign: TextAlign.center,
-        style: TextStyle(fontFamily: fontFamily, fontSize: 20),
+        style: const TextStyle(fontFamily: fontFamily, fontSize: 20),
       ),
     );
   }

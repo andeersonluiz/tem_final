@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:tem_final/src/core/resources/my_behavior.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
+import 'package:tem_final/src/presenter/ad_helper.dart';
 import 'package:tem_final/src/presenter/pages/search/widgets/search_item.dart';
+import 'package:tem_final/src/presenter/reusableWidgets/ad_banner_widger.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_button.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_outline_button.dart';
+import 'package:tem_final/src/presenter/reusableWidgets/error_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
+import 'package:tem_final/src/presenter/stateManagement/bloc/ad/ad_event.dart';
+import 'package:tem_final/src/presenter/stateManagement/bloc/ad/ad_state.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/genres/genre_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/genres/genre_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/genres/genre_state.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/valueNotifier/local_filter_notifier.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../../core/utils/routes_names.dart';
+import '../../stateManagement/bloc/ad/ad_bloc.dart';
 import '../../stateManagement/bloc/favorite/favorite_state.dart';
 
 class GenrePage extends StatefulWidget {
@@ -39,6 +44,8 @@ class _GenrePageState extends State<GenrePage>
   late LocalFilterNotifier filterNotifier;
   late AnimationController _animationController;
   late Animation<double> _animation;
+  late AdBloc adBloc;
+
   @override
   void initState() {
     genreBloc = context.read<GenreBloc>();
@@ -52,15 +59,29 @@ class _GenrePageState extends State<GenrePage>
     controller = ScrollController()..addListener(_scrollListener);
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
     );
     _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
+    adBloc = context.read<AdBloc>();
+    BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          adBloc.add(UpdateBannerAd(bannerAd: ad as BannerAd));
+        },
+        onAdFailedToLoad: (ad, err) {
+          ad.dispose();
+        },
+      ),
+    ).load();
     super.initState();
   }
 
   void _scrollListener() {
     if (controller.position.extentAfter < 500 && !genreBloc.isFinalList) {
-      genreBloc.add(LoadMoreGenreEvent());
+      genreBloc.add(const LoadMoreGenreEvent());
     }
   }
 
@@ -90,13 +111,25 @@ class _GenrePageState extends State<GenrePage>
                   builder: (context, stateFavorite) {
                 CustomToast(msg: stateFavorite.msg);
                 if (stateFavorite is FavoriteError) {
-                  favoriteBloc.add(ResetFavoriteEvent());
+                  favoriteBloc.add(const ResetFavoriteEvent());
                 }
                 return ScrollConfiguration(
                   behavior: MyBehavior(),
-                  child: ListView.builder(
+                  child: ListView.separated(
                       controller: controller,
                       itemCount: state.listTvShowAndMovie.length,
+                      separatorBuilder: (context, index) {
+                        if (index % kAdInverval == 0 && index != 0) {
+                          return BlocBuilder<AdBloc, AdState>(
+                              builder: (context, state) {
+                            return AdMobBanner(
+                              bannerAd: state.bannerAd,
+                            );
+                          });
+                        } else {
+                          return Container();
+                        }
+                      },
                       itemBuilder: (context, index) {
                         if (index == 0) {
                           return Column(
@@ -162,22 +195,32 @@ class _GenrePageState extends State<GenrePage>
             ));
       } else if (state is GenreError) {
         CustomToast(msg: state.msg);
+        print("error");
         return Scaffold(
-            backgroundColor: backgroundColor,
-            appBar: AppBar(
-              backgroundColor: appBarColor,
-              elevation: 0.0,
-              centerTitle: true,
-              title: Text(genre.string),
-              actions: [
-                IconButton(
-                    onPressed: () {
-                      CustomToast(msg: state.msg);
-                    },
-                    icon: const Icon(FontAwesomeIcons.sliders))
-              ],
-            ),
-            body: Container());
+          backgroundColor: backgroundColor,
+          appBar: AppBar(
+            backgroundColor: appBarColor,
+            elevation: 0.0,
+            centerTitle: true,
+            title: Text(genre.string),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    CustomToast(msg: state.msg);
+                  },
+                  icon: const Icon(FontAwesomeIcons.sliders))
+            ],
+          ),
+          body: CustomErrorWidget(
+            errorText: "",
+            onRefresh: () async {
+              print("genreBloc");
+              genreBloc.add(GetGenreEvent(
+                  genreType: genre,
+                  filters: const Tuple2(Filter.all, FilterGenre.popularity)));
+            },
+          ),
+        );
       } else {
         return Scaffold(
             backgroundColor: backgroundColor,

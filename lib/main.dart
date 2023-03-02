@@ -1,13 +1,10 @@
-import 'dart:convert';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'
-    show SystemChrome, SystemUiMode, SystemUiOverlay, rootBundle;
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
+import 'package:tem_final/src/config/keys.dart';
 import 'package:tem_final/src/core/utils/routes_names.dart';
 import 'package:tem_final/src/domain/usecases/filter_genres_usecase.dart';
 import 'package:tem_final/src/domain/usecases/get_all_tv_show_and_move_with_favorite_usecase.dart';
@@ -39,6 +36,7 @@ import 'src/domain/usecases/load_more_tv_show_and_movie_usecase.dart';
 import 'src/domain/usecases/search_tv_show_and_movie_usecase.dart';
 import 'src/domain/usecases/update_rating_usecase.dart';
 import 'src/domain/usecases/verifiy_user_is_logged_usecase.dart';
+import 'src/presenter/stateManagement/bloc/ad/ad_bloc.dart';
 import 'src/presenter/stateManagement/bloc/conclusion/conclusion_bloc.dart';
 import 'src/presenter/stateManagement/bloc/genres/genre_bloc.dart';
 import 'src/presenter/stateManagement/bloc/search/search_bloc.dart';
@@ -54,18 +52,17 @@ void main() async {
 
   await Firebase.initializeApp();
   await supabase.Supabase.initialize(
-    url: "https://imqmttavuchgrverzvee.supabase.co",
-    anonKey:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltcW10dGF2dWNoZ3J2ZXJ6dmVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzYyNDY2ODgsImV4cCI6MTk5MTgyMjY4OH0.hl6Rw7phI4wwaeEEk4LJB3SMnEOn1XcjTBnu-PQQ4ko",
+    url: urlSupabase,
+    anonKey: keySupabase,
   );
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-      overlays: [SystemUiOverlay.bottom]);
+  MobileAds.instance.initialize();
+
   /*var file = await rootBundle.loadString('assets/dataUpdated.json');
   var result = jsonDecode(file);
   supabase.SupabaseClient client = supabase.Supabase.instance.client;
   for (var item in result) {
     try {
-      print("addd");
+      print("addd");  
       await client.from(kDocumentTvShowAndMovies).upsert(item);
     } catch (e) {
       print("${item["id"]} repetido");
@@ -147,6 +144,7 @@ void main() async {
             create: (context) => AnalyticsBloc(
                 context.read<UpdateTvShowAndMovieViewCountUseCase>(),
                 context.read<SubmitReportUseCase>())),
+        Provider<AdBloc>(create: (context) => AdBloc()),
         Provider<LocalRatingNotifier>(
             create: (context) => LocalRatingNotifier()),
         Provider<LocalFilterNotifier>(
@@ -154,7 +152,7 @@ void main() async {
       ],
       child: Builder(builder: (context) {
         return ResponsiveSizer(builder: (ctx, orientation, screenType) {
-          return MaterialApp(
+          return const MaterialApp(
             debugShowCheckedModeBanner: false,
             onGenerateRoute: MyRouter.generateRoute,
             initialRoute: Routes.home,

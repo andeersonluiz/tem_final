@@ -10,4 +10,7 @@ class WidgetSize {
   static const double heightCard = 206;
   static const double heightCardFavoritePage = 180;
   static const double heightButton = 70.0;
+
+  static const double adBannerWidth = 320.0;
+  static const double adBannerHeight = 50.0;
 }

@@ -5,9 +5,7 @@ import 'package:tem_final/src/core/resources/connection_verifyer.dart';
 import 'package:tem_final/src/core/resources/no_connection_exception.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_rating_model.dart';
-import 'package:tem_final/src/data/models/user_choice_model.dart';
 import 'package:tem_final/src/data/models/user_history_model.dart';
-import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tuple/tuple.dart';
 import '../../../core/utils/strings.dart';
 
@@ -396,7 +394,7 @@ class FirebaseHandlerService {
         "hasErrorId": hasErrorFindId
       });
 
-      return Left("");
+      return const Left("");
     } on NoConnectionException catch (e) {
       return Right(Tuple2(e.message, e.stackTrace));
     } catch (e, stacktrace) {
@@ -485,7 +483,6 @@ class FirebaseHandlerService {
           .order("popularity")
           .range(_offSetGenrePage,
               ((pageSize * _paginationNumberGenrePage) - 1)); //0 15
-      print(data.length);
       if (data.isNotEmpty) {
         if (data.length == pageSize) {
           _offSetGenrePage += pageSize;
@@ -699,9 +696,9 @@ class FirebaseHandlerService {
           .eq("idUser", userHistoryModel.idUser)
           .eq("deviceId", deviceId);
       if (result.isEmpty) {
-        return Left(false);
+        return const Left(false);
       } else {
-        return Left(true);
+        return const Left(true);
       }
     } on NoConnectionException catch (e) {
       return Right(Tuple2(e.message, e.stackTrace));

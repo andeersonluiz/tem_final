@@ -10,7 +10,7 @@ class UserState extends Equatable {
 }
 
 class UserLoading extends UserState {
-  UserLoading({required super.username});
+  const UserLoading({required super.username});
 }
 
 class UserLogged extends UserState {

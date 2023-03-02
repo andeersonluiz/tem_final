@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tem_final/src/core/resources/data_state.dart';
 import 'package:tem_final/src/domain/usecases/log_out_usecase.dart';
 import 'package:tem_final/src/domain/usecases/login_via_google_usecase.dart';
-import 'package:tem_final/src/domain/usecases/remove_user_usecase.dart';
 import 'package:tem_final/src/domain/usecases/verifiy_user_is_logged_usecase.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/user/user_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/user/user_state.dart';
@@ -12,7 +11,7 @@ import '../../../../domain/usecases/get_username_usecase.dart';
 class UserBloc extends Bloc<UserEvent, UserState> {
   UserBloc(this._loginViaGoogleUseCase, this._logOutUseCase,
       this._verifiyUserIsLoggedUseCase, this._getUsernameUseCase)
-      : super(UserLoading(username: '')) {
+      : super(const UserLoading(username: '')) {
     on<LoginUserEvent>(_login);
     on<LogOutUserEvent>(_logOut);
     on<LoadUserEvent>(_verifyUserIsLogged);

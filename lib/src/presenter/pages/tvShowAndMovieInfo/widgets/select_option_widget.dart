@@ -9,7 +9,6 @@ import 'package:tem_final/src/core/utils/widget_size.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/presenter/pages/login/login_dialog_page.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/sub_item_result.dart';
-import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/sub_overlay_icon.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_button.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
@@ -17,8 +16,8 @@ import 'package:tem_final/src/presenter/stateManagement/bloc/conclusion/conclusi
 import 'package:tem_final/src/presenter/stateManagement/bloc/conclusion/conclusion_state.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/sub_select_icon_circle.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/sub_unselect_icon_circle.dart';
+// ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
-import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_event.dart';
 
 import '../../../stateManagement/bloc/conclusion/conclusion_bloc.dart';
 
@@ -259,7 +258,7 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
+                                const Text(
                                   "Opção selecionada: ",
                                   style: TextStyle(
                                       fontFamily: fontFamily,
@@ -280,7 +279,7 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
                                         color: subItemSelected.icon1.color),
                                   ),
                                 ),
-                                Text(
+                                const Text(
                                   "+",
                                   style: TextStyle(
                                       fontFamily: fontFamily,
@@ -310,7 +309,7 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
                             child: Text(
                               "A votação da Temporada ${widget.indexTvShowAndMovieInfoStatusBySeason + 1} foi encerrada. Acesse a temporada mais recente para votar.",
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontFamily: fontFamily,
                                   fontSize: 15,
                                   fontStyle: FontStyle.italic,
@@ -365,7 +364,7 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
 
       previousState = state;
       if (state is LoadingConclusion) {
-        return CustomLoadingWidget();
+        return const CustomLoadingWidget();
       }
       return FadeTransition(
         opacity: _animation,

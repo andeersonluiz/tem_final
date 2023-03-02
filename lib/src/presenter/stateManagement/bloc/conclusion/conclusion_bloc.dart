@@ -170,7 +170,7 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
           tvShowAndMovie: event.tvShowAndMovie!));
     } else {
       emit(NoSelectConclusion(
-          conclusionSelectionStatus: ConclusionSelectionStatus(
+          conclusionSelectionStatus: const ConclusionSelectionStatus(
             hasSelectedFirstConclusion: true,
             hasSelectedSecondConclusion: false,
             bothConclusionSelected: false,

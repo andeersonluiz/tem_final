@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:tem_final/src/core/utils/routes_names.dart';
-import 'package:tem_final/src/presenter/pages/favorite/favorite_page.dart';
 import 'package:tem_final/src/presenter/pages/genre/genre_page.dart';
-import 'package:tem_final/src/presenter/pages/home/home_view_page.dart';
 import 'package:tem_final/src/presenter/pages/home/main_page.dart';
-import 'package:tem_final/src/presenter/pages/search/search_page.dart';
-import 'package:tem_final/src/presenter/pages/settings/settings_page.dart';
+import 'package:tem_final/src/presenter/pages/privacyPolicy/privacy_policy_page.dart';
+import 'package:tem_final/src/presenter/pages/termsAndConditions/terms_and_conditions_page.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/tv_show_and_movie_info_page.dart';
 
 class MyRouter {
@@ -14,8 +11,7 @@ class MyRouter {
     switch (settings.name) {
       case Routes.home:
         return PageRouteBuilder(
-          pageBuilder: (_, __, ___) => MainPage(),
-          transitionDuration: Duration(milliseconds: 5000),
+          pageBuilder: (_, __, ___) => const MainPage(),
         );
 
       case Routes.info:
@@ -32,6 +28,14 @@ class MyRouter {
               var args = settings.arguments as Map<String, dynamic>;
               return GenrePage(indexGenre: int.parse(args["index"]));
             });
+      case Routes.privacyPolicy:
+        return PageRouteBuilder(
+            transitionsBuilder: myTrasition,
+            pageBuilder: (_, __, ___) => const PrivacyPolicyPage());
+      case Routes.termsAndConditions:
+        return PageRouteBuilder(
+            transitionsBuilder: myTrasition,
+            pageBuilder: (_, __, ___) => const TermsAndConditionsPage());
       default:
         return PageRouteBuilder(
             pageBuilder: (_, __, ___) => Scaffold(

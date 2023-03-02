@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
 
 class SubUnselectedIconCircle extends StatelessWidget {

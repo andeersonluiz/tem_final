@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
 import 'package:tem_final/src/core/resources/my_behavior.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/core/utils/icons.dart';
@@ -10,6 +9,7 @@ import 'package:tem_final/src/core/utils/strings.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/presenter/pages/login/login_dialog_page.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_button.dart';
+import 'package:tem_final/src/presenter/reusableWidgets/error_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/rating/rating_bloc.dart';
@@ -245,7 +245,13 @@ class InfoWidgetState extends State<InfoWidget> {
                       }
                       if (state is RatingError) {
                         CustomToast(msg: state.error!);
-                        return Container();
+                        return CustomErrorWidget(
+                          errorText: "",
+                          onRefresh: () async {
+                            ratingBloc.add(
+                                UpdateRatingEvent(tvShowAndMovie.localRating));
+                          },
+                        );
                       }
                       return Container();
                     },

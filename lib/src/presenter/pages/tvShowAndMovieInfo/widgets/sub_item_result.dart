@@ -1,13 +1,8 @@
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/sub_overlay_icon.dart';
-import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 class SubItemResult extends StatelessWidget {
   const SubItemResult(

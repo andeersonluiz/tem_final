@@ -40,10 +40,8 @@ class DataIntegrityCheckerRepositoryImpl implements DataIntegrityChecker {
         await firebaseAuthHandlerService.getUserIdFromAuthFirestore();
 
     var localId = await localPreferencesHandlerService.loadUserId();
-    print(idFromFirestore.left + "" + localId.left);
 
     if (idFromFirestore.isLeft && localId.isLeft) {
-      print(idFromFirestore.left + "" + localId.left);
       if (idFromFirestore != localId) {
         await userRepository.logOut();
       }
@@ -56,13 +54,14 @@ class DataIntegrityCheckerRepositoryImpl implements DataIntegrityChecker {
         localId.isRight ? localId.right.item2.toString() : "no has error";
 
     return DataFailed(
-        Tuple2(
-            Strings.multiDeviceError,
-            StackTrace.fromString(
-                "idFromFirestore: $stackTraceidFromFirestore | localId: $stackTraceLocalId")),
-        isLog: true);
+      Tuple2(
+          Strings.multiDeviceError,
+          StackTrace.fromString(
+              "idFromFirestore: $stackTraceidFromFirestore | localId: $stackTraceLocalId")),
+    );
   }
 
+  @override
   Future<bool> checkUserIsLoggedOtherDevice() async {
     String deviceId = await DeviceInfo.getId();
     var userHistory = localPreferencesHandlerService.getUserHistory();

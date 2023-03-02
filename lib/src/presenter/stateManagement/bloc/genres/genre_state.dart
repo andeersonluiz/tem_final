@@ -27,14 +27,14 @@ class GenreLoading extends GenreState {
 }
 
 class GenreDone extends GenreState {
-  GenreDone(
+  const GenreDone(
       {required super.listTvShowAndMovie,
       required super.msg,
       required super.filters});
 }
 
 class GenreError extends GenreState {
-  GenreError(
+  const GenreError(
       {required super.listTvShowAndMovie,
       required super.msg,
       required super.filters});

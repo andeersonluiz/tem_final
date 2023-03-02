@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
-import 'package:tem_final/src/domain/entities/tv_show_and_movie_info_status_entity.dart';
 
 class ConclusionState extends Equatable {
   const ConclusionState(

@@ -5,4 +5,6 @@ class Routes {
   static const settings = "/settings";
   static const favorites = "/favorites";
   static const feedback = "/feedback";
+  static const privacyPolicy = "/privacyPolicy";
+  static const termsAndConditions = "/termsAndConditions";
 }

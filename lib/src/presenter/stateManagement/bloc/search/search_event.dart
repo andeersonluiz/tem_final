@@ -6,7 +6,9 @@ import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 class SearchEvent extends Equatable {
   final String query;
   final TvShowAndMovie? tvShowAndMovie;
-  const SearchEvent({required this.query, this.tvShowAndMovie});
+  final bool refresh;
+  const SearchEvent(
+      {required this.query, this.tvShowAndMovie, this.refresh = false});
 
   @override
   List<Object> get props => [query];
@@ -15,6 +17,7 @@ class SearchEvent extends Equatable {
 class SearchQueryEvent extends SearchEvent {
   const SearchQueryEvent({
     required super.query,
+    super.refresh,
   });
 }
 
