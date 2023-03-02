@@ -3,3 +3,4 @@ const String keySupabase =
 const String urlSupabase = "https://imqmttavuchgrverzvee.supabase.co";
 const String cryptoKey = "&a=bZ-AXayakaehutaomainB-=a=#bXY";
 const String banerAdKey = "ca-app-pub-9717626120167653/8243771155";
+String x = "";
