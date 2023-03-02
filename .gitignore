@@ -31,7 +31,11 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+<<<<<<< HEAD
 /lib/
+=======
+/lib/src/config/
+>>>>>>> ff54efc20ae55f2a16c7e62f181b7e9c19f88625
 
 # Symbolication related
 app.*.symbols
