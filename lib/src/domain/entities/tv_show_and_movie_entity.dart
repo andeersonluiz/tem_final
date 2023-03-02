@@ -24,6 +24,8 @@ class TvShowAndMovie extends Equatable {
   final bool isFavorite;
   final int countConclusion;
   int localRating;
+  ConclusionType? localConclusion;
+
   final List<TvShowAndMovieRating> ratingList;
 
   final double averageRating;
@@ -45,6 +47,7 @@ class TvShowAndMovie extends Equatable {
     required this.actualStatus,
     required this.countConclusion,
     this.localRating = -1,
+    this.localConclusion,
     required this.ratingList,
     required this.averageRating,
   });

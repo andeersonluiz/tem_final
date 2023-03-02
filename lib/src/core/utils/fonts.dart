@@ -23,7 +23,7 @@ const notFoundImageColor = Color(0xff1a2532);
 
 const optionFilledColor = Color(0xff5d748f);
 const textColorFilledOption = Color(0xffffffff);
-const appBarColor = Color(0xff0a0d0f);
+const appBarColor = Color(0xFF0A0D0F);
 
 const indicatorColor = Color(0xffffffff);
 

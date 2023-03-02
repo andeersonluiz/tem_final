@@ -43,7 +43,10 @@ Future<String> initializeDependencies(
   try {
     await localPreferencesHandlerService.init();
     await dataIntegrityChecker.checkIntegrity();
-    //await dataIntegrityChecker.checkMultiDeviceLoginStatus();
+    await dataIntegrityChecker.checkMultiDeviceLoginStatus();
+    if (await dataIntegrityChecker.checkUserIsLoggedOtherDevice()) {
+      await userRepository.logOut();
+    }
     String userId = "";
     var resultUserId = await userRepository.getUserId();
     debugPrint(resultUserId.toString());
@@ -141,13 +144,13 @@ class ProviderInjection extends StatelessWidget {
                 return MultiProvider(providers: [
                   Provider<TvShowAndMovieRepository>(
                     create: (context) => TvShowAndMovieRepositoryImpl(
-                      mapper: context.read<TvShowAndMovieMapper>(),
-                      firebaseHandlerService:
-                          context.read<FirebaseHandlerService>(),
-                      localPreferencesHandlerService:
-                          context.read<LocalPreferencesHandlerService>(),
-                      userHistoryMapper: context.read<UserHistoryMapper>(),
-                    ),
+                        mapper: context.read<TvShowAndMovieMapper>(),
+                        firebaseHandlerService:
+                            context.read<FirebaseHandlerService>(),
+                        localPreferencesHandlerService:
+                            context.read<LocalPreferencesHandlerService>(),
+                        userHistoryMapper: context.read<UserHistoryMapper>(),
+                        userRepository: context.read<UserRepository>()),
                   ),
                   Provider<GetAllTvShowAndMovieWithFavoriteUseCase>(
                       create: (context) =>

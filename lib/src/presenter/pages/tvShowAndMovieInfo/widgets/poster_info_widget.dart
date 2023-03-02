@@ -9,36 +9,43 @@ class PosterInfo extends StatelessWidget {
   const PosterInfo(
       {super.key,
       required this.tvShowAndMovieInfoStatus,
+      this.isMovie = false,
       required this.seasonNumber});
 
   final TvShowAndMovieInfoStatus tvShowAndMovieInfoStatus;
   final int seasonNumber;
+  final bool isMovie;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-            width: WidgetSize.widthPosterInfoPage,
-            height: WidgetSize.heightPosterInfoPage,
-            margin: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: CustomImage(
+        Expanded(
+          child: Container(
               width: WidgetSize.widthPosterInfoPage,
-              urlImage: tvShowAndMovieInfoStatus.posterImageUrl,
               height: WidgetSize.heightPosterInfoPage,
-            )),
-        Flexible(
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text(
-              "${Strings.seasonSingularText} $seasonNumber",
-              style: const TextStyle(
-                  fontFamily: fontFamily,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: textColorGenreMainPage),
-            ),
-          ),
-        )
+              margin: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: CustomImage(
+                width: WidgetSize.widthPosterInfoPage,
+                urlImage: tvShowAndMovieInfoStatus.posterImageUrl,
+                height: WidgetSize.heightPosterInfoPage,
+                fit: BoxFit.contain,
+              )),
+        ),
+        isMovie
+            ? Center(child: Container())
+            : Container(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    "${Strings.seasonSingularText} $seasonNumber",
+                    style: const TextStyle(
+                        fontFamily: fontFamily,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: textColorGenreMainPage),
+                  ),
+                ),
+              )
       ],
     );
   }

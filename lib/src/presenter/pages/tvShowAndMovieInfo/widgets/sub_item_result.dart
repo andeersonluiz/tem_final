@@ -18,6 +18,7 @@ class SubItemResult extends StatelessWidget {
       required this.backgroundIcon1,
       required this.icon2,
       required this.backgroundIcon2,
+      required this.isLastSeason,
       super.key});
   final String text;
   final int totalCount;
@@ -26,7 +27,7 @@ class SubItemResult extends StatelessWidget {
   final Color backgroundIcon1;
   final Icon icon2;
   final Color backgroundIcon2;
-
+  final bool isLastSeason;
   @override
   Widget build(BuildContext context) {
     final percentage = count / totalCount;
@@ -66,15 +67,15 @@ class SubItemResult extends StatelessWidget {
           barRadius: const Radius.circular(25),
           percent: percentage.isNaN ? 0 : percentage,
           backgroundColor: foregroundColor,
-          progressColor: Colors.green[900],
+          progressColor: isLastSeason ? Colors.green[900] : Colors.grey,
           leading: SizedBox(
               height: 12.h,
               width: 20.w,
               child: SubOverlayIcon(
                 icon1: icon1,
-                backgroundIcon1: backgroundIcon1,
+                backgroundIcon1: isLastSeason ? backgroundIcon1 : Colors.grey,
                 icon2: icon2,
-                backgroundIcon2: backgroundIcon2,
+                backgroundIcon2: isLastSeason ? backgroundIcon2 : Colors.grey,
               ))),
     );
   }

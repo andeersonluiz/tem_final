@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:either_dart/either.dart';
 import 'package:flutter/foundation.dart';
+import 'package:tem_final/src/core/resources/device_info.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/resources/data_state.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
@@ -119,16 +123,21 @@ class UserRepositoryImpl implements UserRepository {
         await firebaseHandlerService.getUserHistory(userId);
     if (resultUserHistory.isLeft) {
       UserHistoryModel? userHistoryModel = resultUserHistory.left;
+      String deviceId = await DeviceInfo.getId();
       if (userHistoryModel == null) {
         userHistoryModel = UserHistoryModel(
-            idUser: userId, listUserChoices: [], listUserRatings: []);
-        var resultSetUserHistory =
-            await firebaseHandlerService.setUserHistory(userHistoryModel);
-        if (resultSetUserHistory.isRight) {
-          return DataFailed(resultSetUserHistory.right, isLog: false);
-        }
+            idUser: userId,
+            listUserChoices: [],
+            listUserRatings: [],
+            deviceId: deviceId);
+      } else {
+        userHistoryModel = userHistoryModel.copyWith(deviceId: deviceId);
       }
-
+      var resultSetUserHistory =
+          await firebaseHandlerService.setUserHistory(userHistoryModel);
+      if (resultSetUserHistory.isRight) {
+        return DataFailed(resultSetUserHistory.right, isLog: false);
+      }
       Either<bool, Tuple2<String, StackTrace>> resultUpdateUserHistory =
           await localPreferencesHandlerService
               .updateUserHistory(userHistoryModel);

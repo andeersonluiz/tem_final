@@ -22,7 +22,8 @@ class UserHistoryMapper implements Mapper<UserHistory, UserHistoryModel> {
                 conclusionSelected: e.conclusionSelected,
                 seasonSelected: e.seasonSelected,
                 idTvShowAndMovie: e.idTvShowAndMovie))
-            .toList());
+            .toList(),
+        deviceId: entity.deviceId);
   }
 
   @override
@@ -39,6 +40,7 @@ class UserHistoryMapper implements Mapper<UserHistory, UserHistoryModel> {
                 conclusionSelected: m.conclusionSelected,
                 seasonSelected: m.seasonSelected,
                 idTvShowAndMovie: m.idTvShowAndMovie))
-            .toList());
+            .toList(),
+        deviceId: model.deviceId);
   }
 }

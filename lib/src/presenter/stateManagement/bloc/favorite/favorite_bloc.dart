@@ -73,7 +73,6 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
             .where((item) => item.id == event.idTvShowAndMovie)
             .toList()
             .isNotEmpty;
-        print(isFavorite.toString());
 
         emit(FavoriteDone(
             favoriteList: result.data.reversed.toList(),

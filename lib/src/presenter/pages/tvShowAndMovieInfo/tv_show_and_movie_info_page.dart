@@ -17,6 +17,8 @@ import 'package:tem_final/src/presenter/stateManagement/bloc/analytics/analytics
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/info_widget.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/poster_info_widget.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/select_option_widget.dart';
+import 'package:tem_final/src/presenter/stateManagement/bloc/conclusion/conclusion_bloc.dart';
+import 'package:tem_final/src/presenter/stateManagement/bloc/conclusion/conclusion_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_state.dart';
@@ -50,12 +52,14 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
   late AnalyticsBloc analyticsBloc;
   late AnimationController _animationController;
   late Animation<double> _animation;
+
   @override
   void initState() {
     favoriteBloc = context.read<FavoriteBloc>();
     analyticsBloc = context.read<AnalyticsBloc>();
     tvShowAndMovieInfoBloc = context.read<TvShowAndMovieInfoBloc>();
-    tvShowAndMovieInfoBloc.add(GetTvShowAndMovieEvent(widget.idTvShowAndMovie));
+    tvShowAndMovieInfoBloc
+        .add(GetTvShowAndMovieEvent(id: widget.idTvShowAndMovie));
     favoriteBloc
         .add(GetFavoriteEvent(idTvShowAndMovie: widget.idTvShowAndMovie));
     analyticsBloc
@@ -66,6 +70,7 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
     );
     _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
     _animationController.forward();
+
     super.initState();
   }
 
@@ -74,7 +79,10 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
     return BlocBuilder<TvShowAndMovieInfoBloc, TvShowAndMovieInfoState>(
         builder: (context, state) {
       if (state is TvShowAndMovieInfoDone) {
-        final TvShowAndMovie? tvShowAndMovie = state.tvShowAndMovie;
+        final TvShowAndMovie tvShowAndMovie = state.tvShowAndMovie!;
+        TvShowAndMovieInfoStatus tvShowAndMovieInfoStatusSelected =
+            state.tvShowAndMovieInfoStatus ??
+                tvShowAndMovie.listTvShowAndMovieInfoStatusBySeason.last;
 
         return Scaffold(
           backgroundColor: backgroundColor,
@@ -108,7 +116,7 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
                   return IconButton(
                       onPressed: () {
                         favoriteBloc.add(
-                            SetFavoriteEvent(tvShowAndMovie: tvShowAndMovie!));
+                            SetFavoriteEvent(tvShowAndMovie: tvShowAndMovie));
                       },
                       icon: state.isFavorite
                           ? const Icon(
@@ -126,7 +134,7 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
                 return IconButton(
                     onPressed: () {
                       favoriteBloc.add(
-                          SetFavoriteEvent(tvShowAndMovie: tvShowAndMovie!));
+                          SetFavoriteEvent(tvShowAndMovie: tvShowAndMovie));
                     },
                     icon: state.isFavorite
                         ? const Icon(
@@ -145,7 +153,7 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
             child: Column(children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: tvShowAndMovie!
+                child: tvShowAndMovie
                             .listTvShowAndMovieInfoStatusBySeason.length ==
                         1
                     ? SizedBox(
@@ -158,11 +166,23 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
                                 .seasonNumber,
                             tvShowAndMovieInfoStatus: tvShowAndMovie
                                 .listTvShowAndMovieInfoStatusBySeason.first,
+                            isMovie: tvShowAndMovie.seasons == -1,
                           ),
                         ),
                       )
                     : CarouselSlider(
                         options: CarouselOptions(
+                            initialPage: tvShowAndMovie
+                                    .listTvShowAndMovieInfoStatusBySeason
+                                    .length -
+                                1,
+                            onPageChanged: (index, _) {
+                              tvShowAndMovieInfoBloc.add(
+                                  UpdateTvShowAndMovieInfoStatus(
+                                      tvShowAndMovieInfoStatus: tvShowAndMovie
+                                              .listTvShowAndMovieInfoStatusBySeason[
+                                          index]));
+                            },
                             enlargeCenterPage: true,
                             viewportFraction: kViewportCarousel,
                             aspectRatio: kAspectRatioCarousel),
@@ -211,7 +231,15 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
                               child: TabBarView(
                             children: [
                               SelectOptionWidget(
-                                  tvShowAndMovie: tvShowAndMovie),
+                                tvShowAndMovie: tvShowAndMovie,
+                                indexTvShowAndMovieInfoStatusBySeason: state
+                                    .tvShowAndMovie!
+                                    .listTvShowAndMovieInfoStatusBySeason
+                                    .indexWhere((element) =>
+                                        element.seasonNumber ==
+                                        tvShowAndMovieInfoStatusSelected
+                                            .seasonNumber),
+                              ),
                               const InfoWidget(),
                             ],
                           ))

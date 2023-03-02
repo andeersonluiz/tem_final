@@ -2,6 +2,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'package:tem_final/src/core/utils/constants.dart';
+import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_info_status_entity.dart';
 
 class ConclusionState extends Equatable {
@@ -11,7 +12,7 @@ class ConclusionState extends Equatable {
       this.conclusionNoHasFinal,
       this.showAnimation,
       required this.conclusionSelectionStatus,
-      this.tvShowAndMovieInfoStatus,
+      this.tvShowAndMovie,
       this.msg});
   final Conclusion? conclusion;
   final ConclusionHasFinal? conclusionHasFinal;
@@ -19,54 +20,61 @@ class ConclusionState extends Equatable {
   final bool? showAnimation;
   final ConclusionSelectionStatus conclusionSelectionStatus;
   final String? msg;
-  final TvShowAndMovieInfoStatus? tvShowAndMovieInfoStatus;
+  final TvShowAndMovie? tvShowAndMovie;
   @override
   List<Object> get props => [
         conclusion ?? "",
         conclusionHasFinal ?? "",
         conclusionNoHasFinal ?? "",
         showAnimation ?? "",
-        tvShowAndMovieInfoStatus ?? "",
+        tvShowAndMovie ?? "",
         conclusionSelectionStatus,
         msg ?? ""
       ];
 }
 
+class LoadingConclusion extends ConclusionState {
+  const LoadingConclusion({required super.conclusionSelectionStatus});
+}
+
 class NoSelectConclusion extends ConclusionState {
   const NoSelectConclusion({
     required ConclusionSelectionStatus conclusionSelectionStatus,
+    required TvShowAndMovie tvShowAndMovie,
   }) : super(
-          conclusion: null,
-          conclusionHasFinal: null,
-          conclusionNoHasFinal: null,
-          conclusionSelectionStatus: conclusionSelectionStatus,
-        );
+            conclusion: null,
+            conclusionHasFinal: null,
+            conclusionNoHasFinal: null,
+            conclusionSelectionStatus: conclusionSelectionStatus,
+            tvShowAndMovie: tvShowAndMovie);
 }
 
 class SelectFirstConclusion extends ConclusionState {
-  const SelectFirstConclusion({
-    Conclusion? conclusion,
-    bool? showAnimation,
-    required ConclusionSelectionStatus conclusionSelectionStatus,
-  }) : super(
-          conclusion: conclusion,
-          showAnimation: showAnimation,
-          conclusionSelectionStatus: conclusionSelectionStatus,
-        );
+  const SelectFirstConclusion(
+      {Conclusion? conclusion,
+      bool? showAnimation,
+      required ConclusionSelectionStatus conclusionSelectionStatus,
+      required TvShowAndMovie tvShowAndMovie})
+      : super(
+            conclusion: conclusion,
+            showAnimation: showAnimation,
+            conclusionSelectionStatus: conclusionSelectionStatus,
+            tvShowAndMovie: tvShowAndMovie);
 }
 
 class SelectSecondConclusion extends ConclusionState {
-  SelectSecondConclusion({
-    required Conclusion conclusion,
-    ConclusionHasFinal? conclusionHasFinal,
-    ConclusionNoHasFinal? conclusionNoHasFinal,
-    required ConclusionSelectionStatus conclusionSelectionStatus,
-  }) : super(
-          conclusion: conclusion,
-          conclusionHasFinal: conclusionHasFinal,
-          conclusionNoHasFinal: conclusionNoHasFinal,
-          conclusionSelectionStatus: conclusionSelectionStatus,
-        ) {
+  SelectSecondConclusion(
+      {required Conclusion conclusion,
+      ConclusionHasFinal? conclusionHasFinal,
+      ConclusionNoHasFinal? conclusionNoHasFinal,
+      required ConclusionSelectionStatus conclusionSelectionStatus,
+      required TvShowAndMovie tvShowAndMovie})
+      : super(
+            conclusion: conclusion,
+            conclusionHasFinal: conclusionHasFinal,
+            conclusionNoHasFinal: conclusionNoHasFinal,
+            conclusionSelectionStatus: conclusionSelectionStatus,
+            tvShowAndMovie: tvShowAndMovie) {
     if ((conclusionHasFinal != null && conclusionNoHasFinal != null) ||
         (conclusionHasFinal == null && conclusionNoHasFinal == null)) {
       throw ArgumentError('At least one parameter must be provided.');
@@ -78,22 +86,31 @@ class SelectConclusionDone extends ConclusionState {
   const SelectConclusionDone({
     required ConclusionSelectionStatus conclusionSelectionStatus,
     required String msg,
-  }) : super(conclusionSelectionStatus: conclusionSelectionStatus, msg: msg);
+    required TvShowAndMovie tvShowAndMovie,
+  }) : super(
+          conclusionSelectionStatus: conclusionSelectionStatus,
+          msg: msg,
+          tvShowAndMovie: tvShowAndMovie,
+        );
 }
 
 class SelectConclusionError extends ConclusionState {
   const SelectConclusionError({
     required ConclusionSelectionStatus conclusionSelectionStatus,
+    required TvShowAndMovie tvShowAndMovie,
     required String msg,
-  }) : super(conclusionSelectionStatus: conclusionSelectionStatus, msg: msg);
+  }) : super(
+            conclusionSelectionStatus: conclusionSelectionStatus,
+            msg: msg,
+            tvShowAndMovie: tvShowAndMovie);
 }
 
 class ConclusionResults extends ConclusionState {
   const ConclusionResults(
-      {required TvShowAndMovieInfoStatus tvShowAndMovieInfoStatus,
+      {required TvShowAndMovie tvShowAndMovie,
       required ConclusionSelectionStatus conclusionSelectionStatus})
       : super(
-            tvShowAndMovieInfoStatus: tvShowAndMovieInfoStatus,
+            tvShowAndMovie: tvShowAndMovie,
             conclusionSelectionStatus: conclusionSelectionStatus);
 }
 
@@ -101,7 +118,11 @@ class Unauthorized extends ConclusionState {
   const Unauthorized({
     required ConclusionSelectionStatus conclusionSelectionStatus,
     required String msg,
-  }) : super(conclusionSelectionStatus: conclusionSelectionStatus, msg: msg);
+    required TvShowAndMovie tvShowAndMovie,
+  }) : super(
+            conclusionSelectionStatus: conclusionSelectionStatus,
+            msg: msg,
+            tvShowAndMovie: tvShowAndMovie);
 }
 
 class ConclusionSelectionStatus extends Equatable {

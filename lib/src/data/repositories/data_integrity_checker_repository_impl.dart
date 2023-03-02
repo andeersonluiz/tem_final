@@ -1,4 +1,5 @@
 import 'package:tem_final/src/core/resources/data_state.dart';
+import 'package:tem_final/src/core/resources/device_info.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
 import 'package:tem_final/src/data/datasource/auth/firebase_auth_handler_service.dart';
 import 'package:tem_final/src/data/datasource/local/local_preferences_handler_service.dart';
@@ -37,12 +38,16 @@ class DataIntegrityCheckerRepositoryImpl implements DataIntegrityChecker {
   Future<DataState<bool>> checkMultiDeviceLoginStatus() async {
     var idFromFirestore =
         await firebaseAuthHandlerService.getUserIdFromAuthFirestore();
+
     var localId = await localPreferencesHandlerService.loadUserId();
+    print(idFromFirestore.left + "" + localId.left);
+
     if (idFromFirestore.isLeft && localId.isLeft) {
+      print(idFromFirestore.left + "" + localId.left);
       if (idFromFirestore != localId) {
         await userRepository.logOut();
-        return const DataSucess(true);
       }
+      return const DataSucess(true);
     }
     String stackTraceidFromFirestore = idFromFirestore.isRight
         ? idFromFirestore.right.item2.toString()
@@ -56,5 +61,18 @@ class DataIntegrityCheckerRepositoryImpl implements DataIntegrityChecker {
             StackTrace.fromString(
                 "idFromFirestore: $stackTraceidFromFirestore | localId: $stackTraceLocalId")),
         isLog: true);
+  }
+
+  Future<bool> checkUserIsLoggedOtherDevice() async {
+    String deviceId = await DeviceInfo.getId();
+    var userHistory = localPreferencesHandlerService.getUserHistory();
+    if (userHistory.isLeft) {
+      var resultAuth = await firebaseHandlerService.checkDeviceIdFromUser(
+          userHistory.left!, deviceId);
+      if (resultAuth.isLeft && !resultAuth.left) {
+        return true;
+      }
+    }
+    return false;
   }
 }

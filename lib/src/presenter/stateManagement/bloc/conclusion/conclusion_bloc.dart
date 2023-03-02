@@ -11,7 +11,7 @@ import 'package:tuple/tuple.dart';
 class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
   ConclusionBloc(
       this._selectConclusionUseCase, this._verifitUserIsLoggedUseCase)
-      : super(const NoSelectConclusion(
+      : super(const LoadingConclusion(
           conclusionSelectionStatus: ConclusionSelectionStatus(
             hasSelectedFirstConclusion: true,
             hasSelectedSecondConclusion: false,
@@ -27,6 +27,7 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
     on<SendConclusionEvent>(_sendConclusion);
     on<ResetConclusionEvent>(_resetConclusion);
     on<ShowResultsEvent>(_showResults);
+    on<LoadConclusionEvent>(_loadConclusion);
   }
 
   final SelectConclusionUseCase _selectConclusionUseCase;
@@ -38,7 +39,8 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
     if (!resultVerifyIsLogged) {
       emit(Unauthorized(
           conclusionSelectionStatus: state.conclusionSelectionStatus,
-          msg: Strings.unauthorizedUser));
+          msg: Strings.unauthorizedUser,
+          tvShowAndMovie: state.tvShowAndMovie!));
     } else {
       final newConclusionSelectionStatus =
           state.conclusionSelectionStatus.copyWith(
@@ -50,7 +52,8 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
       emit(SelectFirstConclusion(
           conclusion: event.conclusion!,
           showAnimation: false,
-          conclusionSelectionStatus: newConclusionSelectionStatus));
+          conclusionSelectionStatus: newConclusionSelectionStatus,
+          tvShowAndMovie: state.tvShowAndMovie!));
     }
   }
 
@@ -67,7 +70,8 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
     emit(SelectFirstConclusion(
         conclusion: event.conclusion!,
         showAnimation: false,
-        conclusionSelectionStatus: newConclusionSelectionStatus));
+        conclusionSelectionStatus: newConclusionSelectionStatus,
+        tvShowAndMovie: state.tvShowAndMovie!));
   }
 
   Future<void> _showAnimation(
@@ -84,7 +88,8 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
     emit(SelectFirstConclusion(
         conclusion: event.conclusion,
         showAnimation: true,
-        conclusionSelectionStatus: newConclusionSelectionStatus));
+        conclusionSelectionStatus: newConclusionSelectionStatus,
+        tvShowAndMovie: state.tvShowAndMovie!));
   }
 
   Future<void> _selectSecondConclusion(
@@ -101,7 +106,8 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
         conclusion: event.conclusion!,
         conclusionHasFinal: event.conclusionHasFinal,
         conclusionNoHasFinal: event.conclusionNoHasFinal,
-        conclusionSelectionStatus: newConclusionSelectionStatus));
+        conclusionSelectionStatus: newConclusionSelectionStatus,
+        tvShowAndMovie: state.tvShowAndMovie!));
   }
 
   Future<void> _sendConclusion(
@@ -125,16 +131,19 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
     var resultSelectConclusion = await _selectConclusionUseCase(
         Tuple2(event.tvShowAndMovie!, conclusionType));
     String msg = "";
+    state.tvShowAndMovie!.localConclusion = conclusionType;
     if (resultSelectConclusion is DataSucess) {
       msg = resultSelectConclusion.data!;
       emit(SelectConclusionDone(
           conclusionSelectionStatus: state.conclusionSelectionStatus,
-          msg: msg));
+          msg: msg,
+          tvShowAndMovie: state.tvShowAndMovie!));
     } else {
       msg = resultSelectConclusion.error!.item1;
       emit(SelectConclusionError(
           conclusionSelectionStatus: state.conclusionSelectionStatus,
-          msg: msg));
+          msg: msg,
+          tvShowAndMovie: state.tvShowAndMovie!));
     }
   }
 
@@ -142,8 +151,34 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
       ShowResultsEvent event, Emitter<ConclusionState> emit) async {
     emit(ConclusionResults(
         conclusionSelectionStatus: state.conclusionSelectionStatus,
-        tvShowAndMovieInfoStatus:
-            event.tvShowAndMovie!.listTvShowAndMovieInfoStatusBySeason.last));
+        tvShowAndMovie: state.tvShowAndMovie!));
+  }
+
+  Future<void> _loadConclusion(
+      LoadConclusionEvent event, Emitter<ConclusionState> emit) async {
+    if (event.tvShowAndMovie!.localConclusion != null && event.showUpdate) {
+      ConclusionSelectionStatus conclusionSelectionStatus =
+          state.conclusionSelectionStatus;
+
+      emit(ConclusionResults(
+          conclusionSelectionStatus: conclusionSelectionStatus.copyWith(
+              hasSelectedFirstConclusion: false,
+              hasSelectedSecondConclusion: true,
+              bothConclusionSelected: true,
+              showAnimationOpacitySecondConclusion: true,
+              showButton: true),
+          tvShowAndMovie: event.tvShowAndMovie!));
+    } else {
+      emit(NoSelectConclusion(
+          conclusionSelectionStatus: ConclusionSelectionStatus(
+            hasSelectedFirstConclusion: true,
+            hasSelectedSecondConclusion: false,
+            bothConclusionSelected: false,
+            showAnimationOpacitySecondConclusion: false,
+            showButton: false,
+          ),
+          tvShowAndMovie: event.tvShowAndMovie!));
+    }
   }
 
   Future<void> _resetConclusion(
@@ -156,7 +191,7 @@ class ConclusionBloc extends Bloc<ConclusionEvent, ConclusionState> {
       showAnimationOpacitySecondConclusion: false,
       showButton: false,
     );
-    emit(NoSelectConclusion(
+    emit(LoadingConclusion(
         conclusionSelectionStatus: newConclusionSelectionStatus));
   }
 }

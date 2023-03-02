@@ -27,6 +27,8 @@ class FirebaseAuthHandlerService {
         idToken: signInAuthentication.idToken,
       );
       await _instance.signInWithCredential(credential);
+      await _instance.currentUser?.getIdToken(true);
+
       String userId = _instance.currentUser!.uid;
       String username = _instance.currentUser!.displayName!;
       return Left(Tuple2(userId, username));

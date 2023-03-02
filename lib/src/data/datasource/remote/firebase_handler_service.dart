@@ -26,6 +26,7 @@ class FirebaseHandlerService {
   late int _paginationNumber = 1;
   late int _paginationNumberGenrePage = 1;
   late Tuple2<Filter, FilterGenre> filterParams;
+  late RealtimeChannel myChannel;
 
 //* TESTADO *//
   Future<
@@ -542,7 +543,7 @@ class FirebaseHandlerService {
     try {
       await _instance
           .from(kDocumentUserHistory)
-          .insert(userHistoryModel.toMap());
+          .upsert(userHistoryModel.toMap());
 
       return const Left(true);
     } on NoConnectionException catch (e) {
@@ -679,6 +680,29 @@ class FirebaseHandlerService {
       });
       await _instance.from(kDocumentUserHistory).delete().eq("idUser", userId);
       return const Left(Strings.sucessRemoveUser);
+    } on NoConnectionException catch (e) {
+      return Right(Tuple2(e.message, e.stackTrace));
+    } catch (e, stacktrace) {
+      return Right(Tuple2(Strings.msgErrorConnectionFirebase,
+          StackTrace.fromString("$e\n$stacktrace")));
+    }
+  }
+
+  Future<Either<bool, Tuple2<String, StackTrace>>> checkDeviceIdFromUser(
+      UserHistoryModel userHistoryModel, String deviceId) async {
+    try {
+      await ConnectionVerifyer.verify();
+
+      var result = await _instance
+          .from(kDocumentUserHistory)
+          .select()
+          .eq("idUser", userHistoryModel.idUser)
+          .eq("deviceId", deviceId);
+      if (result.isEmpty) {
+        return Left(false);
+      } else {
+        return Left(true);
+      }
     } on NoConnectionException catch (e) {
       return Right(Tuple2(e.message, e.stackTrace));
     } catch (e, stacktrace) {

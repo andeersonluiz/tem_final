@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:either_dart/either.dart';
+import 'package:tem_final/src/core/resources/device_info.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
 import 'package:tem_final/src/data/datasource/local/local_preferences_handler_service.dart';
 import 'package:tem_final/src/data/datasource/remote/firebase_handler_service.dart';
@@ -15,22 +19,24 @@ import 'package:tem_final/src/core/utils/constants.dart';
 
 import 'package:tem_final/src/core/resources/data_state.dart';
 import 'package:tem_final/src/domain/entities/user_history_entity.dart';
+import 'package:tem_final/src/domain/repositories/user_repository.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../domain/repositories/tv_show_and_movie_repository.dart';
 
 class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
-  TvShowAndMovieRepositoryImpl({
-    required this.firebaseHandlerService,
-    required this.localPreferencesHandlerService,
-    required this.mapper,
-    required this.userHistoryMapper,
-  });
+  TvShowAndMovieRepositoryImpl(
+      {required this.firebaseHandlerService,
+      required this.localPreferencesHandlerService,
+      required this.mapper,
+      required this.userHistoryMapper,
+      required this.userRepository});
 
   final FirebaseHandlerService firebaseHandlerService;
   final LocalPreferencesHandlerService localPreferencesHandlerService;
   final TvShowAndMovieMapper mapper;
   final UserHistoryMapper userHistoryMapper;
+  final UserRepository userRepository;
   // ignore: slash_for_doc_comments
   /** 
    * remote_datasource
@@ -100,6 +106,12 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
       Tuple2<TvShowAndMovie, int> params) async {
     TvShowAndMovie tvShowAndMovie = params.item1;
     int ratingValue = params.item2;
+    if (await _checkUserIsLoggedOtherDevice()) {
+      await userRepository.logOut();
+
+      return DataFailed(Tuple2(Strings.userLoggedOtherDevice, StackTrace.empty),
+          isLog: false);
+    }
     /**atualizar o rating na parte do usuário */
     var resultUpdateUserHistory =
         await _updateUserHistoryRating(tvShowAndMovie.id, ratingValue);
@@ -164,17 +176,31 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
   Future<DataState<TvShowAndMovie?>> getTvShowAndMovie(String id) async {
     var firebaseResponse = await firebaseHandlerService.getTvShowAndMovie(id);
     String userId = localPreferencesHandlerService.getUserId();
+    Either<UserHistoryModel?, Tuple2<String, StackTrace>> resultUserHistory =
+        localPreferencesHandlerService.getUserHistory();
 
     if (firebaseResponse.isLeft) {
       if (firebaseResponse.left.isEmpty) return const DataSucess(null);
-
+      //atuatiza rating
       TvShowAndMovie? tvShowAndMovie = mapper
           .modelToEntity(TvShowAndMovieModel.fromMap(firebaseResponse.left));
       var index = tvShowAndMovie.ratingList
           .indexWhere((element) => element.idUser == userId);
+
       if (index != -1) {
         tvShowAndMovie.localRating = tvShowAndMovie.ratingList[index].rating;
       }
+      //atualiza conclusion
+      if (resultUserHistory.isLeft && resultUserHistory.left != null) {
+        var userHistory = resultUserHistory.left;
+        var index = userHistory!.listUserChoices
+            .indexWhere((e) => e.idTvShowAndMovie == id);
+        if (index != -1) {
+          tvShowAndMovie.localConclusion =
+              userHistory.listUserChoices[index].conclusionSelected;
+        }
+      }
+
       return DataSucess(tvShowAndMovie);
     } else {
       return DataFailed(firebaseResponse.right, isLog: false);
@@ -230,6 +256,11 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
   @override
   Future<DataState<String>> selectConclusion(
       Tuple2<TvShowAndMovie, ConclusionType> params) async {
+    if (await _checkUserIsLoggedOtherDevice()) {
+      await userRepository.logOut();
+      return DataFailed(Tuple2(Strings.userLoggedOtherDevice, StackTrace.empty),
+          isLog: false);
+    }
     String idTvShowAndMovie = params.item1.id;
     int seasonSelected =
         params.item1.listTvShowAndMovieInfoStatusBySeason.length;
@@ -456,5 +487,18 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
     } else {
       return DataFailed(result.right, isLog: false);
     }
+  }
+
+  Future<bool> _checkUserIsLoggedOtherDevice() async {
+    String deviceId = await DeviceInfo.getId();
+    var userHistory = localPreferencesHandlerService.getUserHistory();
+    if (userHistory.isLeft) {
+      var resultAuth = await firebaseHandlerService.checkDeviceIdFromUser(
+          userHistory.left!, deviceId);
+      if (resultAuth.isLeft && !resultAuth.left) {
+        return true;
+      }
+    }
+    return false;
   }
 }

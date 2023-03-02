@@ -21,11 +21,6 @@ class TvShowAndMovieInfoStatus extends Equatable {
   List<Object> get props {
     return [
       seasonNumber,
-      hasFinalAndOpened,
-      hasFinalAndClosed,
-      noHasfinalAndNewSeason,
-      noHasfinalAndNoNewSeason,
-      posterImageUrl,
     ];
   }
 }

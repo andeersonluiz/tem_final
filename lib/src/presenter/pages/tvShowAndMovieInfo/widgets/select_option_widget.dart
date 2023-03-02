@@ -9,19 +9,26 @@ import 'package:tem_final/src/core/utils/widget_size.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/presenter/pages/login/login_dialog_page.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/sub_item_result.dart';
+import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/sub_overlay_icon.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_button.dart';
+import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/conclusion/conclusion_event.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/conclusion/conclusion_state.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/sub_select_icon_circle.dart';
 import 'package:tem_final/src/presenter/pages/tvShowAndMovieInfo/widgets/sub_unselect_icon_circle.dart';
 import 'package:collection/collection.dart';
+import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovie/tv_show_and_movie_event.dart';
 
 import '../../../stateManagement/bloc/conclusion/conclusion_bloc.dart';
 
 class SelectOptionWidget extends StatefulWidget {
-  const SelectOptionWidget({super.key, required this.tvShowAndMovie});
+  const SelectOptionWidget(
+      {super.key,
+      required this.tvShowAndMovie,
+      required this.indexTvShowAndMovieInfoStatusBySeason});
   final TvShowAndMovie tvShowAndMovie;
+  final int indexTvShowAndMovieInfoStatusBySeason;
   @override
   State<SelectOptionWidget> createState() => SelectOptionWidgetState();
 }
@@ -36,7 +43,9 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
   @override
   void initState() {
     conclusionBloc = context.read<ConclusionBloc>();
-
+    conclusionBloc.add(LoadConclusionEvent(
+        tvShowAndMovie: widget.tvShowAndMovie,
+        showUpdate: widget.tvShowAndMovie.localConclusion != null));
     super.initState();
   }
 
@@ -95,7 +104,8 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
             context: context,
             barrierDismissible: false,
             builder: (context) => const LoginDialogPage()));
-        conclusionBloc.add(ResetConclusionEvent());
+        conclusionBloc.add(LoadConclusionEvent(
+            tvShowAndMovie: state.tvShowAndMovie!, showUpdate: false));
       }
 
       if (state is SelectConclusionDone) {
@@ -107,18 +117,29 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
 
       if (state is SelectConclusionError) {
         CustomToast(msg: state.msg!);
-        conclusionBloc.add(ResetConclusionEvent());
+        conclusionBloc.add(LoadConclusionEvent(
+            tvShowAndMovie: state.tvShowAndMovie!, showUpdate: false));
       }
+      late final bool isLastSeason;
 
-      if (state is ConclusionResults) {
+      if (state.tvShowAndMovie != null) {
+        isLastSeason = widget.indexTvShowAndMovieInfoStatusBySeason + 1 ==
+            state.tvShowAndMovie!.listTvShowAndMovieInfoStatusBySeason.length;
+      } else {
+        isLastSeason = true;
+      }
+      if (state is ConclusionResults || !isLastSeason) {
         _controller.forward(from: 0);
         previousState = state;
+        var tvShowAndMovieInfoStatus =
+            state.tvShowAndMovie!.listTvShowAndMovieInfoStatusBySeason[
+                widget.indexTvShowAndMovieInfoStatusBySeason];
 
         var stats = [
-          state.tvShowAndMovieInfoStatus!.hasFinalAndClosed,
-          state.tvShowAndMovieInfoStatus!.hasFinalAndOpened,
-          state.tvShowAndMovieInfoStatus!.noHasfinalAndNoNewSeason,
-          state.tvShowAndMovieInfoStatus!.noHasfinalAndNewSeason,
+          tvShowAndMovieInfoStatus.hasFinalAndClosed,
+          tvShowAndMovieInfoStatus.hasFinalAndOpened,
+          tvShowAndMovieInfoStatus.noHasfinalAndNoNewSeason,
+          tvShowAndMovieInfoStatus.noHasfinalAndNewSeason,
         ];
         stats.sort();
 
@@ -126,7 +147,7 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
         var widgetsList = [
           SubItemResult(
             text: Strings.hasFinalOpenedText,
-            count: state.tvShowAndMovieInfoStatus!.hasFinalAndOpened,
+            count: tvShowAndMovieInfoStatus.hasFinalAndOpened,
             totalCount: sumStats,
             icon1: const Icon(
               hasFinalIcon,
@@ -140,27 +161,11 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
               color: defaultIconColor,
             ),
             backgroundIcon2: openedColor,
-          ),
-          SubItemResult(
-            text: Strings.hasFinalOpenedText,
-            count: state.tvShowAndMovieInfoStatus!.noHasfinalAndNewSeason,
-            totalCount: sumStats,
-            icon1: const Icon(
-              noHasFinalIcon,
-              size: kFirstIconSizeOverlay,
-              color: defaultIconColor,
-            ),
-            backgroundIcon1: noHasFinalColor,
-            icon2: const Icon(
-              newSeasonIcon,
-              size: kSecondIconSizeOverlay,
-              color: defaultIconColor,
-            ),
-            backgroundIcon2: newSeasonColor,
+            isLastSeason: isLastSeason,
           ),
           SubItemResult(
             text: Strings.hasFinalClosedText,
-            count: state.tvShowAndMovieInfoStatus!.hasFinalAndClosed,
+            count: tvShowAndMovieInfoStatus.hasFinalAndClosed,
             totalCount: sumStats,
             icon1: const Icon(
               hasFinalIcon,
@@ -174,10 +179,29 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
               color: defaultIconColor,
             ),
             backgroundIcon2: closedColor,
+            isLastSeason: isLastSeason,
+          ),
+          SubItemResult(
+            text: Strings.noHasFinalNewSeasonText,
+            count: tvShowAndMovieInfoStatus.noHasfinalAndNewSeason,
+            totalCount: sumStats,
+            icon1: const Icon(
+              noHasFinalIcon,
+              size: kFirstIconSizeOverlay,
+              color: defaultIconColor,
+            ),
+            backgroundIcon1: noHasFinalColor,
+            icon2: const Icon(
+              newSeasonIcon,
+              size: kSecondIconSizeOverlay,
+              color: defaultIconColor,
+            ),
+            backgroundIcon2: newSeasonColor,
+            isLastSeason: isLastSeason,
           ),
           SubItemResult(
             text: Strings.noHasFinalNoNewSeasonText,
-            count: state.tvShowAndMovieInfoStatus!.noHasfinalAndNoNewSeason,
+            count: tvShowAndMovieInfoStatus.noHasfinalAndNoNewSeason,
             totalCount: sumStats,
             icon1: const Icon(
               noHasFinalIcon,
@@ -190,9 +214,19 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
               size: kSecondIconSizeOverlay,
               color: defaultIconColor,
             ),
+            isLastSeason: isLastSeason,
             backgroundIcon2: noNewSeasonColor,
           ),
         ];
+        int index = state.tvShowAndMovie!.localConclusion == null
+            ? -1
+            : state.tvShowAndMovie!.localConclusion!.index;
+        SubItemResult? subItemSelected;
+        if (index != -1) {
+          subItemSelected =
+              widgetsList[state.tvShowAndMovie!.localConclusion!.index];
+        }
+
         widgetsList.sort((a, b) => b.count.compareTo(a.count));
         return FadeTransition(
           opacity: _animation,
@@ -206,7 +240,7 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
                       indent: 2,
                     ),
                     Container(
-                      width: 100.h,
+                      width: 100.w,
                       padding: const EdgeInsets.all(8.0),
                       child: const Text(
                         Strings.resultText,
@@ -218,6 +252,72 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
                             color: textColorInfoPageColor),
                       ),
                     ),
+                    subItemSelected != null && isLastSeason
+                        ? Container(
+                            width: 100.w,
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Opção selecionada: ",
+                                  style: TextStyle(
+                                      fontFamily: fontFamily,
+                                      fontSize: 15,
+                                      fontStyle: FontStyle.italic,
+                                      color: textColorInfoPageColor),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4.0),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: subItemSelected.backgroundIcon1),
+                                    child: Icon(subItemSelected.icon1.icon,
+                                        size: 10,
+                                        color: subItemSelected.icon1.color),
+                                  ),
+                                ),
+                                Text(
+                                  "+",
+                                  style: TextStyle(
+                                      fontFamily: fontFamily,
+                                      fontSize: 13,
+                                      fontStyle: FontStyle.italic,
+                                      color: textColorInfoPageColor),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4.0),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: subItemSelected.backgroundIcon2),
+                                    child: Icon(subItemSelected.icon2.icon,
+                                        size: 10,
+                                        color: subItemSelected.icon2.color),
+                                  ),
+                                ),
+                              ],
+                            ))
+                        : Container(),
+                    !isLastSeason
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "A votação da Temporada ${widget.indexTvShowAndMovieInfoStatusBySeason + 1} foi encerrada. Acesse a temporada mais recente para votar.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontFamily: fontFamily,
+                                  fontSize: 15,
+                                  fontStyle: FontStyle.italic,
+                                  color: textColorInfoPageColor),
+                            ),
+                          )
+                        : Container(),
                     const Divider(
                       color: ratingColorPosterMainPage,
                     ),
@@ -237,13 +337,20 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24.0, vertical: 12.0),
                         child: CustomButton(
-                          onPressed: () async {
-                            conclusionBloc.add(ResetConclusionEvent());
-                          },
+                          onPressed: !isLastSeason
+                              ? null
+                              : () async {
+                                  conclusionBloc.add(LoadConclusionEvent(
+                                      tvShowAndMovie: state.tvShowAndMovie!,
+                                      showUpdate: state.tvShowAndMovie!
+                                              .localConclusion ==
+                                          null));
+                                },
                           fontSize: kButtonSizeInfoPage,
-                          text: Strings.backText,
-                          disabledColor:
-                              ratingColorPosterMainPage.withOpacity(0.3),
+                          text: state.tvShowAndMovie!.localConclusion == null
+                              ? Strings.backText
+                              : "Atualizar",
+                          disabledColor: Colors.grey,
                         ),
                       ),
                     ),
@@ -257,6 +364,9 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
       }
 
       previousState = state;
+      if (state is LoadingConclusion) {
+        return CustomLoadingWidget();
+      }
       return FadeTransition(
         opacity: _animation,
         child: Stack(
@@ -637,8 +747,11 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
                                             horizontal: 24.0, vertical: 8.0),
                                         child: CustomButton(
                                           onPressed: () async {
-                                            conclusionBloc
-                                                .add(ResetConclusionEvent());
+                                            conclusionBloc.add(
+                                                LoadConclusionEvent(
+                                                    tvShowAndMovie:
+                                                        state.tvShowAndMovie!,
+                                                    showUpdate: false));
                                           },
                                           fontSize: kButtonSizeInfoPage,
                                           text: Strings.backText,

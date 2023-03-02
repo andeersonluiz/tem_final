@@ -19,7 +19,8 @@ class Strings {
   static const String sendProblemSucess =
       "Obrigado por relatar o problema. Iremos analisar e trabalhar para resolvê-lo o mais rápido possível.";
   static const String errorEmptyFeedback = "Seu texto não pode ser vazio.";
-
+  static const String userLoggedOtherDevice =
+      "Você está atualmente logado em outro dispositivo. Você foi desconectado e precisa fazer login novamente.";
   static const aborted =
       "Operação foi abortada devido a um problema de concorrência, como aborto de transação, etc.";
   static const alreadyExists = "Algum documento que tentamos criar já existe.";

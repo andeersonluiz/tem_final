@@ -8,10 +8,13 @@ class UserHistory extends Equatable {
   final String idUser;
   final List<UserChoice> listUserChoices;
   final List<UserRating> listUserRatings;
-  const UserHistory(
-      {required this.idUser,
-      required this.listUserChoices,
-      required this.listUserRatings});
+  final String deviceId;
+  const UserHistory({
+    required this.idUser,
+    required this.listUserChoices,
+    required this.listUserRatings,
+    required this.deviceId,
+  });
 
   @override
   List<Object> get props => [idUser];

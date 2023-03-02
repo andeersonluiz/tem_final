@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show SystemChrome, SystemUiMode, SystemUiOverlay, rootBundle;
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:tem_final/src/core/utils/routes_names.dart';
@@ -47,7 +49,9 @@ import 'src/presenter/stateManagement/bloc/tvShowAndMovieInfo/tv_show_and_movie_
 import 'src/presenter/stateManagement/valueNotifier/local_filter_notifier.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   await Firebase.initializeApp();
   await supabase.Supabase.initialize(
     url: "https://imqmttavuchgrverzvee.supabase.co",

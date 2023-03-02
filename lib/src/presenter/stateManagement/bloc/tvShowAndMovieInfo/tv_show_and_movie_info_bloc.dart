@@ -10,6 +10,7 @@ class TvShowAndMovieInfoBloc
   TvShowAndMovieInfoBloc(this._getTvShowAndMovieUseCase)
       : super(TvShowAndMovieInfoLoading()) {
     on<GetTvShowAndMovieEvent>(_getTvShowAndMovieInfo);
+    on<UpdateTvShowAndMovieInfoStatus>(_updateTvShowAndMovieInfo);
   }
   final GetTvShowAndMovieUseCase _getTvShowAndMovieUseCase;
   late TvShowAndMovie tvShowAndMovie;
@@ -18,12 +19,19 @@ class TvShowAndMovieInfoBloc
       Emitter<TvShowAndMovieInfoState> emit) async {
     emit(TvShowAndMovieInfoLoading());
 
-    var resultGetTvShowAndMovie = await _getTvShowAndMovieUseCase(event.id);
+    var resultGetTvShowAndMovie = await _getTvShowAndMovieUseCase(event.id!);
     if (resultGetTvShowAndMovie is DataSucess) {
       tvShowAndMovie = resultGetTvShowAndMovie.data!;
-      emit(TvShowAndMovieInfoDone(tvShowAndMovie));
+      emit(TvShowAndMovieInfoDone(tvShowAndMovie,
+          tvShowAndMovie.listTvShowAndMovieInfoStatusBySeason.last));
     } else {
       emit(TvShowAndMovieInfoError(resultGetTvShowAndMovie.error!.item1));
     }
+  }
+
+  Future<void> _updateTvShowAndMovieInfo(UpdateTvShowAndMovieInfoStatus event,
+      Emitter<TvShowAndMovieInfoState> emit) async {
+    emit(TvShowAndMovieInfoDone(
+        state.tvShowAndMovie!, event.tvShowAndMovieInfoStatus!));
   }
 }
