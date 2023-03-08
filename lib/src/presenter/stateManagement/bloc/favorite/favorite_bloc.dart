@@ -14,7 +14,6 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     on<SetFavoriteEvent>(_setFavorite);
     on<GetFavoriteEvent>(_getFavorite);
     on<UpdateFavoriteEvent>(_updateFavorite);
-
     on<ResetFavoriteEvent>(_resetFavorite);
   }
 

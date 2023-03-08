@@ -12,7 +12,8 @@ class TvShowAndMovieInfoStatusModel {
   final int noHasfinalAndNewSeason;
   final int noHasfinalAndNoNewSeason;
   final String posterImageUrl;
-
+  final double widthPosterImage;
+  final double heightPosterImage;
   const TvShowAndMovieInfoStatusModel({
     required this.seasonNumber,
     required this.hasFinalAndOpened,
@@ -20,6 +21,8 @@ class TvShowAndMovieInfoStatusModel {
     required this.noHasfinalAndNewSeason,
     required this.noHasfinalAndNoNewSeason,
     required this.posterImageUrl,
+    required this.widthPosterImage,
+    required this.heightPosterImage,
   });
 
   TvShowAndMovieInfoStatusModel copyWith({
@@ -29,6 +32,8 @@ class TvShowAndMovieInfoStatusModel {
     int? noHasfinalAndNewSeason,
     int? noHasfinalAndNoNewSeason,
     String? posterImageUrl,
+    double? widthPosterImage,
+    double? heightPosterImage,
   }) {
     return TvShowAndMovieInfoStatusModel(
       seasonNumber: seasonNumber ?? this.seasonNumber,
@@ -39,6 +44,8 @@ class TvShowAndMovieInfoStatusModel {
       noHasfinalAndNoNewSeason:
           noHasfinalAndNoNewSeason ?? this.noHasfinalAndNoNewSeason,
       posterImageUrl: posterImageUrl ?? this.posterImageUrl,
+      heightPosterImage: heightPosterImage ?? this.heightPosterImage,
+      widthPosterImage: widthPosterImage ?? this.widthPosterImage,
     );
   }
 
@@ -55,13 +62,14 @@ class TvShowAndMovieInfoStatusModel {
 
   factory TvShowAndMovieInfoStatusModel.fromMap(Map<String, dynamic> map) {
     return TvShowAndMovieInfoStatusModel(
-      seasonNumber: map['seasonNumber'] as int,
-      hasFinalAndOpened: map['hasFinalAndOpened'] as int,
-      hasFinalAndClosed: map['hasFinalAndClosed'] as int,
-      noHasfinalAndNewSeason: map['noHasfinalAndNewSeason'] as int,
-      noHasfinalAndNoNewSeason: map['noHasfinalAndNoNewSeason'] as int,
-      posterImageUrl: map['posterImageUrl'] as String,
-    );
+        seasonNumber: map['seasonNumber'] as int,
+        hasFinalAndOpened: map['hasFinalAndOpened'] as int,
+        hasFinalAndClosed: map['hasFinalAndClosed'] as int,
+        noHasfinalAndNewSeason: map['noHasfinalAndNewSeason'] as int,
+        noHasfinalAndNoNewSeason: map['noHasfinalAndNoNewSeason'] as int,
+        posterImageUrl: map['posterImageUrl'] as String,
+        heightPosterImage: 0,
+        widthPosterImage: 0);
   }
 
   String toJson() => json.encode(toMap());

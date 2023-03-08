@@ -88,6 +88,7 @@ class _HomeViewPageState extends State<HomeViewPage>
                     onPressed: () {
                       _animationController.reset();
                       bloc.add(GetAllTvShowAndMovieEvent(Filter.all));
+                      _animationController.forward();
                     },
                     text: Filter.all.string,
                     selectedText: state.filterSelected),
@@ -95,6 +96,7 @@ class _HomeViewPageState extends State<HomeViewPage>
                   onPressed: () {
                     _animationController.reset();
                     bloc.add(GetAllMovieEvent(Filter.movie));
+                    _animationController.forward();
                   },
                   text: Filter.movie.string,
                   selectedText: state.filterSelected,
@@ -103,6 +105,7 @@ class _HomeViewPageState extends State<HomeViewPage>
                   onPressed: () {
                     _animationController.reset();
                     bloc.add(GetAllTvShowEvent(Filter.tvShow));
+                    _animationController.forward();
                   },
                   text: Filter.tvShow.string,
                   selectedText: state.filterSelected,
@@ -127,7 +130,20 @@ class _HomeViewPageState extends State<HomeViewPage>
                         .where(
                             (element) => element.string == state.filterSelected)
                         .first;
-                    bloc.add(GetAllTvShowAndMovieEvent(filter, refresh: true));
+                    switch (filter) {
+                      case Filter.all:
+                        bloc.add(
+                            GetAllTvShowAndMovieEvent(filter, refresh: true));
+
+                        break;
+                      case Filter.movie:
+                        bloc.add(GetAllMovieEvent(filter, refresh: true));
+
+                        break;
+                      case Filter.tvShow:
+                        bloc.add(GetAllTvShowEvent(filter, refresh: true));
+                        break;
+                    }
                   },
                 ),
               );

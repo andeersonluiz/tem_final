@@ -12,8 +12,12 @@ import 'package:tuple/tuple.dart';
 
 class CustomFeedback extends StatefulWidget {
   const CustomFeedback(
-      {super.key, required this.reportType, this.titleTvShowAndMovie = ""});
+      {super.key,
+      required this.reportType,
+      this.titleTvShowAndMovie = "",
+      this.idTvShowAndMovie = ""});
   final String titleTvShowAndMovie;
+  final String idTvShowAndMovie;
   final ReportType reportType;
 
   @override
@@ -91,7 +95,8 @@ class _CustomFeedbackState extends State<CustomFeedback> {
                         color: foregroundColor, fontFamily: fontFamily)),
                 cursorColor: Colors.white,
                 maxLength: 1000,
-                maxLines: 5,
+                minLines: 1,
+                maxLines: 3,
                 style: const TextStyle(
                     fontFamily: fontFamily, color: foregroundColor),
               ),
@@ -111,7 +116,7 @@ class _CustomFeedbackState extends State<CustomFeedback> {
                     }
                     analyticsBloc.add(SendFeedbackEvent(
                         feedbackParams: Tuple3(textEditingController.text,
-                            widget.reportType, "")));
+                            widget.reportType, widget.idTvShowAndMovie)));
                     CustomToast(msg: msgSucess);
                     Navigator.pop(context);
                   },

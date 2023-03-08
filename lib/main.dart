@@ -82,7 +82,7 @@ void main() async {
         .containedBy("genres", ["Drama", "História"]));
 
     print(queryDocumentData.runtimeType);
-    print(queryDocumentData.length);
+    print(queryDocumentData.length);  
     print(queryDocumentData.first);
     List<Map<String, dynamic>> maps = queryDocumentData
         .map<Map<String, dynamic>>((e) => e as Map<String, dynamic>)

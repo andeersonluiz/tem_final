@@ -6,7 +6,7 @@ import 'package:tem_final/src/core/utils/routes_names.dart';
 import 'package:tem_final/src/presenter/pages/favorite/widgets/favorite_card_widget.dart';
 import 'package:tem_final/src/presenter/pages/search/search_page.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_bottom_navigation.dart';
-import 'package:tem_final/src/presenter/reusableWidgets/error_widget.dart';
+import 'package:tem_final/src/presenter/reusableWidgets/empty_list_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/favorite/favorite_bloc.dart';
@@ -80,23 +80,21 @@ class _FavoritePageState extends State<FavoritePage>
             ),
           ),
           BlocBuilder<FavoriteBloc, FavoriteState>(builder: (context, state) {
+            if (state is FavoriteToastDone) {
+              if (state.isFavorite) {
+                CustomToast(msg: state.msg);
+              }
+              favoriteBloc.add(UpdateFavoriteEvent());
+            }
             if (state is FavoriteDone) {
               if (state.favoriteList.isEmpty) {
-                return Expanded(
-                  child: CustomErrorWidget(
-                    errorText: "Sua lista de favoritos está vazia",
-                    onRefresh: () async {
-                      favoriteBloc.add(const GetFavoriteEvent());
-                    },
+                return const Expanded(
+                  child: EmptyListWidget(
+                    msg: "Sua lista de favoritos está vazia",
                   ),
                 );
               }
-              if (state is FavoriteToastDone) {
-                if (state.isFavorite) {
-                  CustomToast(msg: state.msg);
-                }
-                favoriteBloc.add(UpdateFavoriteEvent());
-              }
+
               return Expanded(
                 child: ScrollConfiguration(
                   behavior: MyBehavior(),

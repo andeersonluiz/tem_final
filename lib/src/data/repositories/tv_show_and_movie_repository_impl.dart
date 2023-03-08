@@ -1,4 +1,6 @@
 import 'package:either_dart/either.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:tem_final/src/core/resources/device_info.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
 import 'package:tem_final/src/data/datasource/local/local_preferences_handler_service.dart';
@@ -187,11 +189,22 @@ class TvShowAndMovieRepositoryImpl implements TvShowAndMovieRepository {
       if (index != -1) {
         tvShowAndMovie.localRating = tvShowAndMovie.ratingList[index].rating;
       }
+      //atualiza height e width do placeholder
+      for (var element in tvShowAndMovie.listTvShowAndMovieInfoStatusBySeason) {
+        var file =
+            await DefaultCacheManager().getSingleFile(element.posterImageUrl);
+        var decodedImage = await decodeImageFromList(file.readAsBytesSync());
+        element.widthPosterImage = decodedImage.width.toDouble();
+        element.heightPosterImage = decodedImage.height.toDouble();
+      }
+
       //atualiza conclusion
       if (resultUserHistory.isLeft && resultUserHistory.left != null) {
         var userHistory = resultUserHistory.left;
-        var index = userHistory!.listUserChoices
-            .indexWhere((e) => e.idTvShowAndMovie == id);
+        var index = userHistory!.listUserChoices.indexWhere((e) =>
+            e.idTvShowAndMovie == id &&
+            tvShowAndMovie.listTvShowAndMovieInfoStatusBySeason.length ==
+                e.seasonSelected);
         if (index != -1) {
           tvShowAndMovie.localConclusion =
               userHistory.listUserChoices[index].conclusionSelected;

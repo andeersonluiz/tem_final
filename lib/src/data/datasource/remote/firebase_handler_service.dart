@@ -389,8 +389,7 @@ class FirebaseHandlerService {
       await _instance.from("reports").insert({
         "message": message,
         "reportType": reportType.string,
-        "idTvShowAndMovie":
-            idTvShowAndMovie.isEmpty ? -1 : int.parse(idTvShowAndMovie),
+        "idTvShowAndMovie": idTvShowAndMovie.isEmpty ? "" : idTvShowAndMovie,
         "hasErrorId": hasErrorFindId
       });
 
@@ -587,7 +586,7 @@ class FirebaseHandlerService {
       await ConnectionVerifyer.verify();
 
       await _instance.rpc('update_rating_list', params: {
-        'p_id': int.parse(idTvShowAndMovie),
+        'p_id': idTvShowAndMovie,
         'value': tvShowAndMovieRating.toMap()
       });
       return const Left(true);

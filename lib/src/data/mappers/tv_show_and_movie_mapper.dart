@@ -25,7 +25,6 @@ class TvShowAndMovieMapper
       runtime: model.runtime,
       ageClassification: model.ageClassification,
       posterImage: model.posterImage,
-      link: model.link,
       isNewSeasonUpcoming: model.isNewSeasonUpcoming,
       seasons: model.seasons,
       viewsCount: model.viewsCount,
@@ -38,12 +37,15 @@ class TvShowAndMovieMapper
       localRating: localRating,
       listTvShowAndMovieInfoStatusBySeason: tvShowAndMovieInfoStatusModel
           .map((item) => TvShowAndMovieInfoStatus(
-              hasFinalAndClosed: item.hasFinalAndClosed,
-              hasFinalAndOpened: item.hasFinalAndOpened,
-              seasonNumber: item.seasonNumber,
-              noHasfinalAndNewSeason: item.noHasfinalAndNewSeason,
-              noHasfinalAndNoNewSeason: item.noHasfinalAndNoNewSeason,
-              posterImageUrl: item.posterImageUrl))
+                hasFinalAndClosed: item.hasFinalAndClosed,
+                hasFinalAndOpened: item.hasFinalAndOpened,
+                seasonNumber: item.seasonNumber,
+                noHasfinalAndNewSeason: item.noHasfinalAndNewSeason,
+                noHasfinalAndNoNewSeason: item.noHasfinalAndNoNewSeason,
+                posterImageUrl: item.posterImageUrl,
+                widthPosterImage: item.widthPosterImage,
+                heightPosterImage: item.heightPosterImage,
+              ))
           .toList(),
       isFavorite: isFavorite,
     );
@@ -65,7 +67,6 @@ class TvShowAndMovieMapper
         runtime: entity.runtime,
         ageClassification: entity.ageClassification,
         posterImage: entity.posterImage,
-        link: entity.link,
         isNewSeasonUpcoming: entity.isNewSeasonUpcoming,
         seasons: entity.seasons,
         viewsCount: entity.viewsCount,
@@ -78,12 +79,15 @@ class TvShowAndMovieMapper
             .toList(),
         listTvShowAndMovieInfoStatusBySeason: tvShowAndMovieInfoStatus
             .map((item) => TvShowAndMovieInfoStatusModel(
-                hasFinalAndClosed: item.hasFinalAndClosed,
-                hasFinalAndOpened: item.hasFinalAndOpened,
-                seasonNumber: item.seasonNumber,
-                noHasfinalAndNewSeason: item.noHasfinalAndNewSeason,
-                noHasfinalAndNoNewSeason: item.noHasfinalAndNoNewSeason,
-                posterImageUrl: item.posterImageUrl))
+                  hasFinalAndClosed: item.hasFinalAndClosed,
+                  hasFinalAndOpened: item.hasFinalAndOpened,
+                  seasonNumber: item.seasonNumber,
+                  noHasfinalAndNewSeason: item.noHasfinalAndNewSeason,
+                  noHasfinalAndNoNewSeason: item.noHasfinalAndNoNewSeason,
+                  posterImageUrl: item.posterImageUrl,
+                  widthPosterImage: item.widthPosterImage,
+                  heightPosterImage: item.heightPosterImage,
+                ))
             .toList());
   }
 }

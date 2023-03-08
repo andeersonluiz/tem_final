@@ -27,9 +27,9 @@ class SubItemResult extends StatelessWidget {
   Widget build(BuildContext context) {
     final percentage = count / totalCount;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
       child: LinearPercentIndicator(
-          lineHeight: 7.h,
+          lineHeight: 5.5.h,
           animation: true,
           animationDuration: 800,
           center: Row(
@@ -64,14 +64,15 @@ class SubItemResult extends StatelessWidget {
           backgroundColor: foregroundColor,
           progressColor: isLastSeason ? Colors.green[900] : Colors.grey,
           leading: SizedBox(
-              height: 12.h,
-              width: 20.w,
-              child: SubOverlayIcon(
-                icon1: icon1,
-                backgroundIcon1: isLastSeason ? backgroundIcon1 : Colors.grey,
-                icon2: icon2,
-                backgroundIcon2: isLastSeason ? backgroundIcon2 : Colors.grey,
-              ))),
+            width: 20.w,
+            height: 75,
+            child: SubOverlayIcon(
+              icon1: icon1,
+              backgroundIcon1: isLastSeason ? backgroundIcon1 : Colors.grey,
+              icon2: icon2,
+              backgroundIcon2: isLastSeason ? backgroundIcon2 : Colors.grey,
+            ),
+          )),
     );
   }
 }

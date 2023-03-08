@@ -18,7 +18,6 @@ class TvShowAndMovieModel {
   final int runtime;
   final String ageClassification;
   final String posterImage;
-  final String link;
   final ConclusionType actualStatus;
   final bool isNewSeasonUpcoming;
   final int seasons;
@@ -40,7 +39,6 @@ class TvShowAndMovieModel {
     required this.runtime,
     required this.ageClassification,
     required this.posterImage,
-    required this.link,
     required this.isNewSeasonUpcoming,
     required this.seasons,
     required this.viewsCount,
@@ -81,7 +79,6 @@ class TvShowAndMovieModel {
         runtime: runtime ?? this.runtime,
         ageClassification: ageClassification ?? this.ageClassification,
         posterImage: posterImage ?? this.posterImage,
-        link: link ?? this.link,
         isNewSeasonUpcoming: isNewSeasonUpcoming ?? this.isNewSeasonUpcoming,
         seasons: seasons ?? this.seasons,
         viewsCount: viewsCount ?? this.viewsCount,
@@ -105,7 +102,6 @@ class TvShowAndMovieModel {
       'runtime': runtime,
       'ageClassification': ageClassification,
       'posterImage': posterImage,
-      'link': link,
       'isNewSeasonUpcoming': isNewSeasonUpcoming,
       'seasons': seasons,
       'viewsCount': viewsCount,
@@ -163,7 +159,6 @@ class TvShowAndMovieModel {
         runtime: map['runtime'] as int,
         ageClassification: map['ageClassification'] as String,
         posterImage: map['posterImage'] as String,
-        link: map['link'] as String,
         isNewSeasonUpcoming: map['isNewSeasonUpcoming'] as bool,
         seasons: map['seasons'] as int,
         viewsCount: map['viewsCount'] as int,
@@ -182,7 +177,7 @@ class TvShowAndMovieModel {
 
   @override
   String toString() {
-    return 'TvShowAndMovieModel(id: $id, title: $title, caseSearch: $caseSearch, synopsis: $synopsis, imdbInfo: $imdbInfo, genres: $genres, runtime: $runtime, ageClassification: $ageClassification, posterImage: $posterImage, link: $link, actualStatus: $actualStatus, isNewSeasonUpcoming: $isNewSeasonUpcoming, seasons: $seasons, viewsCount: $viewsCount, countConclusions: $countConclusions, ratingList: $ratingList, averageRating: $averageRating)';
+    return 'TvShowAndMovieModel(id: $id, title: $title, caseSearch: $caseSearch, synopsis: $synopsis, imdbInfo: $imdbInfo, genres: $genres, runtime: $runtime, ageClassification: $ageClassification, posterImage: $posterImage, actualStatus: $actualStatus, isNewSeasonUpcoming: $isNewSeasonUpcoming, seasons: $seasons, viewsCount: $viewsCount, countConclusions: $countConclusions, ratingList: $ratingList, averageRating: $averageRating)';
   }
 
   @override

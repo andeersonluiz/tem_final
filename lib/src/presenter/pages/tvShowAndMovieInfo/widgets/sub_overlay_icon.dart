@@ -1,5 +1,5 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 class SubOverlayIcon extends StatelessWidget {
   const SubOverlayIcon(
@@ -15,36 +15,40 @@ class SubOverlayIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Positioned(
-          top: 0,
-          left: 0,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
+    return SizedBox(
+      child: IntrinsicHeight(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle, color: backgroundIcon1),
-                child: icon1),
-          ),
+                child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle, color: backgroundIcon1),
+                    child: icon1),
+              ),
+            ),
+            Positioned(
+              top: 35,
+              left: 38,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: backgroundIcon2,
+                    ),
+                    child: icon2),
+              ),
+            )
+          ],
         ),
-        Positioned(
-          top: 5.5.h,
-          left: 9.w,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: backgroundIcon2,
-                ),
-                child: icon2),
-          ),
-        )
-      ],
+      ),
     );
   }
 }

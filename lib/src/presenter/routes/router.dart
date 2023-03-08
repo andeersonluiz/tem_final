@@ -15,12 +15,14 @@ class MyRouter {
         );
 
       case Routes.info:
-        return PageRouteBuilder(pageBuilder: (_, __, ___) {
-          var args = settings.arguments as Map<String, dynamic>;
-          return TvShowAndMovieInfoPage(
-              idTvShowAndMovie: args["idTvShowAndMovie"],
-              titleTvShowAndMovie: args["title"]);
-        });
+        return PageRouteBuilder(
+            transitionsBuilder: myTrasition,
+            pageBuilder: (_, __, ___) {
+              var args = settings.arguments as Map<String, dynamic>;
+              return TvShowAndMovieInfoPage(
+                  idTvShowAndMovie: args["idTvShowAndMovie"],
+                  titleTvShowAndMovie: args["title"]);
+            });
       case Routes.genre:
         return PageRouteBuilder(
             transitionsBuilder: myTrasition,

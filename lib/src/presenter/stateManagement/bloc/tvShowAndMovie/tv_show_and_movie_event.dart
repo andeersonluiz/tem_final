@@ -17,11 +17,13 @@ class GetAllTvShowAndMovieEvent extends TvShowAndMovieEvent {
 }
 
 class GetAllTvShowEvent extends TvShowAndMovieEvent {
-  GetAllTvShowEvent(Filter filter) : super(filterSelected: filter.string);
+  GetAllTvShowEvent(Filter filter, {bool refresh = false})
+      : super(filterSelected: filter.string, refresh: refresh);
 }
 
 class GetAllMovieEvent extends TvShowAndMovieEvent {
-  GetAllMovieEvent(Filter filter) : super(filterSelected: filter.string);
+  GetAllMovieEvent(Filter filter, {bool refresh = false})
+      : super(filterSelected: filter.string, refresh: refresh);
 }
 
 class LoadingMoreEvent extends TvShowAndMovieEvent {

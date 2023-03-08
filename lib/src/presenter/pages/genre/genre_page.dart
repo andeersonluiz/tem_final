@@ -195,7 +195,7 @@ class _GenrePageState extends State<GenrePage>
             ));
       } else if (state is GenreError) {
         CustomToast(msg: state.msg);
-        print("error");
+   
         return Scaffold(
           backgroundColor: backgroundColor,
           appBar: AppBar(
@@ -214,7 +214,7 @@ class _GenrePageState extends State<GenrePage>
           body: CustomErrorWidget(
             errorText: "",
             onRefresh: () async {
-              print("genreBloc");
+              
               genreBloc.add(GetGenreEvent(
                   genreType: genre,
                   filters: const Tuple2(Filter.all, FilterGenre.popularity)));

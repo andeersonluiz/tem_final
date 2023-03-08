@@ -9,7 +9,6 @@ import 'package:tem_final/src/core/utils/strings.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/presenter/pages/login/login_dialog_page.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_button.dart';
-import 'package:tem_final/src/presenter/reusableWidgets/error_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/loading_widget.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/toast.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/rating/rating_bloc.dart';
@@ -245,21 +244,57 @@ class InfoWidgetState extends State<InfoWidget> {
                       }
                       if (state is RatingError) {
                         CustomToast(msg: state.error!);
-                        return CustomErrorWidget(
-                          errorText: "",
-                          onRefresh: () async {
-                            ratingBloc.add(
-                                UpdateRatingEvent(tvShowAndMovie.localRating));
-                          },
+                        return Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                Strings.myRatingText,
+                                style: textStyle.copyWith(
+                                    fontSize: 17, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            tvShowAndMovie.localRating != -1
+                                ? GestureDetector(
+                                    onTap: () async {
+                                      await _showModalBottomSheet(
+                                          tvShowAndMovie,
+                                          Strings.updateRatingText);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: RatingBarIndicator(
+                                        rating: tvShowAndMovie.localRating
+                                            .toDouble(),
+                                        direction: Axis.horizontal,
+                                        itemCount: 5,
+                                        itemSize: 20,
+                                        itemPadding: const EdgeInsets.symmetric(
+                                            vertical: 4.0),
+                                        unratedColor:
+                                            unratedColorPosterMainPage,
+                                        itemBuilder: (context, _) => const Icon(
+                                          Icons.star,
+                                          color: ratingColorPosterMainPage,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : CustomButton(
+                                    onPressed: () async {
+                                      await _showModalBottomSheet(
+                                          tvShowAndMovie,
+                                          Strings.yourRatingText);
+                                    },
+                                    text: Strings.generateButtonText(
+                                        isMovie: tvShowAndMovie.seasons == -1),
+                                  )
+                          ],
                         );
                       }
                       return Container();
                     },
-                  )
-                  /*Obx(() {
-                 
-                }),*/
-                  ),
+                  )),
             ),
             const Divider(
               color: ratingColorPosterMainPage,

@@ -15,7 +15,6 @@ class TvShowAndMovie extends Equatable {
   final int runtime;
   final String ageClassification;
   final String posterImage;
-  final String link;
   final bool isNewSeasonUpcoming;
   final int seasons;
   final int viewsCount;
@@ -38,7 +37,6 @@ class TvShowAndMovie extends Equatable {
     required this.runtime,
     required this.ageClassification,
     required this.posterImage,
-    required this.link,
     required this.isNewSeasonUpcoming,
     required this.seasons,
     required this.viewsCount,

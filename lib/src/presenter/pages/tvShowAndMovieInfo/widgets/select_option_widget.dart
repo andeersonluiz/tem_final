@@ -90,8 +90,6 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
           state.conclusionSelectionStatus;
       final bool selectFirstConclusion =
           conclusionSelectionStatus.hasSelectedFirstConclusion;
-      final bool selectSecondConclusion =
-          conclusionSelectionStatus.hasSelectedSecondConclusion;
       final bool bothConclusionSelected =
           conclusionSelectionStatus.bothConclusionSelected;
       final bool showAnimationOpacitySecondConclusion =
@@ -368,198 +366,293 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
       }
       return FadeTransition(
         opacity: _animation,
-        child: Stack(
+        child: Column(
           children: [
-            SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnimatedPadding(
-                    padding: selectFirstConclusion
-                        ? const EdgeInsets.all(26)
-                        : EdgeInsets.zero,
-                    duration:
-                        const Duration(milliseconds: kDurationAnimationPadding),
-                    child: selectFirstConclusion
-                        ? Text(
-                            "${Strings.generateTypeTvShowAndMovie(isMovie: isMovie)} ${Strings.hasEndText.toLowerCase()}",
-                            style: const TextStyle(
-                                fontFamily: fontFamily,
-                                fontSize: kHeaderSizeInfoPage,
-                                fontWeight: FontWeight.w500,
-                                color: textColorInfoPageColor),
-                          )
-                        : Container(),
-                  ),
-
-                  AnimatedContainer(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    duration:
-                        const Duration(milliseconds: kDurationAnimationResize),
-                    curve: Curves.linear,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              state.conclusion == Conclusion.hasFinal
-                                  ? SubSelectedIconCircle(
-                                      icon: Icon(
-                                        hasFinalIcon,
-                                        size: selectFirstConclusion
-                                            ? kSelectFirstIconSize
-                                            : kUnselectFirstIconSize,
-                                        color: hasFinalColor,
-                                      ),
-                                      selectedColor: hasFinalColor,
-                                      text: Strings.hasFinalOptionText,
-                                      backgroundColor:
-                                          selectedIconBackgroundColor,
-                                      textSize: selectFirstConclusion
-                                          ? kSizeSelectedFirstItem
-                                          : kSizeUnselectedFirstItem,
-                                    )
-                                  : SubUnselectedIconCircle(
-                                      onTap: () async {
-                                        conclusionBloc.add(
-                                            const SelectFirstConclusionEvent(
-                                                Conclusion.hasFinal));
-                                        await Future.delayed(const Duration(
-                                            milliseconds:
-                                                kAwaitTimeToAnimation));
-                                        conclusionBloc.add(const ShowAnimation(
-                                            Conclusion.hasFinal));
-                                      },
-                                      backgroundColor: hasFinalColor,
-                                      text: Strings.hasFinalOptionText,
-                                      textSize: selectFirstConclusion
-                                          ? kSizeSelectedFirstItem
-                                          : kSizeUnselectedFirstItem,
-                                    ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              state.conclusion == Conclusion.noHasFinal
-                                  ? SubSelectedIconCircle(
-                                      icon: Icon(
-                                        noHasFinalIcon,
-                                        size: selectFirstConclusion
-                                            ? kSelectFirstIconSize
-                                            : kUnselectFirstIconSize,
-                                        color: noHasFinalColor,
-                                      ),
-                                      backgroundColor:
-                                          selectedIconBackgroundColor,
-                                      selectedColor: noHasFinalColor,
-                                      text: Strings.noHasFinalOptionText,
-                                      textSize: selectFirstConclusion
-                                          ? kSizeSelectedFirstItem
-                                          : kSizeUnselectedFirstItem,
-                                    )
-                                  : SubUnselectedIconCircle(
-                                      onTap: () async {
-                                        conclusionBloc.add(
-                                            const SelectFirstConclusionEvent(
-                                                Conclusion.noHasFinal));
-                                        await Future.delayed(const Duration(
-                                            milliseconds:
-                                                kAwaitTimeToAnimation));
-                                        conclusionBloc.add(const ShowAnimation(
-                                            Conclusion.noHasFinal));
-                                      },
-                                      backgroundColor: noHasFinalColor,
-                                      text: Strings.noHasFinalOptionText,
-                                      textSize: selectFirstConclusion
-                                          ? kSizeSelectedFirstItem
-                                          : kSizeUnselectedFirstItem,
-                                    ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  //SEGUNDA OPT
-                  selectFirstConclusion
-                      ? Container()
-                      : Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: AnimatedOpacity(
-                              opacity:
-                                  showAnimationOpacitySecondConclusion ? 1 : 0,
-                              duration: const Duration(
-                                  milliseconds: kDurationAnimationOpacity),
-                              child: showAnimationOpacitySecondConclusion
-                                  ? RichText(
-                                      text: TextSpan(
-                                          style: const TextStyle(
-                                              fontFamily: fontFamily,
-                                              fontSize: kConjuctionSizeInfoPage,
-                                              fontStyle: FontStyle.italic),
-                                          children: [
-                                            TextSpan(
-                                                text: Strings
-                                                        .generateTypeTvShowAndMovie(
-                                                            isMovie: isMovie)
-                                                    .toString()
-                                                    .toUpperCase()),
-                                            state.conclusion ==
-                                                    Conclusion.noHasFinal
-                                                ? const TextSpan(
-                                                    text:
-                                                        " ${Strings.noHasFinalOptionText}",
-                                                    style: TextStyle(
-                                                        color: noHasFinalColor,
-                                                        fontWeight:
-                                                            FontWeight.bold))
-                                                : const TextSpan(
-                                                    text:
-                                                        " ${Strings.hasFinalOptionText}",
-                                                    style: TextStyle(
-                                                        color: hasFinalColor,
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                            state.conclusion ==
-                                                    Conclusion.noHasFinal
-                                                ? const TextSpan(
-                                                    text: Strings
-                                                        .noHasFinalConjuctionText)
-                                                : const TextSpan(
-                                                    text: Strings
-                                                        .hasFinalConjuctionText),
-                                          ]),
-                                    )
-                                  : const Text(
-                                      "",
-                                      style: TextStyle(
-                                          fontSize: kConjuctionSizeInfoPage,
-                                          color: Colors.transparent),
-                                    )),
-                        ),
-                  AnimatedContainer(
-                    duration:
-                        const Duration(milliseconds: kDurationAnimationResize),
-                    height: selectSecondConclusion ? 22.h : 0,
-                    child: AnimatedOpacity(
-                      alwaysIncludeSemantics: true,
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnimatedPadding(
+                      padding: selectFirstConclusion
+                          ? const EdgeInsets.all(26)
+                          : EdgeInsets.zero,
                       duration: const Duration(
-                          milliseconds: kDurationAnimationOpacity),
-                      curve: Curves.easeInQuint,
-                      opacity: showAnimationOpacitySecondConclusion ? 1 : 0,
-                      child: !showAnimationOpacitySecondConclusion
-                          ? Container()
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          milliseconds: kDurationAnimationPadding),
+                      child: selectFirstConclusion
+                          ? Text(
+                              "${Strings.generateTypeTvShowAndMovie(isMovie: isMovie)} ${Strings.hasEndText.toLowerCase()}",
+                              style: const TextStyle(
+                                  fontFamily: fontFamily,
+                                  fontSize: kHeaderSizeInfoPage,
+                                  fontWeight: FontWeight.w500,
+                                  color: textColorInfoPageColor),
+                            )
+                          : Container(),
+                    ),
+
+                    AnimatedContainer(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      duration: const Duration(
+                          milliseconds: kDurationAnimationResize),
+                      curve: Curves.linear,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: Column(
                               children: [
-                                Expanded(
-                                  child: Column(
+                                state.conclusion == Conclusion.hasFinal
+                                    ? SubSelectedIconCircle(
+                                        icon: Icon(
+                                          hasFinalIcon,
+                                          size: selectFirstConclusion
+                                              ? kSelectFirstIconSize
+                                              : kUnselectFirstIconSize,
+                                          color: hasFinalColor,
+                                        ),
+                                        selectedColor: hasFinalColor,
+                                        text: Strings.hasFinalOptionText,
+                                        backgroundColor:
+                                            selectedIconBackgroundColor,
+                                        textSize: selectFirstConclusion
+                                            ? kSizeSelectedFirstItem
+                                            : kSizeUnselectedFirstItem,
+                                      )
+                                    : SubUnselectedIconCircle(
+                                        onTap: () async {
+                                          conclusionBloc.add(
+                                              const SelectFirstConclusionEvent(
+                                                  Conclusion.hasFinal));
+                                          await Future.delayed(const Duration(
+                                              milliseconds:
+                                                  kAwaitTimeToAnimation));
+                                          conclusionBloc.add(
+                                              const ShowAnimation(
+                                                  Conclusion.hasFinal));
+                                        },
+                                        backgroundColor: hasFinalColor,
+                                        text: Strings.hasFinalOptionText,
+                                        textSize: selectFirstConclusion
+                                            ? kSizeSelectedFirstItem
+                                            : kSizeUnselectedFirstItem,
+                                      ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                state.conclusion == Conclusion.noHasFinal
+                                    ? SubSelectedIconCircle(
+                                        icon: Icon(
+                                          noHasFinalIcon,
+                                          size: selectFirstConclusion
+                                              ? kSelectFirstIconSize
+                                              : kUnselectFirstIconSize,
+                                          color: noHasFinalColor,
+                                        ),
+                                        backgroundColor:
+                                            selectedIconBackgroundColor,
+                                        selectedColor: noHasFinalColor,
+                                        text: Strings.noHasFinalOptionText,
+                                        textSize: selectFirstConclusion
+                                            ? kSizeSelectedFirstItem
+                                            : kSizeUnselectedFirstItem,
+                                      )
+                                    : SubUnselectedIconCircle(
+                                        onTap: () async {
+                                          conclusionBloc.add(
+                                              const SelectFirstConclusionEvent(
+                                                  Conclusion.noHasFinal));
+                                          await Future.delayed(const Duration(
+                                              milliseconds:
+                                                  kAwaitTimeToAnimation));
+                                          conclusionBloc.add(
+                                              const ShowAnimation(
+                                                  Conclusion.noHasFinal));
+                                        },
+                                        backgroundColor: noHasFinalColor,
+                                        text: Strings.noHasFinalOptionText,
+                                        textSize: selectFirstConclusion
+                                            ? kSizeSelectedFirstItem
+                                            : kSizeUnselectedFirstItem,
+                                      ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    //SEGUNDA OPT
+                    selectFirstConclusion
+                        ? Container()
+                        : Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: AnimatedOpacity(
+                                opacity: showAnimationOpacitySecondConclusion
+                                    ? 1
+                                    : 0,
+                                duration: const Duration(
+                                    milliseconds: kDurationAnimationOpacity),
+                                child: showAnimationOpacitySecondConclusion
+                                    ? RichText(
+                                        text: TextSpan(
+                                            style: const TextStyle(
+                                                fontFamily: fontFamily,
+                                                fontSize:
+                                                    kConjuctionSizeInfoPage,
+                                                fontStyle: FontStyle.italic),
+                                            children: [
+                                              TextSpan(
+                                                  text: Strings
+                                                          .generateTypeTvShowAndMovie(
+                                                              isMovie: isMovie)
+                                                      .toString()
+                                                      .toUpperCase()),
+                                              state.conclusion ==
+                                                      Conclusion.noHasFinal
+                                                  ? const TextSpan(
+                                                      text:
+                                                          " ${Strings.noHasFinalOptionText}",
+                                                      style: TextStyle(
+                                                          color:
+                                                              noHasFinalColor,
+                                                          fontWeight:
+                                                              FontWeight.bold))
+                                                  : const TextSpan(
+                                                      text:
+                                                          " ${Strings.hasFinalOptionText}",
+                                                      style: TextStyle(
+                                                          color: hasFinalColor,
+                                                          fontWeight:
+                                                              FontWeight.bold)),
+                                              state.conclusion ==
+                                                      Conclusion.noHasFinal
+                                                  ? const TextSpan(
+                                                      text: Strings
+                                                          .noHasFinalConjuctionText)
+                                                  : const TextSpan(
+                                                      text: Strings
+                                                          .hasFinalConjuctionText),
+                                            ]),
+                                      )
+                                    : const Text(
+                                        "",
+                                        style: TextStyle(
+                                            fontSize: kConjuctionSizeInfoPage,
+                                            color: Colors.transparent),
+                                      )),
+                          ),
+                    Container(
+                      constraints: BoxConstraints(minHeight: 22.h),
+                      child: AnimatedOpacity(
+                        alwaysIncludeSemantics: true,
+                        duration: const Duration(
+                            milliseconds: kDurationAnimationOpacity),
+                        curve: Curves.easeInQuint,
+                        opacity: showAnimationOpacitySecondConclusion ? 1 : 0,
+                        child: !showAnimationOpacitySecondConclusion
+                            ? Container()
+                            : Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: state.conclusion ==
+                                                Conclusion.noHasFinal
+                                            ? [
+                                                state.conclusionNoHasFinal ==
+                                                        ConclusionNoHasFinal
+                                                            .newSeason
+                                                    ? const SubSelectedIconCircle(
+                                                        icon: Padding(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  16.0),
+                                                          child: Icon(
+                                                            newSeasonIcon,
+                                                            size:
+                                                                kIconSizeOption,
+                                                            color:
+                                                                newSeasonColor,
+                                                          ),
+                                                        ),
+                                                        backgroundColor:
+                                                            selectedIconBackgroundColor,
+                                                        selectedColor:
+                                                            newSeasonColor,
+                                                        text: Strings
+                                                            .newSeasonOptionText,
+                                                        maxLines: 2,
+                                                      )
+                                                    : SubUnselectedIconCircle(
+                                                        onTap: () async {
+                                                          conclusionBloc.add(SelectSecondConclusionEvent(
+                                                              conclusion:
+                                                                  Conclusion
+                                                                      .noHasFinal,
+                                                              conclusionNoHasFinal:
+                                                                  ConclusionNoHasFinal
+                                                                      .newSeason));
+                                                          _scrollDown();
+                                                        },
+                                                        backgroundColor:
+                                                            newSeasonColor,
+                                                        text: Strings
+                                                            .newSeasonOptionText,
+                                                        maxLines: 2,
+                                                      ),
+                                              ]
+                                            : [
+                                                state.conclusionHasFinal ==
+                                                        ConclusionHasFinal
+                                                            .opened
+                                                    ? const SubSelectedIconCircle(
+                                                        icon: Padding(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  16.0),
+                                                          child: Icon(
+                                                            openedIcon,
+                                                            size:
+                                                                kIconSizeOption,
+                                                            color: openedColor,
+                                                          ),
+                                                        ),
+                                                        backgroundColor:
+                                                            selectedIconBackgroundColor,
+                                                        selectedColor:
+                                                            openedColor,
+                                                        text: Strings
+                                                            .openedOptionText,
+                                                      )
+                                                    : SubUnselectedIconCircle(
+                                                        onTap: () async {
+                                                          conclusionBloc.add(SelectSecondConclusionEvent(
+                                                              conclusion:
+                                                                  Conclusion
+                                                                      .hasFinal,
+                                                              conclusionHasFinal:
+                                                                  ConclusionHasFinal
+                                                                      .opened));
+                                                          _scrollDown();
+                                                        },
+                                                        backgroundColor:
+                                                            openedColor,
+                                                        text: Strings
+                                                            .openedOptionText,
+                                                      ),
+                                              ]),
+                                  ),
+                                  Expanded(
+                                    child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: state.conclusion ==
@@ -567,62 +660,62 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
                                           ? [
                                               state.conclusionNoHasFinal ==
                                                       ConclusionNoHasFinal
-                                                          .newSeason
+                                                          .noNewSeason
                                                   ? const SubSelectedIconCircle(
                                                       icon: Padding(
                                                         padding: EdgeInsets.all(
                                                             16.0),
                                                         child: Icon(
-                                                          newSeasonIcon,
+                                                          noNewSeasonIcon,
                                                           size: kIconSizeOption,
-                                                          color: newSeasonColor,
+                                                          color:
+                                                              noNewSeasonColor,
                                                         ),
                                                       ),
                                                       backgroundColor:
                                                           selectedIconBackgroundColor,
                                                       selectedColor:
-                                                          newSeasonColor,
+                                                          noNewSeasonColor,
                                                       text: Strings
-                                                          .newSeasonOptionText,
+                                                          .noNewSeasonOptionText,
                                                       maxLines: 2,
                                                     )
                                                   : SubUnselectedIconCircle(
-                                                      onTap: () async {
+                                                      onTap: () {
                                                         conclusionBloc.add(SelectSecondConclusionEvent(
                                                             conclusion:
                                                                 Conclusion
                                                                     .noHasFinal,
                                                             conclusionNoHasFinal:
                                                                 ConclusionNoHasFinal
-                                                                    .newSeason));
+                                                                    .noNewSeason));
                                                         _scrollDown();
                                                       },
                                                       backgroundColor:
-                                                          newSeasonColor,
+                                                          noNewSeasonColor,
                                                       text: Strings
-                                                          .newSeasonOptionText,
+                                                          .noNewSeasonOptionText,
                                                       maxLines: 2,
                                                     ),
                                             ]
                                           : [
                                               state.conclusionHasFinal ==
-                                                      ConclusionHasFinal.opened
+                                                      ConclusionHasFinal.closed
                                                   ? const SubSelectedIconCircle(
                                                       icon: Padding(
                                                         padding: EdgeInsets.all(
                                                             16.0),
-                                                        child: Icon(
-                                                          openedIcon,
-                                                          size: kIconSizeOption,
-                                                          color: openedColor,
-                                                        ),
+                                                        child: Icon(closedIcon,
+                                                            size:
+                                                                kIconSizeOption,
+                                                            color: closedColor),
                                                       ),
                                                       backgroundColor:
                                                           selectedIconBackgroundColor,
                                                       selectedColor:
-                                                          openedColor,
+                                                          closedColor,
                                                       text: Strings
-                                                          .openedOptionText,
+                                                          .closedOptionText,
                                                     )
                                                   : SubUnselectedIconCircle(
                                                       onTap: () async {
@@ -633,199 +726,113 @@ class SelectOptionWidgetState extends State<SelectOptionWidget>
                                                                         .hasFinal,
                                                                 conclusionHasFinal:
                                                                     ConclusionHasFinal
-                                                                        .opened));
+                                                                        .closed));
                                                         _scrollDown();
                                                       },
                                                       backgroundColor:
-                                                          openedColor,
+                                                          closedColor,
                                                       text: Strings
-                                                          .openedOptionText,
-                                                    ),
-                                            ]),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: state.conclusion ==
-                                            Conclusion.noHasFinal
-                                        ? [
-                                            state.conclusionNoHasFinal ==
-                                                    ConclusionNoHasFinal
-                                                        .noNewSeason
-                                                ? const SubSelectedIconCircle(
-                                                    icon: Padding(
-                                                      padding:
-                                                          EdgeInsets.all(16.0),
-                                                      child: Icon(
-                                                        noNewSeasonIcon,
-                                                        size: kIconSizeOption,
-                                                        color: noNewSeasonColor,
-                                                      ),
-                                                    ),
-                                                    backgroundColor:
-                                                        selectedIconBackgroundColor,
-                                                    selectedColor:
-                                                        noNewSeasonColor,
-                                                    text: Strings
-                                                        .noNewSeasonOptionText,
-                                                    maxLines: 2,
-                                                  )
-                                                : SubUnselectedIconCircle(
-                                                    onTap: () {
-                                                      conclusionBloc.add(
-                                                          SelectSecondConclusionEvent(
-                                                              conclusion:
-                                                                  Conclusion
-                                                                      .noHasFinal,
-                                                              conclusionNoHasFinal:
-                                                                  ConclusionNoHasFinal
-                                                                      .noNewSeason));
-                                                      _scrollDown();
-                                                    },
-                                                    backgroundColor:
-                                                        noNewSeasonColor,
-                                                    text: Strings
-                                                        .noNewSeasonOptionText,
-                                                    maxLines: 2,
-                                                  ),
-                                          ]
-                                        : [
-                                            state.conclusionHasFinal ==
-                                                    ConclusionHasFinal.closed
-                                                ? const SubSelectedIconCircle(
-                                                    icon: Padding(
-                                                      padding:
-                                                          EdgeInsets.all(16.0),
-                                                      child: Icon(closedIcon,
-                                                          size: kIconSizeOption,
-                                                          color: closedColor),
-                                                    ),
-                                                    backgroundColor:
-                                                        selectedIconBackgroundColor,
-                                                    selectedColor: closedColor,
-                                                    text: Strings
-                                                        .closedOptionText,
-                                                  )
-                                                : SubUnselectedIconCircle(
-                                                    onTap: () async {
-                                                      conclusionBloc.add(
-                                                          SelectSecondConclusionEvent(
-                                                              conclusion:
-                                                                  Conclusion
-                                                                      .hasFinal,
-                                                              conclusionHasFinal:
-                                                                  ConclusionHasFinal
-                                                                      .closed));
-                                                      _scrollDown();
-                                                    },
-                                                    backgroundColor:
-                                                        closedColor,
-                                                    text: Strings
-                                                        .closedOptionText,
-                                                  )
-                                          ],
+                                                          .closedOptionText,
+                                                    )
+                                            ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
+                      ),
                     ),
-                  ),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: Row(
-                      children: [
-                        showButton
-                            ? Expanded(
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        height: WidgetSize.heightButton,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 24.0, vertical: 8.0),
-                                        child: CustomButton(
-                                          onPressed: () async {
-                                            conclusionBloc.add(
-                                                LoadConclusionEvent(
-                                                    tvShowAndMovie:
-                                                        state.tvShowAndMovie!,
-                                                    showUpdate: false));
-                                          },
-                                          fontSize: kButtonSizeInfoPage,
-                                          text: Strings.backText,
-                                          disabledColor:
-                                              ratingColorPosterMainPage
-                                                  .withOpacity(0.3),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Row(
+                        children: [
+                          showButton
+                              ? Expanded(
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          height: WidgetSize.heightButton,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 24.0, vertical: 8.0),
+                                          child: CustomButton(
+                                            onPressed: () async {
+                                              conclusionBloc.add(
+                                                  LoadConclusionEvent(
+                                                      tvShowAndMovie:
+                                                          state.tvShowAndMovie!,
+                                                      showUpdate: false));
+                                            },
+                                            fontSize: kButtonSizeInfoPage,
+                                            text: Strings.backText,
+                                            disabledColor:
+                                                ratingColorPosterMainPage
+                                                    .withOpacity(0.3),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        height: WidgetSize.heightButton,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0, vertical: 8.0),
-                                        child: CustomButton(
-                                          onPressed: bothConclusionSelected
-                                              ? () async {
-                                                  conclusionBloc.add(
-                                                      SendConclusionEvent(
-                                                          tvShowAndMovie: widget
-                                                              .tvShowAndMovie));
-                                                }
-                                              : null,
-                                          fontSize: kButtonSizeInfoPage,
-                                          text: Strings.confirmText,
-                                          disabledColor:
-                                              ratingColorPosterMainPage
-                                                  .withOpacity(0.3),
+                                      Expanded(
+                                        child: Container(
+                                          height: WidgetSize.heightButton,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0, vertical: 8.0),
+                                          child: CustomButton(
+                                            onPressed: bothConclusionSelected
+                                                ? () async {
+                                                    conclusionBloc.add(
+                                                        SendConclusionEvent(
+                                                            tvShowAndMovie: widget
+                                                                .tvShowAndMovie));
+                                                  }
+                                                : null,
+                                            fontSize: kButtonSizeInfoPage,
+                                            text: Strings.confirmText,
+                                            disabledColor:
+                                                ratingColorPosterMainPage
+                                                    .withOpacity(0.3),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : Container()
-                      ],
+                                    ],
+                                  ),
+                                )
+                              : Container()
+                        ],
+                      ),
                     ),
-                  )
-                ],
+                  ],
+                ),
               ),
             ),
-            Positioned(
-                bottom: 16,
-                child: AnimatedOpacity(
-                  duration:
-                      const Duration(milliseconds: kDurationAnimationOpacity),
-                  opacity: selectFirstConclusion ? 1 : 0,
-                  child: Container(
-                    width: 100.w,
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: Row(
-                      children: [
-                        selectFirstConclusion
-                            ? Expanded(
-                                child: Container(
-                                  height: WidgetSize.heightButton,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 12.0),
-                                  child: CustomButton(
-                                      onPressed: () async {
-                                        conclusionBloc.add(ShowResultsEvent(
-                                            tvShowAndMovie:
-                                                widget.tvShowAndMovie));
-                                      },
-                                      fontSize: kButtonSizeInfoPage,
-                                      text: Strings.viewResultsText,
-                                      backgroundColor:
-                                          ratingColorPosterMainPage),
-                                ),
-                              )
-                            : Container()
-                      ],
-                    ),
-                  ),
-                )),
+            AnimatedOpacity(
+              duration: const Duration(milliseconds: kDurationAnimationOpacity),
+              opacity: selectFirstConclusion ? 1 : 0,
+              child: Container(
+                width: 100.w,
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Row(
+                  children: [
+                    selectFirstConclusion
+                        ? Expanded(
+                            child: Container(
+                              height: WidgetSize.heightButton,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 12.0),
+                              child: CustomButton(
+                                  onPressed: () async {
+                                    conclusionBloc.add(ShowResultsEvent(
+                                        tvShowAndMovie: widget.tvShowAndMovie));
+                                  },
+                                  fontSize: kButtonSizeInfoPage,
+                                  text: Strings.viewResultsText,
+                                  backgroundColor: ratingColorPosterMainPage),
+                            ),
+                          )
+                        : Container()
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       );

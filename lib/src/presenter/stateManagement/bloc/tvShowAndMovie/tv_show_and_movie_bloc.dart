@@ -42,7 +42,7 @@ Rx<StatusLoadingTvShowAndMovie> statusLoadingTvSHowAndMovie =
 
   Future<void> _getAllTvShowsAndMovies(GetAllTvShowAndMovieEvent event,
       Emitter<TvShowAndMovieState> emit) async {
-    final Filter filter = filterSelected ?? Filter.all;
+    const Filter filter = Filter.all;
     if (filterSelected == filter && !event.refresh) return;
     filterSelected = filter;
     isFinalList = false;

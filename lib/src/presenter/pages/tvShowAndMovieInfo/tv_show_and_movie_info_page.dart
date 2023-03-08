@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:tem_final/src/core/resources/my_behavior.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
@@ -148,56 +149,61 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
           body: FadeTransition(
             opacity: _animation,
             child: Column(children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: tvShowAndMovie
-                            .listTvShowAndMovieInfoStatusBySeason.length ==
-                        1
-                    ? SizedBox(
-                        height: WidgetSize.heightPosterInfoPageOneSeason,
-                        child: Center(
-                          child: PosterInfo(
-                            seasonNumber: tvShowAndMovie
-                                .listTvShowAndMovieInfoStatusBySeason
-                                .first
-                                .seasonNumber,
-                            tvShowAndMovieInfoStatus: tvShowAndMovie
-                                .listTvShowAndMovieInfoStatusBySeason.first,
-                            isMovie: tvShowAndMovie.seasons == -1,
-                          ),
-                        ),
-                      )
-                    : CarouselSlider(
-                        options: CarouselOptions(
-                            initialPage: tvShowAndMovie
-                                    .listTvShowAndMovieInfoStatusBySeason
-                                    .length -
-                                1,
-                            onPageChanged: (index, _) {
-                              tvShowAndMovieInfoBloc.add(
-                                  UpdateTvShowAndMovieInfoStatus(
-                                      tvShowAndMovieInfoStatus: tvShowAndMovie
-                                              .listTvShowAndMovieInfoStatusBySeason[
-                                          index]));
-                            },
-                            enlargeCenterPage: true,
-                            viewportFraction: kViewportCarousel,
-                            aspectRatio: kAspectRatioCarousel),
-                        items: tvShowAndMovie
-                            .listTvShowAndMovieInfoStatusBySeason
-                            .asMap()
-                            .entries
-                            .map((item) {
-                          TvShowAndMovieInfoStatus tvShowAndMovieInfoStatus =
-                              item.value;
+              Expanded(
+                flex: 4,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: tvShowAndMovie
+                              .listTvShowAndMovieInfoStatusBySeason.length ==
+                          1
+                      ? PosterInfo(
+                          seasonNumber: tvShowAndMovie
+                              .listTvShowAndMovieInfoStatusBySeason
+                              .first
+                              .seasonNumber,
+                          tvShowAndMovieInfoStatus: tvShowAndMovie
+                              .listTvShowAndMovieInfoStatusBySeason.first,
+                          isMovie: tvShowAndMovie.seasons == -1,
+                          onlySeason: tvShowAndMovie.seasons != -1,
+                        )
+                      : SizedBox(
+                          width: 100.w,
+                          child: CarouselSlider(
+                              options: CarouselOptions(
+                                initialPage: tvShowAndMovie
+                                        .listTvShowAndMovieInfoStatusBySeason
+                                        .length -
+                                    1,
+                                onPageChanged: (index, _) {
+                                  tvShowAndMovieInfoBloc.add(
+                                      UpdateTvShowAndMovieInfoStatus(
+                                          tvShowAndMovieInfoStatus: tvShowAndMovie
+                                                  .listTvShowAndMovieInfoStatusBySeason[
+                                              index]));
+                                },
+                                enlargeCenterPage: true,
+                                viewportFraction: kViewportCarousel,
+                              ),
+                              items: tvShowAndMovie
+                                  .listTvShowAndMovieInfoStatusBySeason
+                                  .asMap()
+                                  .entries
+                                  .map((item) {
+                                TvShowAndMovieInfoStatus
+                                    tvShowAndMovieInfoStatus = item.value;
 
-                          return PosterInfo(
-                            seasonNumber: tvShowAndMovieInfoStatus.seasonNumber,
-                            tvShowAndMovieInfoStatus: tvShowAndMovieInfoStatus,
-                          );
-                        }).toList()),
+                                return PosterInfo(
+                                  seasonNumber:
+                                      tvShowAndMovieInfoStatus.seasonNumber,
+                                  tvShowAndMovieInfoStatus:
+                                      tvShowAndMovieInfoStatus,
+                                );
+                              }).toList()),
+                        ),
+                ),
               ),
               Expanded(
+                flex: 6,
                 child: ScrollConfiguration(
                   behavior: MyBehavior(),
                   child: DefaultTabController(
@@ -313,9 +319,9 @@ class _TvShowAndMovieInfoPageState extends State<TvShowAndMovieInfoPage>
         isScrollControlled: true,
         backgroundColor: optionFilledColor,
         builder: (ctx) => CustomFeedback(
-              reportType: reportType,
-              titleTvShowAndMovie: widget.titleTvShowAndMovie,
-            ));
+            reportType: reportType,
+            titleTvShowAndMovie: widget.titleTvShowAndMovie,
+            idTvShowAndMovie: widget.idTvShowAndMovie));
   }
 
   @override
