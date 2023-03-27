@@ -29,14 +29,14 @@ class SubItemResult extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
       child: LinearPercentIndicator(
-          lineHeight: 5.5.h,
+          lineHeight: 6.5.h,
           animation: true,
           animationDuration: 800,
           center: Row(
             children: [
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 14.0),
                   child: Text(
                       text[0].toUpperCase() + text.substring(1).toLowerCase(),
                       maxLines: 2,

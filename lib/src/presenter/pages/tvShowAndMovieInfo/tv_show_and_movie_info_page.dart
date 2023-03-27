@@ -8,7 +8,6 @@ import 'package:tem_final/src/core/resources/my_behavior.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/core/utils/strings.dart';
-import 'package:tem_final/src/core/utils/widget_size.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_info_status_entity.dart';
 import 'package:tem_final/src/presenter/reusableWidgets/custom_feedback.dart';

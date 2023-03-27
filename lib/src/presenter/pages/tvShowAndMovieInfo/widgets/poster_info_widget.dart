@@ -22,7 +22,7 @@ class PosterInfo extends StatelessWidget {
       children: [
         Expanded(
           child: Transform.scale(
-            scale: isMovie || onlySeason ? 0.8 : 1,
+            scale: isMovie || onlySeason ? 0.9 : 1,
             child: AspectRatio(
               aspectRatio: tvShowAndMovieInfoStatus.widthPosterImage /
                   tvShowAndMovieInfoStatus.heightPosterImage,

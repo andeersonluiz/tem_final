@@ -126,9 +126,9 @@ class Strings {
   static const hasFinalOpenedText = "TEM FINAL, E SEU FINAL É ABERTO";
   static const hasFinalClosedText = "TEM FINAL, E SEU FINAL É FECHADO";
   static const noHasFinalNewSeasonText =
-      "NÃO TEM FINAL, MAS HAVÉRA NOVA TEMPORADA";
+      "NÃO TEM FINAL, MAS VAI TER CONTINUAÇÃO";
   static const noHasFinalNoNewSeasonText =
-      "NÃO TEM FINAL E NÃO HAVÉRA NOVA TEMPORADA";
+      "NÃO TEM FINAL E NÃO VAI TER CONTINUAÇÃO";
 
   static const hasFinalOptionText = "TEM FINAL";
   static const noHasFinalOptionText = "NÃO TEM FINAL";
@@ -138,8 +138,8 @@ class Strings {
 
   static const openedOptionText = "ABERTO";
   static const closedOptionText = "FECHADO";
-  static const newSeasonOptionText = "HAVERÁ NOVA TEMPORADA";
-  static const noNewSeasonOptionText = "NÃO HAVERÁ NOVA TEMPORADA";
+  static const newSeasonOptionText = "VAI TER CONTINUAÇÃO";
+  static const noNewSeasonOptionText = "NÃO VAI TER CONTINUAÇÃO";
 
   static const noEnoughData = "Sem avaliações suficientes";
 
