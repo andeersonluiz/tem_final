@@ -1,9 +1,11 @@
 import 'package:tem_final/src/core/resources/mapper.dart';
 import 'package:tem_final/src/data/models/imdb_model.dart';
+import 'package:tem_final/src/data/models/streaming_info_model.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_info_status_model.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_model.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_rating_model.dart';
 import 'package:tem_final/src/domain/entities/imdb_entity.dart';
+import 'package:tem_final/src/domain/entities/streaming_info_entity.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_entity.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_info_status_entity.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_rating_entity.dart';
@@ -16,39 +18,43 @@ class TvShowAndMovieMapper
     List<TvShowAndMovieInfoStatusModel> tvShowAndMovieInfoStatusModel =
         model.listTvShowAndMovieInfoStatusBySeason;
     return TvShowAndMovie(
-      id: model.id,
-      title: model.title,
-      synopsis: model.synopsis,
-      imdbInfo: Imdb(
-          rating: model.imdbInfo.rating, lastUpdate: model.imdbInfo.lastUpdate),
-      genres: model.genres,
-      runtime: model.runtime,
-      ageClassification: model.ageClassification,
-      posterImage: model.posterImage,
-      isNewSeasonUpcoming: model.isNewSeasonUpcoming,
-      seasons: model.seasons,
-      viewsCount: model.viewsCount,
-      actualStatus: model.actualStatus,
-      averageRating: model.averageRating,
-      countConclusion: model.countConclusions,
-      ratingList: model.ratingList
-          .map((m) => TvShowAndMovieRating(idUser: m.idUser, rating: m.rating))
-          .toList(),
-      localRating: localRating,
-      listTvShowAndMovieInfoStatusBySeason: tvShowAndMovieInfoStatusModel
-          .map((item) => TvShowAndMovieInfoStatus(
-                hasFinalAndClosed: item.hasFinalAndClosed,
-                hasFinalAndOpened: item.hasFinalAndOpened,
-                seasonNumber: item.seasonNumber,
-                noHasfinalAndNewSeason: item.noHasfinalAndNewSeason,
-                noHasfinalAndNoNewSeason: item.noHasfinalAndNoNewSeason,
-                posterImageUrl: item.posterImageUrl,
-                widthPosterImage: item.widthPosterImage,
-                heightPosterImage: item.heightPosterImage,
-              ))
-          .toList(),
-      isFavorite: isFavorite,
-    );
+        id: model.id,
+        title: model.title,
+        synopsis: model.synopsis,
+        imdbInfo: Imdb(
+            rating: model.imdbInfo.rating,
+            lastUpdate: model.imdbInfo.lastUpdate),
+        genres: model.genres,
+        runtime: model.runtime,
+        ageClassification: model.ageClassification,
+        posterImage: model.posterImage,
+        isNewSeasonUpcoming: model.isNewSeasonUpcoming,
+        seasons: model.seasons,
+        viewsCount: model.viewsCount,
+        actualStatus: model.actualStatus,
+        averageRating: model.averageRating,
+        countConclusion: model.countConclusions,
+        ratingList: model.ratingList
+            .map(
+                (m) => TvShowAndMovieRating(idUser: m.idUser, rating: m.rating))
+            .toList(),
+        localRating: localRating,
+        listTvShowAndMovieInfoStatusBySeason: tvShowAndMovieInfoStatusModel
+            .map((item) => TvShowAndMovieInfoStatus(
+                  hasFinalAndClosed: item.hasFinalAndClosed,
+                  hasFinalAndOpened: item.hasFinalAndOpened,
+                  seasonNumber: item.seasonNumber,
+                  noHasfinalAndNewSeason: item.noHasfinalAndNewSeason,
+                  noHasfinalAndNoNewSeason: item.noHasfinalAndNoNewSeason,
+                  posterImageUrl: item.posterImageUrl,
+                  widthPosterImage: item.widthPosterImage,
+                  heightPosterImage: item.heightPosterImage,
+                ))
+            .toList(),
+        isFavorite: isFavorite,
+        streamingList: model.streamingList
+            .map((item) => StreamingInfo(code: item.code, url: item.url))
+            .toList());
   }
 
   @override
@@ -88,6 +94,9 @@ class TvShowAndMovieMapper
                   widthPosterImage: item.widthPosterImage,
                   heightPosterImage: item.heightPosterImage,
                 ))
+            .toList(),
+        streamingList: entity.streamingList
+            .map((item) => StreamingInfoModel(code: item.code, url: item.url))
             .toList());
   }
 }

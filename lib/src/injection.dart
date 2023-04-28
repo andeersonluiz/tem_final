@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tem_final/src/core/providers/global_provider.dart';
 import 'package:tem_final/src/data/datasource/auth/firebase_auth_handler_service.dart';
 import 'package:tem_final/src/data/datasource/local/local_preferences_handler_service.dart';
 import 'package:tem_final/src/data/datasource/remote/firebase_handler_service.dart';
@@ -34,7 +35,7 @@ import 'package:tem_final/src/domain/usecases/submit_report_usecase.dart';
 import 'package:tem_final/src/domain/usecases/update_view_count_usecase.dart';
 import 'package:tem_final/src/domain/usecases/verifiy_user_is_logged_usecase.dart';
 
-Future<String> initializeDependencies(
+Future<Map<String, String>> initializeDependencies(
   LocalPreferencesHandlerService localPreferencesHandlerService,
   DataIntegrityChecker dataIntegrityChecker,
   UserRepository userRepository,
@@ -48,14 +49,17 @@ Future<String> initializeDependencies(
     }
     String userId = "";
     var resultUserId = await userRepository.getUserId();
+
     debugPrint(resultUserId.toString());
     if (resultUserId.isLeft) {
       userId = resultUserId.left;
     }
     await localPreferencesHandlerService.setUserId(userId);
-    return userId;
+    var streamingList = await userRepository.getStreamingLogosUrlList();
+
+    return streamingList;
   } catch (e) {
-    return "";
+    return {};
   }
 }
 
@@ -205,6 +209,11 @@ class ProviderInjection extends StatelessWidget {
                   Provider<FilterGenresUseCase>(
                       create: (context) => FilterGenresUseCase(
                           context.read<TvShowAndMovieRepository>())),
+                  Provider<GlobalVariables>(
+                    create: (context) => GlobalVariables(
+                      streamingList: snp.data ?? {},
+                    ),
+                  )
                 ], child: child);
               }
               {

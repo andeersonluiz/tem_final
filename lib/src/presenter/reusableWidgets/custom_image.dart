@@ -33,7 +33,7 @@ class CustomImage extends StatelessWidget {
         },
         imageUrl: urlImage,
         placeholder: (context, url) => Container(
-              color: Colors.green,
+              color: ratingColorPosterMainPage,
               child: Image.asset(
                 placeholderPath,
                 width: width,

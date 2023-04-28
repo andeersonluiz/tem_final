@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:tem_final/src/core/utils/constants.dart';
 
 import 'package:tem_final/src/data/models/imdb_model.dart';
+import 'package:tem_final/src/data/models/streaming_info_model.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_info_status_model.dart';
 import 'package:tem_final/src/data/models/tv_show_and_movie_rating_model.dart';
 import 'package:tuple/tuple.dart';
@@ -28,6 +29,7 @@ class TvShowAndMovieModel {
   final int countConclusions;
   final List<TvShowAndMovieRatingModel> ratingList;
   final double averageRating;
+  final List<StreamingInfoModel> streamingList;
 
   TvShowAndMovieModel({
     required this.id,
@@ -47,6 +49,7 @@ class TvShowAndMovieModel {
     required this.ratingList,
     required this.countConclusions,
     required this.averageRating,
+    required this.streamingList,
   });
 
   TvShowAndMovieModel copyWith({
@@ -68,6 +71,7 @@ class TvShowAndMovieModel {
     List<TvShowAndMovieRatingModel>? ratingList,
     double? averageRating,
     int? countConclusions,
+    List<StreamingInfoModel>? streamingList,
   }) {
     return TvShowAndMovieModel(
         id: id ?? this.id,
@@ -88,7 +92,8 @@ class TvShowAndMovieModel {
         ratingList: ratingList ?? this.ratingList,
         averageRating: averageRating ?? this.averageRating,
         actualStatus: actualStatus ?? this.actualStatus,
-        countConclusions: countConclusions ?? this.countConclusions);
+        countConclusions: countConclusions ?? this.countConclusions,
+        streamingList: streamingList ?? this.streamingList);
   }
 
   Map<String, dynamic> toMap() {
@@ -110,6 +115,7 @@ class TvShowAndMovieModel {
       'ratingList': ratingList.map((e) => e.toMap()).toList(),
       'countConclusions': countConclusions,
       'averageRating': averageRating,
+      'streamingList': streamingList.map((e) => e.toMap()).toList()
     };
   }
 
@@ -148,26 +154,30 @@ class TvShowAndMovieModel {
         tvShowAndMovieInfoStatusModelLast.hasFinalAndOpened +
         tvShowAndMovieInfoStatusModelLast.noHasfinalAndNewSeason +
         tvShowAndMovieInfoStatusModelLast.noHasfinalAndNoNewSeason;
-
+    var streamingInfo = map['streamingInfo'] ?? [];
     return TvShowAndMovieModel(
-        id: map['id'].toString(),
-        title: map['title'] as String,
-        caseSearch: List<String>.from(map['caseSearch']),
-        synopsis: map['synopsis'] as String,
-        imdbInfo: ImdbModel.fromMap(map['imdbInfo'] as Map<String, dynamic>),
-        genres: List<String>.from(map['genres']),
-        runtime: map['runtime'] as int,
-        ageClassification: map['ageClassification'] as String,
-        posterImage: map['posterImage'] as String,
-        isNewSeasonUpcoming: map['isNewSeasonUpcoming'] as bool,
-        seasons: map['seasons'] as int,
-        viewsCount: map['viewsCount'] as int,
-        listTvShowAndMovieInfoStatusBySeason:
-            listTvShowAndMovieInfoStatusBySeason,
-        ratingList: ratingList,
-        averageRating: map['averageRating'].toDouble(),
-        countConclusions: countConclusions,
-        actualStatus: tuple.item1);
+      id: map['id'].toString(),
+      title: map['title'] as String,
+      caseSearch: List<String>.from(map['caseSearch']),
+      synopsis: map['synopsis'] as String,
+      imdbInfo: ImdbModel.fromMap(map['imdbInfo'] as Map<String, dynamic>),
+      genres: List<String>.from(map['genres']),
+      runtime: map['runtime'] as int,
+      ageClassification: map['ageClassification'] as String,
+      posterImage: map['posterImage'] as String,
+      isNewSeasonUpcoming: map['isNewSeasonUpcoming'] as bool,
+      seasons: map['seasons'] as int,
+      viewsCount: map['viewsCount'] as int,
+      listTvShowAndMovieInfoStatusBySeason:
+          listTvShowAndMovieInfoStatusBySeason,
+      ratingList: ratingList,
+      averageRating: map['averageRating'].toDouble(),
+      countConclusions: countConclusions,
+      actualStatus: tuple.item1,
+      streamingList: List<StreamingInfoModel>.from(streamingInfo
+          .map<StreamingInfoModel>((item) => StreamingInfoModel.fromMap(item))
+          .toList()),
+    );
   }
 
   String toJson() => json.encode(toMap());
@@ -177,7 +187,7 @@ class TvShowAndMovieModel {
 
   @override
   String toString() {
-    return 'TvShowAndMovieModel(id: $id, title: $title, caseSearch: $caseSearch, synopsis: $synopsis, imdbInfo: $imdbInfo, genres: $genres, runtime: $runtime, ageClassification: $ageClassification, posterImage: $posterImage, actualStatus: $actualStatus, isNewSeasonUpcoming: $isNewSeasonUpcoming, seasons: $seasons, viewsCount: $viewsCount, countConclusions: $countConclusions, ratingList: $ratingList, averageRating: $averageRating)';
+    return 'TvShowAndMovieModel(id: $id, title: $title, caseSearch: $caseSearch, synopsis: $synopsis, imdbInfo: $imdbInfo, genres: $genres, runtime: $runtime, ageClassification: $ageClassification, posterImage: $posterImage, actualStatus: $actualStatus, isNewSeasonUpcoming: $isNewSeasonUpcoming, seasons: $seasons, viewsCount: $viewsCount, countConclusions: $countConclusions, ratingList: $ratingList, averageRating: $averageRating, streamingList: $streamingList)';
   }
 
   @override

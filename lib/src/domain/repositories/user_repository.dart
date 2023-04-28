@@ -19,4 +19,5 @@ abstract class UserRepository {
 
   Future<Either<String, Tuple2<String, StackTrace>>> getUserId();
   Future<String> getUsername();
+  Future<Map<String, String>> getStreamingLogosUrlList();
 }

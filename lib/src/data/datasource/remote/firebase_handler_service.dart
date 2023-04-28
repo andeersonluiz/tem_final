@@ -25,6 +25,32 @@ class FirebaseHandlerService {
   late int _paginationNumberGenrePage = 1;
   late Tuple2<Filter, FilterGenre> filterParams;
   late RealtimeChannel myChannel;
+  List<String> streamingCodes = [
+    'oiplay',
+    'nowonline',
+    'hbomax',
+    'netflix',
+    'globoplay',
+    'univervideo',
+    'looke',
+    'pluto',
+    'primevideo',
+    'paramountplus',
+    'apple',
+    'disneyplus',
+    'starplus',
+    'crunchyroll',
+    'funimation',
+    'mubi',
+    'kocowa',
+    'google',
+    'microsoft',
+    'netmovies',
+    'oldflix',
+    'curiositystream',
+    'historyplay',
+    'tntgo'
+  ];
 
 //* TESTADO *//
   Future<
@@ -215,7 +241,7 @@ class FirebaseHandlerService {
           .select()
           .contains("caseSearch", [_querySearch])
           .order("popularity")
-          .limit(pageSize);
+          .limit(pageSizeSearch);
 
       /* if (queryDocumentData.isNotEmpty) {
         if (queryDocumentData.length == pageSize) {
@@ -818,6 +844,33 @@ class FirebaseHandlerService {
           tuples.add(Tuple2(genre, map));
         }
         return tuples;
+    }
+  }
+
+  //STORAGE
+
+  Future<Either<Map<String, String>, Tuple2<String, StackTrace>>>
+      getStreamingLogosUrlList() async {
+    try {
+      await ConnectionVerifyer.verify();
+      Map<String, String> urlList = {};
+      for (String code in streamingCodes) {
+        var url = _instance.storage.from("logos").getPublicUrl(
+              '$code.png',
+              transform: const TransformOptions(
+                height: 16,
+                width: 16,
+              ),
+            );
+        urlList[code] = url.replaceFirst("render/image", "object");
+      }
+
+      return Left(urlList);
+    } on NoConnectionException catch (e) {
+      return Right(Tuple2(e.message, e.stackTrace));
+    } catch (e, stacktrace) {
+      return Right(Tuple2(Strings.msgErrorConnectionFirebase,
+          StackTrace.fromString("$e\n$stacktrace")));
     }
   }
 }

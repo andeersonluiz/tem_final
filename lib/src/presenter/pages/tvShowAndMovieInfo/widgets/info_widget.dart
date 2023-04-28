@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tem_final/src/core/providers/global_provider.dart';
 import 'package:tem_final/src/core/resources/my_behavior.dart';
 import 'package:tem_final/src/core/utils/fonts.dart';
 import 'package:tem_final/src/core/utils/icons.dart';
@@ -16,6 +17,7 @@ import 'package:tem_final/src/presenter/stateManagement/bloc/rating/rating_event
 import 'package:tem_final/src/presenter/stateManagement/bloc/rating/rating_state.dart';
 import 'package:tem_final/src/presenter/stateManagement/bloc/tvShowAndMovieInfo/tv_show_and_movie_info_bloc.dart';
 import 'package:tem_final/src/presenter/stateManagement/valueNotifier/local_rating_notifier.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class InfoWidget extends StatefulWidget {
   const InfoWidget({super.key});
@@ -44,6 +46,9 @@ class InfoWidgetState extends State<InfoWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isMovie = tvShowAndMovie.seasons == -1;
+    final Map<String, String> streamingList =
+        context.read<GlobalVariables>().streamingList;
     return ScrollConfiguration(
       behavior: MyBehavior(),
       child: SingleChildScrollView(
@@ -348,6 +353,83 @@ class InfoWidgetState extends State<InfoWidget> {
                           ))
                       .toList(),
                 )),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                children: [
+                  RichText(
+                      text: TextSpan(children: [
+                    TextSpan(
+                        text: Strings.streamingText,
+                        style: textStyle.copyWith(
+                            fontSize: 20,
+                            color: ratingColorPosterMainPage,
+                            fontWeight: FontWeight.bold)),
+                    TextSpan(
+                        text:
+                            " ${Strings.generateDateLastUpdate(lastUpdate: tvShowAndMovie.imdbInfo.lastUpdate)}",
+                        style: textStyle.copyWith(
+                            fontSize: 16,
+                            color: ratingColorPosterMainPage,
+                            fontWeight: FontWeight.bold)),
+                  ]))
+                ],
+              ),
+            ),
+            tvShowAndMovie.streamingList.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, top: 20.0, bottom: 24.0),
+                      child: Text(
+                          "${Strings.noStreamingText} para ${Strings.generateTypeTvShowAndMovie(isMovie: isMovie).toLowerCase()}",
+                          style: textStyle.copyWith(
+                              fontSize: 16,
+                              color: textColorPosterMainPage,
+                              fontWeight: FontWeight.normal)),
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Wrap(
+                      children: tvShowAndMovie.streamingList.map((e) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 16.0),
+                          child: InkWell(
+                            onTap: () {
+                              _launchUrl(e.url);
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12.0),
+                              child: FadeInImage(
+                                width: 60,
+                                height: 60,
+                                image: NetworkImage(
+                                    streamingList[e.code].toString()),
+                                imageErrorBuilder:
+                                    (context, object, stacktrace) {
+                                  return InkWell(
+                                    onTap: () {},
+                                    child: Image.asset(
+                                      "assets/not_found_icon.png",
+                                      width: 60,
+                                      height: 60,
+                                    ),
+                                  );
+                                },
+                                placeholder: const AssetImage(
+                                  "assets/placeholderImage.gif",
+                                ),
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    )),
           ],
         ),
       ),
@@ -449,5 +531,13 @@ class InfoWidgetState extends State<InfoWidget> {
             ),
           );
         });
+  }
+
+  Future<void> _launchUrl(String url) async {
+    if (!await launchUrl(Uri.parse(url),
+        mode: LaunchMode.externalApplication)) {
+      CustomToast(
+          msg: 'Não foi possivel abrir o link, tente novamente mais tarde');
+    }
   }
 }

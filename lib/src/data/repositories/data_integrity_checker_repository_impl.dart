@@ -65,7 +65,7 @@ class DataIntegrityCheckerRepositoryImpl implements DataIntegrityChecker {
   Future<bool> checkUserIsLoggedOtherDevice() async {
     String deviceId = await DeviceInfo.getId();
     var userHistory = localPreferencesHandlerService.getUserHistory();
-    if (userHistory.isLeft) {
+    if (userHistory.isLeft && userHistory.left != null) {
       var resultAuth = await firebaseHandlerService.checkDeviceIdFromUser(
           userHistory.left!, deviceId);
       if (resultAuth.isLeft && !resultAuth.left) {

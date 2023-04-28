@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:tem_final/src/core/utils/constants.dart';
 
 import 'package:tem_final/src/domain/entities/imdb_entity.dart';
+import 'package:tem_final/src/domain/entities/streaming_info_entity.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_info_status_entity.dart';
 import 'package:tem_final/src/domain/entities/tv_show_and_movie_rating_entity.dart';
 
@@ -26,29 +27,30 @@ class TvShowAndMovie extends Equatable {
   ConclusionType? localConclusion;
 
   final List<TvShowAndMovieRating> ratingList;
+  final List<StreamingInfo> streamingList;
 
   final double averageRating;
-  TvShowAndMovie({
-    required this.id,
-    required this.title,
-    required this.synopsis,
-    required this.imdbInfo,
-    required this.genres,
-    required this.runtime,
-    required this.ageClassification,
-    required this.posterImage,
-    required this.isNewSeasonUpcoming,
-    required this.seasons,
-    required this.viewsCount,
-    required this.listTvShowAndMovieInfoStatusBySeason,
-    required this.isFavorite,
-    required this.actualStatus,
-    required this.countConclusion,
-    this.localRating = -1,
-    this.localConclusion,
-    required this.ratingList,
-    required this.averageRating,
-  });
+  TvShowAndMovie(
+      {required this.id,
+      required this.title,
+      required this.synopsis,
+      required this.imdbInfo,
+      required this.genres,
+      required this.runtime,
+      required this.ageClassification,
+      required this.posterImage,
+      required this.isNewSeasonUpcoming,
+      required this.seasons,
+      required this.viewsCount,
+      required this.listTvShowAndMovieInfoStatusBySeason,
+      required this.isFavorite,
+      required this.actualStatus,
+      required this.countConclusion,
+      this.localRating = -1,
+      this.localConclusion,
+      required this.ratingList,
+      required this.averageRating,
+      required this.streamingList});
 
   @override
   List<Object> get props {

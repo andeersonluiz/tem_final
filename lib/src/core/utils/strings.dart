@@ -113,6 +113,8 @@ class Strings {
   static const updateRatingText = "Atualizar avaliação";
   static const sendRatingText = "Atualizar avaliação";
   static const genresText = "Gêneros";
+  static const streamingText = "Streaming";
+  static const noStreamingText = "Não há streamings";
   static const synopsisText = "Sinopse";
   static const seasonsText = "Temporadas";
   static const seasonSingularText = "Temporada ";

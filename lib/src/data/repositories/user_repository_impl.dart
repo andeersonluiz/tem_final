@@ -185,4 +185,14 @@ class UserRepositoryImpl implements UserRepository {
       return false;
     }
   }
+
+  @override
+  Future<Map<String, String>> getStreamingLogosUrlList() async {
+    var resultStreamingLogo =
+        await firebaseHandlerService.getStreamingLogosUrlList();
+    if (resultStreamingLogo.isRight) {
+      return {};
+    }
+    return resultStreamingLogo.left;
+  }
 }

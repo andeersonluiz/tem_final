@@ -185,6 +185,7 @@ extension FilterGenreString on FilterGenre {
 final List<GenreType> kGenresList =
     GenreType.values.where((element) => element.string.isNotEmpty).toList();
 const int pageSize = 10;
+const int pageSizeSearch = 20;
 
 const int pageSizeMainPage = 5;
 
